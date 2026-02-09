@@ -22,6 +22,7 @@ namespace Canopy.Models
         public DateTime? Deadline { get; set; }
 
         public ICollection<ProjectMember> Members { get; set; } = new List<ProjectMember>();
+        public ICollection<PlannedTask> Tasks { get; set; } = new List<PlannedTask>();
     }
 
     public class ProjectMember

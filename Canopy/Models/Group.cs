@@ -9,6 +9,7 @@ public class Group
     public DateTime DateCreated { get; set; }
     public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
     public ICollection<Project> Projects { get; set; } = new List<Project>();   
+    public ICollection<PlannedTask> Tasks { get; set; } = new List<PlannedTask>();   
 
 }
 
