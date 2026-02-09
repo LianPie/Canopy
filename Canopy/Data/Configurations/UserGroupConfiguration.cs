@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Canopy.Data.Configurations
 {
-    public class UserGroupConfiguration
+    public class UserGroupConfiguration : IEntityTypeConfiguration<UserGroup>
     {
         public void Configure(EntityTypeBuilder<UserGroup> builder)
         {
