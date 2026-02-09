@@ -17,5 +17,10 @@
         // Navigation Properties
         public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
         public ICollection<Group> CreatedGroups { get; set; } = new List<Group>();
+
+        public ICollection<Project> ProjectsCreated { get; set; } = new List<Project>();
+        public ICollection<ProjectMember> ProjectMemberships { get; set; } = new List<ProjectMember>();
+
+
     }
 }

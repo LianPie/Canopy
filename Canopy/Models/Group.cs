@@ -8,6 +8,7 @@ public class Group
     public User? Creator { get; set; }
     public DateTime DateCreated { get; set; }
     public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
+    public ICollection<Project> Projects { get; set; } = new List<Project>();   
 
 }
 
