@@ -21,6 +21,9 @@
         public ICollection<Project> ProjectsCreated { get; set; } = new List<Project>();
         public ICollection<ProjectMember> ProjectMemberships { get; set; } = new List<ProjectMember>();
 
+        public ICollection<PlannedTask> TasksCreated { get; set; } = new List<PlannedTask>();
+        public ICollection<PlannedTask> TaskAssignee { get; set; } = new List<PlannedTask>();
+
 
     }
 }

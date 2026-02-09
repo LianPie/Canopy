@@ -1,7 +1,6 @@
 ﻿using Canopy.Data.Configurations;
 using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Configurations;
 
 namespace Canopy.Data
 {
@@ -23,6 +22,7 @@ namespace Canopy.Data
             modelBuilder.ApplyConfiguration(new GroupConfiguration());
             modelBuilder.ApplyConfiguration(new UserGroupConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+            modelBuilder.ApplyConfiguration(new PlannedTaskConfiguration());
         }
     }
 }
