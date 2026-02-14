@@ -19,10 +19,16 @@ namespace Canopy.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserSecurityConfiguration());
             modelBuilder.ApplyConfiguration(new GroupConfiguration());
             modelBuilder.ApplyConfiguration(new UserGroupConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+            modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration());
             modelBuilder.ApplyConfiguration(new PlannedTaskConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatConfiguration());
+            modelBuilder.ApplyConfiguration(new MessageConfiguration());
+            modelBuilder.ApplyConfiguration(new MessageAttachmentConfiguration());
+            modelBuilder.ApplyConfiguration(new MessageSeenStatusConfiguration());
         }
     }
 }
