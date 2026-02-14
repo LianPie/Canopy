@@ -35,10 +35,12 @@ namespace Canopy.Data.Configurations
 
             builder.Property(t => t.Title)
                 .HasColumnName("Task_Title")
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(t => t.Description)
                 .HasColumnName("Task_Description")
+                .HasMaxLength(255)
                 .IsRequired(false);
 
             builder.Property(t => t.Status)
