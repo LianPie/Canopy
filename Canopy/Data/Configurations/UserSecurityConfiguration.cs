@@ -25,6 +25,7 @@ namespace Canopy.Data.Configurations
             // Required Fields
             builder.Property(us => us.FailedLoginAttempts)
                 .HasColumnName("Failed_Login_Attempts")
+                .HasDefaultValue(0)
                 .IsRequired();
 
             builder.Property(us => us.LockoutUntil)
@@ -42,6 +43,7 @@ namespace Canopy.Data.Configurations
                 
             builder.Property(us => us.TwoFactorEnabled)
                 .HasColumnName("Two_Factor_Enabled")
+                .HasDefaultValue(false)
                 .IsRequired();
 
             // Nullable Fields
@@ -56,18 +58,18 @@ namespace Canopy.Data.Configurations
 
             builder.Property(us => us.SecurityQuestionsAnswered)
                 .HasColumnName("Security_Questions_Answered")
+                .HasDefaultValue(false)
                 .IsRequired();
 
             // DateTime Fields
             builder.Property(us => us.CreatedDate)
                 .HasColumnName("Created_Date")
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()"); // یا برای SQL Server
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(us => us.ModifiedDate)
                 .HasColumnName("Modified_Date")
-                .HasDefaultValueSql("GETUTCDATE()")
-                .IsRequired();
+                .HasDefaultValueSql("GETUTCDATE()");    
 
             builder.HasOne(us => us.User)             
                 .WithOne(x => x.UserSecurity)

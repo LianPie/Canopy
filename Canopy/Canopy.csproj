@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Resources\Models\" />
+    <Folder Include="Resources\Views\Dashboard\" />
     <Folder Include="wwwroot\js\Home\" />
   </ItemGroup>
 

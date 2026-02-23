@@ -11,6 +11,7 @@
     <title>@ViewData["Title"] - Canopy</title>
     <script type="importmap"></script>
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet" />
 
     @if (isRTL)
     {
@@ -35,6 +36,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 
     
     @await RenderSectionAsync("Scripts", required: false)
@@ -44,7 +46,7 @@
             "debug": false,                 
             "newestOnTop": true,            
             "progressBar": true,           
-            "positionClass": @(isRTL? "toastr-top-right" : "toastr-top-left"),
+            "positionClass": "toastr-top-left",
             "preventDuplicates": false,      
             "showDuration": 300,             
             "hideDuration": 1000,            
