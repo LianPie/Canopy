@@ -117,46 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_GetStarted" xml:space="preserve">
-    <value>Get Started!</value>
+  <data name="10_UserName" xml:space="preserve">
+    <value>نام کاربری</value>
   </data>
-  <data name="2_Canopyfor" xml:space="preserve">
-    <value>a Canopy for</value>
+  <data name="12_pass" xml:space="preserve">
+    <value>رمز عبور</value>
   </data>
-  <data name="5_Managment" xml:space="preserve">
-    <value>Managment</value>
+  <data name="15_terms" xml:space="preserve">
+    <value>قوانین و مقررات</value>
   </data>
-  <data name="4_Planing" xml:space="preserve">
-    <value>Planing</value>
+  <data name="16_CreateAccount" xml:space="preserve">
+    <value>ایجاد حساب کاربری</value>
   </data>
-  <data name="3_Productivity" xml:space="preserve">
-    <value>Productivity</value>
+  <data name="11_Email" xml:space="preserve">
+    <value>ایمیل</value>
   </data>
-  <data name="6_createAccount" xml:space="preserve">
-    <value>create an account</value>
+  <data name="13_confirmPass" xml:space="preserve">
+    <value> تایید رمز عبور</value>
   </data>
-  <data name="7_WhatisCanopy" xml:space="preserve">
-    <value>What is Canopy</value>
+  <data name="14_Accept" xml:space="preserve">
+    <value>قبول</value>
   </data>
-  <data name="8_CanopyInfoTitle" xml:space="preserve">
-    <value>Organize your team's chaos into a clear Canopy</value>
+  <data name="17_AlreadyRegistered" xml:space="preserve">
+    <value>قبلا ثبت نام کردی؟</value>
   </data>
-  <data name="9_CanopyInfo" xml:space="preserve">
-    <value>Canopy is a powerful, intuitive web application designed for managing and planning personal or team projects. Whether you're a solo creator or a growing startup, stay on top of every task and deadline.</value>
+  <data name="1_usernameValidation" xml:space="preserve">
+    <value>فقط حروف انگلیسی و اعداد، حداقل ۳ کاراکتر، بدون فاصله.</value>
   </data>
-  <data name="10_GetStarted" xml:space="preserve">
-    <value>Get Started for Free</value>
+  <data name="2_emailValidation" xml:space="preserve">
+    <value>لطفاً یک ایمیل معتبر وارد کنید.</value>
   </data>
-  <data name="11_LoginUname" xml:space="preserve">
-    <value>Email / Username</value>
+  <data name="4_confirmPasswordValidation" xml:space="preserve">
+    <value>رمزهای عبور با هم مطابقت ندارند.</value>
   </data>
-  <data name="12_LoginPass" xml:space="preserve">
-    <value>Password</value>
+  <data name="3_passwordFieldValidation" xml:space="preserve">
+    <value>حداقل ۸ کاراکتر، یک حرف بزرگ و یک کاراکتر خاص.</value>
   </data>
-  <data name="13_RememberMe" xml:space="preserve">
-    <value>Remember Me</value>
-  </data>
-  <data name="14_ForgotPassword" xml:space="preserve">
-    <value>Forgot Password</value>
+  <data name="5_TermsValidation" xml:space="preserve">
+    <value>لطفاً شرایط و قوانین را بپذیرید.</value>
   </data>
 </root>

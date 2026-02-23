@@ -1,8 +1,201 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@inject IViewLocalizer V
+@inject IHtmlLocalizer<SharedResources> SR
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var isRTL = requestCulture?.RequestCulture.Culture.Name == "fa";
+    var currentCulture = requestCulture?.RequestCulture.Culture.Name ?? "en";
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
+}
+@section Head
+{
+
+    @if (isRTL)
+    {
+        <link href="~/css/bootstrap.rtl.css" rel="stylesheet" />
+    }
+    else
+    {
+        <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    }
+    <link href="~/css/templatemo.css" rel="stylesheet" />
+}
+<main>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="~/">
+                <i class="fa-solid fa-leaf logo"></i>
+                <span class="navbar-brand-text">
+                    @(SR["Canopy"])
+                    <small>
+                        @(SR["Slogan"])
+                    </small>
+                </span>
+            </a>
+
+            <div class="d-lg-none ms-auto me-3">
+
+                <a class="btn btnnav custom-btn custom-border-btn" href="~/Home/Login">@SR["LoginBtn"]</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-lg-auto">
+                </ul>
+                <div class="d-none d-lg-block ms-lg-3">
+                    <div class="d-flex align-items-center">
+                        <!-- Language dropdown for desktop -->
+                        <div class="dropdown me-2">
+                            <button class="btn btnnav custom-btn custom-border-btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-globe"></i> @(currentCulture == "fa" ? "فارسی" : "EN")
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li>
+                                    <input type="hidden" name="culture" value="en" />
+                                    <a href="~/?culture=en" class="dropdown-item @(currentCulture == "en" ? "active" : "")">
+                                        <i class="fa-solid fa-check @(currentCulture == "en" ? "visible" : "invisible")"></i>
+                                        English
+                                    </a>
+                                </li>
+                                <li>
+                                    <input type="hidden" name="culture" value="fa" />
+                                    <a href="~/?culture=fa" class="dropdown-item @(currentCulture == "fa" ? "active" : "")">
+                                        <i class="fa-solid fa-check @(currentCulture == "fa" ? "visible" : "invisible")"></i>
+                                        فارسی
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a class="btn btnnav custom-btn custom-border-btn" href="~/Home/Login">@SR["LoginBtn"]</a>
+                    </div>
+                </div>
+            </div>
+    </nav>
+
+    <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+
+        <div class="section-overlay"></div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#365036" fill-opacity="1"
+                  d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,0L1405.7,0C1371.4,0,1303,0,1234,0C1165.7,0,1097,0,1029,0C960,0,891,0,823,0C754.3,0,686,0,617,0C548.6,0,480,0,411,0C342.9,0,274,0,206,0C137.1,0,69,0,34,0L0,0Z">
+            </path>
+        </svg>
+
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+                    <h2 class="text-white">@V["1_GetStarted"]</h2>
+
+                    <h1 class="cd-headline rotate-1 text-white mb-4 pb-2">
+                        <span>@V["2_Canopyfor"]</span>
+                        <span class="cd-words-wrapper">
+                            <b class="is-visible">@V["3_Productivity"]</b>
+                            <b>@V["4_Planing"]</b>
+                            <b>@V["5_Managment"]</b>
+                        </span>
+                    </h1>
+
+                    <div class="custom-btn-group">
+                        <a href="~/Home/SignUp" class="btn custom-btn smoothscroll me-3">@V["6_createAccount"]</a>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-12">
+                    <div class="ratio ratio-16x9">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/MGNgbNGOzh8"
+                                title="YouTube video player" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#f5f3ed" fill-opacity="1"
+                  d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z">
+            </path>
+        </svg>
+    </section>
+
+
+    <section class="about-section section-padding " id="section_2">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-12 col-12 text-center">
+                    <h2 class="mb-lg-5 mb-4">@V["7_WhatisCanopy"]</h2>
+                </div>
+
+                <div class="col-lg-5 col-12 me-auto mb-4 mb-lg-0">
+                    <h4>
+                        @V["8_CanopyInfoTitle"].</h1>
+
+                        <p>
+                            @V["9_CanopyInfo"]
+                        </p>
+
+                        <div class="cta-group">
+                            <a href="/home/signup" class="btn-primary">@V["10_GetStarted"]</a>
+                        </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12 mb-4 mb-lg-0 mb-md-0">
+                    <img src="">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" class="footer-wave">
+    <path fill="#50c070" fill-opacity="1"
+          d="M0,84L34.3,72C68.6,60,137,36,206,33.8C274.3,32,343,52,411,54C480,56,549,40,617,46C685.7,52,754,80,823,90C891.4,100,960,92,1029,84C1097.1,76,1166,68,1234,60C1302.9,52,1371,44,1406,40L1440,36L1440,120L1405.7,120C1371.4,120,1303,120,1234,120C1165.7,120,1097,120,1029,120C960,120,891,120,823,120C754.3,120,686,120,617,120C548.6,120,480,120,411,120C342.9,120,274,120,206,120C137.1,120,69,120,34,120L0,120Z">
+    </path>
+</svg>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-12 me-auto">
+                    <a class="navbar-brand d-flex align-items-center" href="/">
+                        <span class="navbar-brand-text">
+                            @(SR["Canopy"])
+                            <small>
+                                @(SR["Slogan"])
+                            </small>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-12 text-center text-lg-start">
+                    <p class="copyright-text">Copyright © 2026 Canopy</p>
+                </div>
+
+                <div class="col-lg-2 col-12 ms-auto">
+                    <ul class="social-icon d-flex justify-content-lg-end justify-content-center">
+                        <li class="social-icon-item"><a href="#" class="social-icon-link bi-instagram"></a></li>
+                        <li class="social-icon-item"><a href="#" class="social-icon-link bi-twitter"></a></li>
+                        <li class="social-icon-item"><a href="#" class="social-icon-link bi-whatsapp"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+@section Scripts {
+    <script src="~/js/jquery.sticky.js"></script>
+    <script src="~/js/click-scroll.js"></script>
+    <script src="~/js/animated-headline.js"></script>
+    <script src="~/js/modernizr.js"></script>
+}

@@ -118,45 +118,45 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1_GetStarted" xml:space="preserve">
-    <value>شروع کن!</value>
+    <value>Get Started!</value>
   </data>
   <data name="2_Canopyfor" xml:space="preserve">
-    <value>کانوپی برای</value>
+    <value>a Canopy for</value>
   </data>
   <data name="5_Managment" xml:space="preserve">
-    <value>مدیریت</value>
+    <value>Managment</value>
   </data>
   <data name="4_Planing" xml:space="preserve">
-    <value>برنامه‌ریزی</value>
+    <value>Planing</value>
   </data>
   <data name="3_Productivity" xml:space="preserve">
-    <value>بهره‌وری</value>
+    <value>Productivity</value>
   </data>
   <data name="6_createAccount" xml:space="preserve">
-    <value>ساخت حساب کاربری</value>
+    <value>create an account</value>
   </data>
   <data name="7_WhatisCanopy" xml:space="preserve">
-    <value>کانوپی چیه؟</value>
+    <value>What is Canopy</value>
   </data>
   <data name="8_CanopyInfoTitle" xml:space="preserve">
-    <value>با کانوپی شلوغی تیم تو مدیریت کن</value>
+    <value>Organize your team's chaos into a clear Canopy</value>
   </data>
   <data name="9_CanopyInfo" xml:space="preserve">
-    <value>کنوپی یه اپلیکیشن تحت وب باحال و کاربردی‌ست که کار مدیریت و برنامه‌ریزی پروژه‌های شخصی یا تیمی رو برات راحت می‌کنه. چه تنها روی پروژه‌هات کار کنی، چه یه استارت‌آپ در حال رشدی باشی، باهاش همیشه از همه کارا و مهلت‌ها سر در میاری.</value>
+    <value>Canopy is a powerful, intuitive web application designed for managing and planning personal or team projects. Whether you're a solo creator or a growing startup, stay on top of every task and deadline.</value>
   </data>
   <data name="10_GetStarted" xml:space="preserve">
-    <value>رایگان ثبت نام کن</value>
+    <value>Get Started for Free</value>
   </data>
   <data name="11_LoginUname" xml:space="preserve">
-    <value>ایمیل / نام کاربری</value>
+    <value>Email / Username</value>
   </data>
   <data name="12_LoginPass" xml:space="preserve">
-    <value>رمز عبور</value>
+    <value>Password</value>
   </data>
   <data name="13_RememberMe" xml:space="preserve">
-    <value>منو یادت بمونه!</value>
+    <value>Remember Me!</value>
   </data>
   <data name="14_ForgotPassword" xml:space="preserve">
-    <value>یادم رفته :(</value>
+    <value>Forgot Password :(</value>
   </data>
 </root>

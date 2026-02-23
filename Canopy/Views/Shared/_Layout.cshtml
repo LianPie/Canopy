@@ -1,50 +1,81 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Localization
+    @{
+        var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+        var isRTL = requestCulture?.RequestCulture.Culture.Name == "fa";
+    }
+<!DOCTYPE html>
+<html lang="@requestCulture?.RequestCulture.Culture.Name">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Canopy</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Canopy.styles.css" asp-append-version="true" />
+
+
+    @if (isRTL)
+    {
+        <link href="~/css/plugins.bundle.rtl.css" rel="stylesheet" />
+    }
+
+    else
+    {
+        <link href="~/css/plugins.bundle.css" rel="stylesheet" />
+    }
+    <link href="~/css/stylecolors.css" rel="stylesheet" />
+
+    @await RenderSectionAsync("Head", required: false)
+    @if (isRTL)
+    {
+        <link href="~/css/rtl.css" rel="stylesheet" />
+    }
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Canopy</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Canopy - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    @RenderBody()
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        toastr.options = {
+            "closeButton": true,           
+            "debug": false,                 
+            "newestOnTop": true,            
+            "progressBar": true,           
+            "positionClass": @(isRTL? "toastr-top-right" : "toastr-top-left"),
+            "preventDuplicates": false,      
+            "showDuration": 300,             
+            "hideDuration": 1000,            
+            "timeOut": 5000,                 
+            "extendedTimeOut": 1000,         
+            "showEasing": "swing",           
+            "hideEasing": "linear",          
+            "showMethod": "fadeIn",          
+            "hideMethod": "fadeOut",         
+            "tapToDismiss": true             
+        };
+        
+        $(document).ready(function () {
+            // 1. Check if the URL has a culture parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const culture = urlParams.get('culture');
+
+            if (culture) {
+                // 2. Format the cookie value ASP.NET Core expects
+                // Format: c=en|uic=en (c = Culture, uic = UI Culture)
+                const cookieValue = `c=${culture}|uic=${culture}`;
+
+                // 3. Save the cookie (Expires in 1 year)
+                const date = new Date();
+                date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+                document.cookie = `.AspNetCore.Culture=${cookieValue}; expires=${date.toUTCString()}; path=/`;
+
+                console.log("Language saved: " + culture);
+            }
+        });
+    </script>
 </body>
 </html>
+
