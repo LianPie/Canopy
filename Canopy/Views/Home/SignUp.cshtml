@@ -1,0 +1,306 @@
+﻿@model Canopy.Models.RegisterViewModel
+@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@inject IViewLocalizer V
+@inject IHtmlLocalizer<SharedResources> SR
+
+@section Head
+{
+    <link href="~/css/loginstyle.css" rel="stylesheet" />
+    <style>
+        .input-box {
+            margin-bottom: 8px;
+        }
+    </style>
+}
+
+<div class="login-container">
+    <form id="registerForm" asp-controller="Home" asp-action="SignUp" method="post">
+        @Html.AntiForgeryToken()
+        <div class="login-card signup-card">
+            <div class="avatar-container">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class="input-box">
+                    <i class="fa-solid fa-at"></i>
+                    <input type="text" id="username" name="Username" placeholder="@V["10_UserName"]">
+                </div>
+                <span class="error-msg" id="usernameError"></span>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="Email" placeholder="@V["11_Email"]">
+                </div>
+                <span class="error-msg" id="emailError"></span>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="passwordField" name="Password" placeholder="@V["12_pass"]">
+                    <button type="button" id="togglePassword" class="toggle-btn">
+                        <i class="fa-solid fa-eye-slash" id="lockIcon"></i>
+                    </button>
+                </div>
+                <span class="error-msg" id="passwordFieldError"></span>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <input type="password" id="confirmPasswordField" name="ConfirmPassword" placeholder="@V["13_confirmPass"]">
+                    <button type="button" id="toggleConfirmPassword" class="toggle-btn">
+                        <i class="fa-solid fa-eye-slash" id="confirmLockIcon"></i>
+                    </button>
+                </div>
+                <span class="error-msg" id="confirmPasswordFieldError"></span>
+            </div>
+
+            <div class="options">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="Terms">
+                    <div class="checkmark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 6L9 17L4 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="label">@V["14_Accept"] <a> @V["15_terms"] </a></span>
+                </label>
+            </div>
+            <span class="error-msg" id="termsError"></span>
+
+            <button onclick="register" class="login-btn" id="submitBtn">@V["16_CreateAccount"]</button>
+
+
+            <p class="switch-mode">@V["17_AlreadyRegistered"]<a href="~/home/Login">@SR["LoginBtn"]</a></p>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    <script>
+                const $signupCard   = $('.login-card');
+                const $submitBtn    = $('#submitBtn');
+                const fieldIds   = ['username','email','passwordField','confirmPasswordField','Terms'];
+
+                const emailRegex = new RegExp("^[\\w-\\.]+@@([\\w-]+\\.)+[\\w-]{2,4}$");
+                const passRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@@#$%^&*])(?=.{8,})");
+
+                const validators = {
+                    username:          v => /^[a-zA-Z0-9._]+$/.test(v) && v.length >= 3,
+                    email:             v => emailRegex.test(v),
+                    passwordField:     v => passRegex.test(v),
+                    confirmPasswordField: v => v === $('#passwordField').val() && v !== '',
+                    Terms:             () => $('#Terms').is(':checked')
+                };
+
+                const errorMessages = {
+                    username:               '@V["1_usernameValidation"]',
+                    email:                  '@V["2_emailValidation"]',
+                    passwordField:          '@V["3_passwordFieldValidation"]',
+                    confirmPasswordField:   '@V["4_confirmPasswordValidation"]',
+                    Terms:                  '@V["5_TermsValidation"]'
+                };
+
+                $submitBtn.prop('disabled', true);
+
+
+
+        const ui = {
+            /** Toggle password visibility */
+            togglePassword(btnId, fieldId, iconId) {
+                $(btnId).on('click', () => {
+                    const $field = $(fieldId);
+                    const $icon = $(iconId);
+                    const isPwd = $field.attr('type') === 'password';
+
+                    $field.attr('type', isPwd ? 'text' : 'password');
+                    $icon.toggleClass('fa-eye-slash fa-eye');
+                    $(btnId).toggleClass('is-visible', isPwd);
+                });
+            },
+
+            /** Show/hide validation feedback */
+            setValidity($parent, $msgSpan, isValid) {
+                $parent.toggleClass('invalid', !isValid)
+                       .toggleClass('valid', isValid);
+                $msgSpan.toggleClass('visible', !isValid);
+            }
+        };
+
+        function validateField(id) {
+            const $field = $(`#${id}`);
+            const $parent = $field.closest('.input-box, .checkbox-wrapper');
+            const $msgSpan = $(`#${id}Error`).length ? $(`#${id}Error`) : $('#termsError');
+
+            // Check if field is already marked as invalid
+            const isCurrentlyInvalid = $parent.hasClass('taken');
+
+            // If it's already invalid and we're not changing anything, don't re-validate
+            if (isCurrentlyInvalid) {
+                return false;
+            }
+
+            const isValid = validators[id]($field.val());
+
+
+            // Use the UI helper for consistency
+            ui.setValidity($parent, $msgSpan, isValid);
+            if (!isValid && $field.val() != "") {
+                $msgSpan.text(errorMessages[id]);
+            }
+            return isValid;
+        }
+
+        function updateSubmitState() {
+            const allValid = fieldIds.every(id => validateField(id));
+            $submitBtn.prop('disabled', !allValid);
+            return allValid;
+        }
+
+        function checkAvailability() {
+            const userName = $('#username').val();
+            const $usernameError = $('#usernameError');
+            const $usernameField = $('#username');
+
+            return $.get('/api/account/checkUser', { username: userName })
+                .done(res => {
+                    // Clear previous messages
+                    $usernameError.removeClass('visible');
+                    const $parent = $usernameField.closest('.input-box, .checkbox-wrapper');
+
+                    if (res.userNameTaken) {
+                        $usernameError.text('@SR["UsernameExists"]').addClass('visible');
+
+                        $parent.addClass('taken');
+
+                        ui.setValidity($parent, $usernameError, false);
+
+                        $submitBtn.prop('disabled', true);
+                    } else {
+                        $parent.removeClass('taken');
+                        // If username is available, recheck overall validation
+                        updateSubmitState();
+                    }
+                });
+        }
+
+        function checkEmailAvailability() {
+            const email = $('#email').val();
+            const $emailError = $('#emailError');
+            const $emailField = $('#email');
+
+            return $.get('/api/account/checkEmail', { email: email })
+                .done(res => {
+                    // Clear previous messages
+                    $emailError.removeClass('visible');
+
+                    const $parent = $emailField.closest('.input-box, .checkbox-wrapper');
+
+                    if (res.emailTaken) {
+                        $emailError.text('@SR["EmailExists"]').addClass('visible');
+                        $parent.addClass('taken');
+                        ui.setValidity($parent, $emailError, false);
+
+                        $submitBtn.prop('disabled', true);
+                    } else {
+                        $parent.removeClass('taken');
+                        // If email is available, recheck overall validation
+                        updateSubmitState();
+                    }
+                });
+        }
+
+        $(function() {
+            // Single event handler for all fields to update validation state
+            fieldIds.forEach(id => {
+                $(`#${id}`).on('blur input change', function() {
+                    validateField(id);
+
+                    // Handle availability checks on blur only
+                    if (this.id === 'username' && this.id === id && this.value) {
+                        const localOk = true;
+                        if (localOk) {
+                            checkAvailability();
+                        } else {
+                            $submitBtn.prop('disabled', true);
+                        }
+                    } else if (this.id === 'email' && this.id === id && this.value) {
+                        const localOk = true;
+                        if (localOk) {
+                            checkEmailAvailability();
+                        } else {
+                            $submitBtn.prop('disabled', true);
+                        }
+                    } else {
+                        // For all other fields or when conditions aren't met
+                        updateSubmitState();
+                    }
+                });
+            });
+
+            // Trigger initial validation
+            updateSubmitState();
+        });
+
+
+                ui.togglePassword('#togglePassword',        '#passwordField',        '#lockIcon');
+                ui.togglePassword('#toggleConfirmPassword','#confirmPasswordField','#confirmLockIcon');
+
+                $(function () {
+                          $('#registerForm').on('submit', function (e) {
+                            e.preventDefault();
+                        });
+
+                         $('#submitBtn').on('click', function () {
+
+                            const allValid = fieldIds.every(id => validateField(id));
+                            if (!allValid) {
+                                return;
+                            }
+
+                            register();
+                        });
+                    });
+
+                function register(){
+                        const model = {
+                            Username: $('#username').val().trim(),
+                            Email:    $('#email').val().trim(),
+                            Password: $('#passwordField').val(),
+                            ConfirmPassword: $('#confirmPasswordField').val(),
+                            AcceptTerms:  $('#Terms').is(':checked')
+                        };
+
+                        $.ajax({
+                            url: '/home/signup',
+                            method: 'POST',
+                            data: model,
+                            headers: {
+                                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: function () {
+                                window.location.href = '/home/welcome';
+                            },
+                            error: function (xhr) {
+                                const errors = xhr.responseJSON;
+                                if (errors) {
+                                    $('.error').removeClass('visible').text('');
+                                    for (const field in errors) {
+                                        const $msg = $(`#${field}Error`);
+                                        if ($msg.length) {
+                                            $msg.text(errors[field][0]).addClass('visible');
+                                        }
+                                    }
+                                } else {
+                                    alert('An unexpected error occurred.');
+                                }
+                            }
+                        });
+                     }
+    </script>
+
+}

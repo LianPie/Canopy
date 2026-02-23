@@ -22,7 +22,7 @@ namespace Canopy.Data.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.Property(u => u.Creator)
+            builder.Property(u => u.CreatorId)
                 .HasColumnName("Group_Creator")
                 .IsRequired();
 

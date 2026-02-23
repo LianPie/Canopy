@@ -53,7 +53,7 @@ namespace Canopy.Data.Configurations
             builder.Property(u => u.DateCreated)
                 .HasColumnName("User_DateCreated")
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()"); // یا برای SQL Server
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(u => u.LastLogin)
                 .HasColumnName("User_LastLogin")
@@ -83,6 +83,8 @@ namespace Canopy.Data.Configurations
             // Indexes
             builder.HasIndex(u => u.UserName).IsUnique();
             builder.HasIndex(u => u.Email).IsUnique();
+
+            
         }
     }
 }

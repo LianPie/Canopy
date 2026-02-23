@@ -1,0 +1,44 @@
+﻿@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@inject IHtmlLocalizer<SharedResources> SR
+
+@section Head
+{
+    <link href="~/css/loginstyle.css" rel="stylesheet" />
+    <style>
+        .input-box {
+            margin-bottom: 8px;
+        }
+    </style>
+}
+
+<div class="login-container">
+    <form id="registerForm" asp-controller="Home" asp-action="SignUp" method="post">
+        @Html.AntiForgeryToken()
+        <div class="login-card signup-card">
+            <div class="avatar-container">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+            </div>
+            <h1>@SR["WelcometoCanopy"]</h1>
+            <h4>@SR["accountCreated"]</h4>
+            <p>
+                @SR["welcomtext"]
+            </p>
+
+            <a asp-controller="Home" asp-action="Login"
+               class="btn btn-primary"
+               style="margin-top:1.5rem;">
+                @SR["GotoLogin"]
+            </a>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+
+}

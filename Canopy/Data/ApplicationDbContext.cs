@@ -10,9 +10,19 @@ namespace Canopy.Data
 
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Group> Group { get; set; }
+        public DbSet<UserSecurity> UserSecurity { get; set; }
         public DbSet<UserGroup> UserGroup { get; set; }
+        public DbSet<ProjectMember> ProjectMember { get; set; }
+
+        public DbSet<Group> Group { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<PlannedTask> PlannedTask { get; set; }
+
+        public DbSet<Chat> Chat { get; set; }
+        public DbSet<Message> Message { get; set; }
+        public DbSet<MessageAttachment> MessageAttachment { get; set; }
+        public DbSet<MessageSeenStatus> MessageSeenStatus { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -120,13 +120,97 @@
   <data name="Canopy" xml:space="preserve">
     <value>Canopy</value>
   </data>
-  <data name="Slogan" xml:space="preserve">
-    <value>productivity and teamwork</value>
-  </data>
   <data name="LoginBtn" xml:space="preserve">
     <value>Login</value>
   </data>
   <data name="LogOutBtn" xml:space="preserve">
     <value>Logout</value>
+  </data>
+  <data name="Slogan" xml:space="preserve">
+    <value>productivity and teamwork</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="UsernameLength" xml:space="preserve">
+    <value>Username must be between 3 and 50 characters</value>
+  </data>
+  <data name="UsernameInvalid" xml:space="preserve">
+    <value>Username can only contain letters, numbers, dots, and underscores</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Please enter a valid email address</value>
+  </data>
+  <data name="EmailLength" xml:space="preserve">
+    <value>Email cannot exceed 100 characters</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>Password must be at least 8 characters</value>
+  </data>
+  <data name="PasswordComplexity" xml:space="preserve">
+    <value>Password must contain at least one uppercase letter and one special character</value>
+  </data>
+  <data name="ConfirmPasswordRequired" xml:space="preserve">
+    <value>Please confirm your password</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
+  <data name="TermsRequired" xml:space="preserve">
+    <value>You must accept the Terms &amp; Conditions</value>
+  </data>
+  <data name="UsernameExists" xml:space="preserve">
+    <value>This username is already taken</value>
+  </data>
+  <data name="EmailExists" xml:space="preserve">
+    <value>This email is already registered</value>
+  </data>
+  <data name="RegistrationSuccess" xml:space="preserve">
+    <value>Account created successfully!</value>
+  </data>
+  <data name="ValidationFailed" xml:space="preserve">
+    <value>Please correct the errors and try again</value>
+  </data>
+  <data name="DatabaseError" xml:space="preserve">
+    <value>A database error occurred. Please try again.</value>
+  </data>
+  <data name="RegistrationError" xml:space="preserve">
+    <value>An error occurred while creating your account</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Invalid login attempt</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid username or email</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Invalid password</value>
+  </data>
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>Login successful!</value>
+  </data>
+  <data name="LoginError" xml:space="preserve">
+    <value>An error occurred during login</value>
+  </data>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value>You have been logged out successfully</value>
+  </data>
+  <data name="accountCreated" xml:space="preserve">
+    <value>Your account has been created successfully! :)</value>
+  </data>
+  <data name="WelcometoCanopy" xml:space="preserve">
+    <value>Welcome to Canopy!</value>
+  </data>
+  <data name="welcomtext" xml:space="preserve">
+    <value>You can now log in and start managing your tasks.</value>
+  </data>
+  <data name="GotoLogin" xml:space="preserve">
+    <value>Go to Login</value>
   </data>
 </root>

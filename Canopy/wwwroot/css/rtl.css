@@ -1,0 +1,38 @@
+﻿
+@font-face {
+    font-family: 'yekan';
+    src: url('../fonts/yekan.woff') format('woff');
+}
+
+body {
+    direction: rtl;
+}
+
+* {
+    font-family: 'yekan' !important;
+    box-sizing: border-box;
+}
+
+.navbar-brand {
+    margin: 0;
+    padding: 0;
+}
+
+.btnnav {
+    font-size: 12px !important;
+    padding: 8px 20px;
+}
+
+.logo {
+    padding-left: 8px;
+}
+
+.input-box input {
+    padding: 10px;
+    font-size: 13px;
+}
+
+.input-box i {
+    padding: 14px;
+    width: 48px;
+}

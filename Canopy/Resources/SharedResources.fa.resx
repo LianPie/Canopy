@@ -120,13 +120,97 @@
   <data name="Canopy" xml:space="preserve">
     <value>کانوپی</value>
   </data>
-  <data name="Slogan" xml:space="preserve">
-    <value>بهره‌وری و کار تیمی</value>
-  </data>
   <data name="LoginBtn" xml:space="preserve">
     <value>ورود</value>
   </data>
   <data name="LogOutBtn" xml:space="preserve">
     <value>خروج</value>
+  </data>
+  <data name="Slogan" xml:space="preserve">
+    <value>بهره‌وری و کار تیمی</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>نام کاربری الزامی است</value>
+  </data>
+  <data name="UsernameLength" xml:space="preserve">
+    <value>نام کاربری باید بین ۳ تا ۵۰ کاراکتر باشد</value>
+  </data>
+  <data name="UsernameInvalid" xml:space="preserve">
+    <value>نام کاربری فقط می‌تواند شامل حروف، اعداد، نقطه و زیرخط باشد</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>ایمیل الزامی است</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>لطفاً یک ایمیل معتبر وارد کنید</value>
+  </data>
+  <data name="EmailLength" xml:space="preserve">
+    <value>ایمیل نمی‌تواند بیش از ۱۰۰ کاراکتر باشد</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>رمز عبور الزامی است</value>
+  </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>رمز عبور باید حداقل ۸ کاراکتر باشد</value>
+  </data>
+  <data name="PasswordComplexity" xml:space="preserve">
+    <value>رمز عبور باید حداقل یک حرف بزرگ و یک کاراکتر خاص داشته باشد</value>
+  </data>
+  <data name="ConfirmPasswordRequired" xml:space="preserve">
+    <value>لطفاً رمز عبور را تأیید کنید</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>رمز عبور مطابقت ندارد</value>
+  </data>
+  <data name="TermsRequired" xml:space="preserve">
+    <value>باید شرایط و ضوابط را بپذیرید</value>
+  </data>
+  <data name="UsernameExists" xml:space="preserve">
+    <value>این نام کاربری قبلاً ثبت شده است</value>
+  </data>
+  <data name="EmailExists" xml:space="preserve">
+    <value>این ایمیل قبلاً ثبت شده است</value>
+  </data>
+  <data name="RegistrationSuccess" xml:space="preserve">
+    <value>حساب کاربری با موفقیت ایجاد شد!</value>
+  </data>
+  <data name="ValidationFailed" xml:space="preserve">
+    <value>لطفاً خطاها را اصلاح کنید و دوباره تلاش کنید</value>
+  </data>
+  <data name="DatabaseError" xml:space="preserve">
+    <value>خطای پایگاه داده رخ داد. لطفاً دوباره تلاش کنید.</value>
+  </data>
+  <data name="RegistrationError" xml:space="preserve">
+    <value>خطایی در ایجاد حساب کاربری رخ داد</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>تلاش ناموفق برای ورود</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>نام کاربری یا ایمیل نامعتبر است</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>رمز عبور نامعتبر است</value>
+  </data>
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>ورود با موفقیت انجام شد!</value>
+  </data>
+  <data name="LoginError" xml:space="preserve">
+    <value>خطایی در هنگام ورود رخ داد</value>
+  </data>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value>با موفقیت خارج شدید</value>
+  </data>
+  <data name="accountCreated" xml:space="preserve">
+    <value>اکانتت با موفقیت ساخته شد :)</value>
+  </data>
+  <data name="WelcometoCanopy" xml:space="preserve">
+    <value>به کانوپی خوش اومدی!</value>
+  </data>
+  <data name="welcomtext" xml:space="preserve">
+    <value>حالا میتونی وارد شی و کاراتو مدیریت کنی</value>
+  </data>
+  <data name="GotoLogin" xml:space="preserve">
+    <value>ورود به پنل</value>
   </data>
 </root>
