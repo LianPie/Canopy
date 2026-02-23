@@ -16,6 +16,7 @@ namespace Canopy.Controllers
         private readonly IStringLocalizer<SharedResources> _localizer;
         private readonly IUserRepository _repo;
 
+
         public HomeController(
         ApplicationDbContext context,
         ILogger<HomeController> logger,
@@ -27,7 +28,7 @@ namespace Canopy.Controllers
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _repo = repo ?? throw new ArgumentNullException(nameof(repo));
         }
-        
+
 
 
         public IActionResult Index()
@@ -48,6 +49,65 @@ namespace Canopy.Controllers
         public IActionResult Welcome()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            //auth proccess
+            var user = await _repo.GetByUserNameOrEmailAsync(model.Username);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid credentials.");
+                return View(model);
+            }
+
+            var security = await _repo.GetSecurityByUserIdAsync(user.Id);
+            if (security == null)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to verify account status.");
+                return View(model);
+            }
+            if (security.LockoutUntil.HasValue && security.LockoutUntil.Value > DateTime.UtcNow)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Account locked until {security.LockoutUntil.Value:u}.");
+                return View(model);
+            }
+
+
+            const int maxAttempts = 5;
+            var lockoutUntil = DateTime.UtcNow.AddMinutes(15);
+
+            var passwordOk = await _repo.VerifyPasswordAsync(user, model.Password);
+            if (!passwordOk)
+            {
+                await _repo.IncrementFailedAttemptsAsync(user.Id);
+
+                if (security.FailedLoginAttempts > maxAttempts)
+                {
+                    await _repo.LockoutAsync(user.Id, lockoutUntil);
+                    ModelState.AddModelError(string.Empty, $"Too many failed attempts. Account locked until {lockoutUntil:u}.");
+                }
+                else
+                    ModelState.AddModelError(string.Empty, "Invalid credentials.");
+
+                return View(model);
+            }
+
+            await _repo.ResetFailedAttemptsAsync(user.Id);
+
+
+            //session and cookie
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.UserName);
+
+
+            return RedirectToAction("index", "Dashboard");
         }
 
         [HttpPost]

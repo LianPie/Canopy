@@ -4,9 +4,9 @@ namespace Canopy.Helpers
 {
     public static class PasswordHelper
     {
-        private const int SaltSize = 16; // 128 bits
-        private const int HashSize = 32; // 256 bits
-        private const int Iterations = 100000; // Number of iterations (increase for more security)
+        private const int SaltSize = 16;
+        private const int HashSize = 32;
+        private const int Iterations = 100000; 
 
         public static string HashPassword(string password)
         {
@@ -23,7 +23,6 @@ namespace Canopy.Helpers
                 Array.Copy(salt, 0, hashBytes, 0, SaltSize);
                 Array.Copy(hash, 0, hashBytes, SaltSize, HashSize);
 
-                // Convert to base64 for storage
                 return Convert.ToBase64String(hashBytes);
             }
         }

@@ -39,4 +39,26 @@ namespace Canopy.Models
         [Display(Name = "AcceptTerms")]
         public bool AcceptTerms { get; set; }
     }
+    public class LoginViewModel
+    {
+        [Required(ErrorMessage = "UsernameRequired")]
+        [StringLength(50, MinimumLength = 3,
+            ErrorMessage = "UsernameLength")]
+        [RegularExpression(@"^[a-zA-Z0-9._]+$",
+            ErrorMessage = "UsernameInvalid")]
+        [Display(Name = "Username")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "PasswordRequired")]
+        [StringLength(100, MinimumLength = 8,
+            ErrorMessage = "PasswordLength")]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$",
+            ErrorMessage = "PasswordComplexity")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
+        [Display(Name = "RememberMe")]
+        public bool RememberMe { get; set; }
+    }
 }

@@ -110,7 +110,7 @@
 
 
         const ui = {
-            /** Toggle password visibility */
+            //Toggle password visibility
             togglePassword(btnId, fieldId, iconId) {
                 $(btnId).on('click', () => {
                     const $field = $(fieldId);
@@ -123,7 +123,7 @@
                 });
             },
 
-            /** Show/hide validation feedback */
+            //Show/hide validation feedback
             setValidity($parent, $msgSpan, isValid) {
                 $parent.toggleClass('invalid', !isValid)
                        .toggleClass('valid', isValid);
@@ -131,15 +131,14 @@
             }
         };
 
+        //validate User inputs
         function validateField(id) {
             const $field = $(`#${id}`);
             const $parent = $field.closest('.input-box, .checkbox-wrapper');
             const $msgSpan = $(`#${id}Error`).length ? $(`#${id}Error`) : $('#termsError');
 
-            // Check if field is already marked as invalid
             const isCurrentlyInvalid = $parent.hasClass('taken');
 
-            // If it's already invalid and we're not changing anything, don't re-validate
             if (isCurrentlyInvalid) {
                 return false;
             }
@@ -147,7 +146,6 @@
             const isValid = validators[id]($field.val());
 
 
-            // Use the UI helper for consistency
             ui.setValidity($parent, $msgSpan, isValid);
             if (!isValid && $field.val() != "") {
                 $msgSpan.text(errorMessages[id]);
@@ -155,12 +153,14 @@
             return isValid;
         }
 
+        //recheck all fields and check submit btnId stat
         function updateSubmitState() {
             const allValid = fieldIds.every(id => validateField(id));
             $submitBtn.prop('disabled', !allValid);
             return allValid;
         }
 
+        //check username and Email checkAvailability
         function checkAvailability() {
             const userName = $('#username').val();
             const $usernameError = $('#usernameError');
@@ -168,7 +168,6 @@
 
             return $.get('/api/account/checkUser', { username: userName })
                 .done(res => {
-                    // Clear previous messages
                     $usernameError.removeClass('visible');
                     const $parent = $usernameField.closest('.input-box, .checkbox-wrapper');
 
@@ -182,7 +181,6 @@
                         $submitBtn.prop('disabled', true);
                     } else {
                         $parent.removeClass('taken');
-                        // If username is available, recheck overall validation
                         updateSubmitState();
                     }
                 });
@@ -195,7 +193,6 @@
 
             return $.get('/api/account/checkEmail', { email: email })
                 .done(res => {
-                    // Clear previous messages
                     $emailError.removeClass('visible');
 
                     const $parent = $emailField.closest('.input-box, .checkbox-wrapper');
@@ -208,19 +205,16 @@
                         $submitBtn.prop('disabled', true);
                     } else {
                         $parent.removeClass('taken');
-                        // If email is available, recheck overall validation
                         updateSubmitState();
                     }
                 });
         }
 
         $(function() {
-            // Single event handler for all fields to update validation state
             fieldIds.forEach(id => {
                 $(`#${id}`).on('blur input change', function() {
                     validateField(id);
 
-                    // Handle availability checks on blur only
                     if (this.id === 'username' && this.id === id && this.value) {
                         const localOk = true;
                         if (localOk) {
@@ -236,13 +230,11 @@
                             $submitBtn.prop('disabled', true);
                         }
                     } else {
-                        // For all other fields or when conditions aren't met
                         updateSubmitState();
                     }
                 });
             });
 
-            // Trigger initial validation
             updateSubmitState();
         });
 
@@ -250,6 +242,8 @@
                 ui.togglePassword('#togglePassword',        '#passwordField',        '#lockIcon');
                 ui.togglePassword('#toggleConfirmPassword','#confirmPasswordField','#confirmLockIcon');
 
+
+                //Submit form ajax
                 $(function () {
                           $('#registerForm').on('submit', function (e) {
                             e.preventDefault();
