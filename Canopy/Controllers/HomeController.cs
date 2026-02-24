@@ -2,6 +2,7 @@
 using Canopy.Helpers;
 using Canopy.Models;
 using Canopy.Repositories;
+using Canopy.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -13,20 +14,23 @@ namespace Canopy.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        private readonly IStringLocalizer<SharedResources> _localizer;
+        private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IUserRepository _repo;
+        private readonly ITokenService _tokenService;
 
 
         public HomeController(
         ApplicationDbContext context,
         ILogger<HomeController> logger,
-        IStringLocalizer<SharedResources> localizer,
-        IUserRepository repo)
+        IStringLocalizer<HomeController> localizer,
+        IUserRepository repo,
+        ITokenService tokenService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
 
@@ -53,7 +57,7 @@ namespace Canopy.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -62,14 +66,14 @@ namespace Canopy.Controllers
             var user = await _repo.GetByUserNameOrEmailAsync(model.Username);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Invalid credentials.");
+                ModelState.AddModelError(string.Empty, _localizer["InvalidCredentials"]);
                 return View(model);
             }
 
             var security = await _repo.GetSecurityByUserIdAsync(user.Id);
             if (security == null)
             {
-                ModelState.AddModelError(string.Empty, "Unable to verify account status.");
+                ModelState.AddModelError(string.Empty, _localizer["UnableToVerifyAccount"]);
                 return View(model);
             }
             if (security.LockoutUntil.HasValue && security.LockoutUntil.Value > DateTime.UtcNow)
@@ -91,23 +95,75 @@ namespace Canopy.Controllers
                 if (security.FailedLoginAttempts > maxAttempts)
                 {
                     await _repo.LockoutAsync(user.Id, lockoutUntil);
-                    ModelState.AddModelError(string.Empty, $"Too many failed attempts. Account locked until {lockoutUntil:u}.");
+                    var lockoutMessage = _localizer["AccountLocked", lockoutUntil.ToString("u")];
+                    ModelState.AddModelError(string.Empty, lockoutMessage);
                 }
                 else
-                    ModelState.AddModelError(string.Empty, "Invalid credentials.");
+                    ModelState.AddModelError(string.Empty, _localizer["InvalidCredentials"]);
 
                 return View(model);
             }
+
 
             await _repo.ResetFailedAttemptsAsync(user.Id);
 
 
             //session and cookie
-            HttpContext.Session.SetInt32("UserId", user.Id);
-            HttpContext.Session.SetString("UserName", user.UserName);
+            var token = _tokenService.GenerateToken(user.Id);
 
+            if (model.RememberMe)
+            {
+                // Remember Me = 7 days 
+                CookieHelper.Set(
+                    response: Response,
+                    key: "access_token",
+                    value: token,
+                    expiresDays: 7,
+                    httpOnly: true,
+                    secure: true
+                );
 
-            return RedirectToAction("index", "Dashboard");
+                CookieHelper.Set(
+                    response: Response,
+                    key: "session_type",
+                    value: "Remember",
+                    expiresDays: 7,
+                    httpOnly: false,
+                    secure: true
+                );
+            }
+            else
+            {
+                // Session only = browser closes = NO expiration set
+                var options = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                };
+                Response.Cookies.Append("access_token", token, options);
+
+                Response.Cookies.Append("session_type", "temporary", new CookieOptions
+                {
+                    Expires = DateTime.UtcNow.AddDays(1),
+                    HttpOnly = false,
+                    Secure = true
+                });
+            }
+
+            // Return user data
+            return Ok(new
+            {
+                message = _localizer["Success", user.UserName],
+                user = new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email
+                },
+                rememberMe = model.RememberMe
+            });
+
         }
 
         [HttpPost]
