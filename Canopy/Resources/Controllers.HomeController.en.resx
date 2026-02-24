@@ -117,40 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="11_LoginUname" xml:space="preserve">
-    <value>ایمیل / نام کاربری</value>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Wrong Username or Password!</value>
   </data>
-  <data name="12_LoginPass" xml:space="preserve">
-    <value>رمز عبور</value>
+  <data name="UnableToVerifyAccount" xml:space="preserve">
+    <value>Unable to verify account status.</value>
   </data>
-  <data name="13_RememberMe" xml:space="preserve">
-    <value>منو یادت بمونه!</value>
+  <data name="AccountLocked" xml:space="preserve">
+    <value>Too many failed attempts. Account locked until {0}.</value>
   </data>
-  <data name="14_ForgotPassword" xml:space="preserve">
-    <value>یادم رفته :(</value>
-  </data>
-  <data name="15_NoAccount" xml:space="preserve">
-    <value>حساب کاربری نداری؟</value>
-  </data>
-  <data name="16_SignUp" xml:space="preserve">
-    <value>ایجاد حساب کاربری</value>
-  </data>
-  <data name="17_InvalidCred" xml:space="preserve">
-    <value>نام کاربری یا پسورد اشتباهه!</value>
-  </data>
-  <data name="RequiredFields" xml:space="preserve">
-    <value>لطفاً نام کاربری و رمز عبور را وارد کنید</value>
-  </data>
-  <data name="Error400" xml:space="preserve">
-    <value>داده‌های ورودی نامعتبر است</value>
-  </data>
-  <data name="Error403" xml:space="preserve">
-    <value>دسترسی به حساب رد شد</value>
-  </data>
-  <data name="Error500" xml:space="preserve">
-    <value>خطای سرور. لطفاً بعداً دوباره تلاش کن!</value>
-  </data>
-  <data name="ErrorGeneric" xml:space="preserve">
-    <value>خطایی رخ داد. لطفاً دوباره تلاش کن!</value>
+  <data name="Success" xml:space="preserve">
+    <value>Welcome! {0}</value>
   </data>
 </root>

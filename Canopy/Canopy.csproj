@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.3.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
@@ -28,6 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Resources\Controllers.HomeController.en.resx">
+      <SubType>Designer</SubType>
+      <CustomToolNamespace></CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers.HomeController.fa.resx">
+      <SubType>Designer</SubType>
+      <CustomToolNamespace></CustomToolNamespace>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\SharedResources.en.resx">
       <CustomToolNamespace></CustomToolNamespace>
     </EmbeddedResource>

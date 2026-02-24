@@ -26,10 +26,13 @@ namespace Canopy.Repositories
                 return entry.Entity;
             }
 
-            public async Task<User?> GetByUserNameOrEmailAsync(string identifier) => await _ctx.Users
-                 .FirstOrDefaultAsync(u =>
-                     u.UserName.Equals(identifier, StringComparison.OrdinalIgnoreCase) ||
-                     u.Email.Equals(identifier, StringComparison.OrdinalIgnoreCase));
+            public async Task<User?> GetByUserNameOrEmailAsync(string identifier)
+            {
+                return await _ctx.Users
+                    .FirstOrDefaultAsync(u =>
+                        EF.Functions.Like(u.UserName, identifier) ||
+                        EF.Functions.Like(u.Email, identifier));
+            }
 
 
             public Task<bool> VerifyPasswordAsync(User user, string plainPassword) =>

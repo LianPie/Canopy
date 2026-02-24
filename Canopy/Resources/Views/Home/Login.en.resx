@@ -135,4 +135,28 @@
   <data name="16_SignUp" xml:space="preserve">
     <value>Create an Account</value>
   </data>
+  <data name="17_InvalidCred" xml:space="preserve">
+    <value>Invalid username or password!</value>
+  </data>
+	
+  <data name="RequiredFields" xml:space="preserve">
+    <value>Please enter both username and password</value>
+  </data>
+  
+  <!-- Error Messages by Status Code -->
+  <data name="Error400" xml:space="preserve">
+    <value>Invalid input data</value>
+  </data>
+  
+  <data name="Error403" xml:space="preserve">
+    <value>Account access denied</value>
+  </data>
+  
+  <data name="Error500" xml:space="preserve">
+    <value>Server error. Please try again later.</value>
+  </data>
+  
+  <data name="ErrorGeneric" xml:space="preserve">
+    <value>An error occurred. Please try again.</value>
+  </data>
 </root>
