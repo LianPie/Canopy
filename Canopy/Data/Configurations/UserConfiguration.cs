@@ -8,7 +8,6 @@ namespace Canopy.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            // نام جدول
             builder.ToTable("User");
 
             // Primary Key

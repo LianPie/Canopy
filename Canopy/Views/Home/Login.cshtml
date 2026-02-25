@@ -144,7 +144,7 @@
                         withCredentials: true
                     },
                         success: function(response) {
-                            toastr.success(response.message);
+                            toastr.success(response.message.value);
                         setTimeout(function() {
                             window.location.href = '/dashboard';
                         }, 1500);

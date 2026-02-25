@@ -124,7 +124,7 @@
     <value>Unable to verify account status.</value>
   </data>
   <data name="AccountLocked" xml:space="preserve">
-    <value>Too many failed attempts. Account locked until {0}.</value>
+    <value>Too many failed attempts. Account locked for {0} minutes</value>
   </data>
   <data name="Success" xml:space="preserve">
     <value>Welcome! {0}</value>
