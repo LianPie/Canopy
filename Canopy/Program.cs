@@ -102,14 +102,12 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            if (context.Request.Cookies.ContainsKey("access_token"))
-            {
-                context.Token = context.Request.Cookies["access_token"];
-            }
+            context.Token = context.Request.Cookies["access_token"];
             return Task.CompletedTask;
         }
     };
 });
+
 
 builder.Services.AddAuthorization();
 
@@ -133,7 +131,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.MapControllers();
-app.UseAuthorization();
+
+app.UseAuthentication();
+app.UseAuthorization();   
 
 app.MapStaticAssets();
 

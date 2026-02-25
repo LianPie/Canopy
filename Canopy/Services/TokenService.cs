@@ -13,7 +13,7 @@ namespace Canopy.Services
         private readonly ILogger<TokenService> _logger;
         private readonly SymmetricSecurityKey _key;
 
-        // Can inject ANY dependencies!
+        // ask about ts later i have no idea what i'm doing
         public TokenService(IConfiguration config, ILogger<TokenService> logger)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -28,24 +28,25 @@ namespace Canopy.Services
 
         public string GenerateToken(int userId, int? expiryDays = null)
         {
-            _logger.LogInformation($"Generating token for user {userId}"); 
+            _logger.LogInformation($"Generating token for user {userId}");
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("generated_at", DateTime.UtcNow.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("generated_at", DateTime.UtcNow.ToString())
         };
-
-            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
+            
+            var key = _key;
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var expiry = expiryDays.HasValue
                 ? DateTime.UtcNow.AddDays(expiryDays.Value)
                 : DateTime.UtcNow.AddHours(1);
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
+                issuer: _config["JwtSettings:Issuer"],
+                audience: _config["JwtSettings:Audience"],
                 claims: claims,
                 expires: expiry,
                 signingCredentials: creds

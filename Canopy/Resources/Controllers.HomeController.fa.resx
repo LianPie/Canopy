@@ -124,7 +124,7 @@
     <value>قادر به تأیید وضعیت حساب نیستیم.</value>
   </data>
   <data name="AccountLocked" xml:space="preserve">
-    <value>تعداد دفعات تلاش ناموفق زیاد است. حساب تا {0} قفل شده است.</value>
+    <value>تعداد دفعات تلاش ناموفق زیاد است. حساب برای {0} دقیقه قفل شده است.</value>
   </data>
   <data name="Success" xml:space="preserve">
     <value>خوش اومدی! {0}</value>

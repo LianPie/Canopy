@@ -8,7 +8,6 @@ namespace Canopy.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<UserSecurity> builder)
         {
-            // نام جدول
             builder.ToTable("UserSecurity");
 
             // Primary Key
@@ -25,7 +24,6 @@ namespace Canopy.Data.Configurations
             // Required Fields
             builder.Property(us => us.FailedLoginAttempts)
                 .HasColumnName("Failed_Login_Attempts")
-                .HasDefaultValue(0)
                 .IsRequired();
 
             builder.Property(us => us.LockoutUntil)
@@ -38,12 +36,11 @@ namespace Canopy.Data.Configurations
 
             builder.Property(us => us.PasswordChangedDate)
                 .HasColumnName("Password_Changed_Date")
-                .HasDefaultValueSql("GETUTCDATE()")
-                .IsRequired();
-                
+                .IsRequired()
+                .HasDefaultValueSql("GETUTCDATE()");
+
             builder.Property(us => us.TwoFactorEnabled)
                 .HasColumnName("Two_Factor_Enabled")
-                .HasDefaultValue(false)
                 .IsRequired();
 
             // Nullable Fields
@@ -58,7 +55,6 @@ namespace Canopy.Data.Configurations
 
             builder.Property(us => us.SecurityQuestionsAnswered)
                 .HasColumnName("Security_Questions_Answered")
-                .HasDefaultValue(false)
                 .IsRequired();
 
             // DateTime Fields

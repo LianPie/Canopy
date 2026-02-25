@@ -51,9 +51,10 @@ namespace Canopy.Repositories
 
                 if (user != null && user.UserSecurity == null)
                 {
-                    user.UserSecurity = new UserSecurity { UserId = userId };
-                    _ctx.UserSecurity.Add(user.UserSecurity);
+                    user.UserSecurity = new UserSecurity { UserId= user.Id};
+                    await _ctx.UserSecurity.AddAsync(user.UserSecurity);
                     await _ctx.SaveChangesAsync();
+
                 }
 
                 return user?.UserSecurity;
@@ -79,7 +80,7 @@ namespace Canopy.Repositories
                 await _ctx.SaveChangesAsync();
             }
 
-            public async Task LockoutAsync(int userId, DateTime utcLockoutUntil) 
+            public async Task LockoutAsync(int userId, DateTime utcLockoutUntil)
             {
                 var sec = await GetSecurityByUserIdAsync(userId);
                 if (sec == null) return;

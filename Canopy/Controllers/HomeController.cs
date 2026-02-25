@@ -42,16 +42,28 @@ namespace Canopy.Controllers
 
         public IActionResult Login()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
             return View();
         }
 
         public IActionResult SignUp()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
             return View();
         }
 
         public IActionResult Welcome()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
             return View();
         }
 
@@ -62,25 +74,53 @@ namespace Canopy.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+
             //auth proccess
             var user = await _repo.GetByUserNameOrEmailAsync(model.Username);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, _localizer["InvalidCredentials"]);
-                return View(model);
+                return BadRequest(new
+                {
+                    message = _localizer["InvalidCredentials"],
+                    errors = ModelState.ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    )
+                });
             }
 
             var security = await _repo.GetSecurityByUserIdAsync(user.Id);
             if (security == null)
             {
                 ModelState.AddModelError(string.Empty, _localizer["UnableToVerifyAccount"]);
-                return View(model);
+                return BadRequest(new
+                {
+                    message = _localizer["UnableToVerifyAccount"],
+                    errors = ModelState.ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    )
+                });
             }
             if (security.LockoutUntil.HasValue && security.LockoutUntil.Value > DateTime.UtcNow)
             {
-                ModelState.AddModelError(string.Empty,
-                    $"Account locked until {security.LockoutUntil.Value:u}.");
-                return View(model);
+                DateTime now = DateTime.UtcNow;
+                double minutes = (security.LockoutUntil.Value - now).TotalMinutes;
+                var lockoutMessage = _localizer["AccountLocked", (int)Math.Round(minutes)];
+                ModelState.AddModelError(string.Empty, lockoutMessage);
+                return BadRequest(new
+                {
+                    message = lockoutMessage,
+                    errors = ModelState.ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    )
+                });
             }
 
 
@@ -95,13 +135,33 @@ namespace Canopy.Controllers
                 if (security.FailedLoginAttempts > maxAttempts)
                 {
                     await _repo.LockoutAsync(user.Id, lockoutUntil);
-                    var lockoutMessage = _localizer["AccountLocked", lockoutUntil.ToString("u")];
+
+                    DateTime now = DateTime.UtcNow;
+                    double minutes = (security.LockoutUntil.Value - now).TotalMinutes;
+                    var lockoutMessage = _localizer["AccountLocked", (int)Math.Round(minutes)];
                     ModelState.AddModelError(string.Empty, lockoutMessage);
+                    return BadRequest(new
+                    {
+                        message = lockoutMessage,
+                        errors = ModelState.ToDictionary(
+                            x => x.Key,
+                            x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        )
+                    });
+
                 }
                 else
+                {
                     ModelState.AddModelError(string.Empty, _localizer["InvalidCredentials"]);
-
-                return View(model);
+                    return BadRequest(new
+                    {
+                        message = _localizer["InvalidCredentials"],
+                        errors = ModelState.ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    )
+                    });
+                }
             }
 
 
