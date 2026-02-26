@@ -118,12 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1_DarkMode" xml:space="preserve">
-    <value>تیره</value>
+    <value>Dark</value>
   </data>
   <data name="2_LightMode" xml:space="preserve">
-    <value>روشن</value>
+    <value>Light</value>
   </data>
   <data name="3_Dashboard" xml:space="preserve">
-    <value>خروج</value>
+    <value>Dashboard</value>
+  </data>
+  <data name="3_Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="4_Settings" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>
