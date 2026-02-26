@@ -8,8 +8,11 @@ body {
     direction: rtl;
 }
 
-* {
-    font-family: 'yekan' !important;
+*:not(i, span) {
+    font-family: 'yekan';
+    box-sizing: border-box;
+}
+i {
     box-sizing: border-box;
 }
 
