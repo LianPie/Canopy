@@ -9,6 +9,7 @@ namespace Canopy.Repositories
         Task<bool> EmailExistsAsync(string email);
         Task<User> AddAsync(User user);
         Task<User?> GetByUserNameOrEmailAsync(string identifier);
+        User? GetById(int identifier);
         Task<bool> VerifyPasswordAsync(User user, string plainPassword);
 
 

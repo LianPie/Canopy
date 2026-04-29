@@ -1,5 +1,8 @@
 ﻿using Canopy.Repositories;
+using Canopy.Repositories.TaskManager.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Canopy.Controllers
 {
@@ -26,6 +29,28 @@ namespace Canopy.Controllers
             var emailTaken = await _repo.EmailExistsAsync(email);
 
             return Ok(new {emailTaken });
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult GetCurrentUser()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var user = _repo.GetById(userId);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                user.Id,
+                user.UserName,
+                user.Email
+            });
         }
     }
 }
