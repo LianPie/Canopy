@@ -11,45 +11,41 @@ namespace Canopy.Repositories
         private readonly ApplicationDbContext _ctx;
         public TasksRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
-        public async Task<List<Project>> GetUserProjectsAsync(int UserId)
+        public List<PlannedTask> GetAllByUser(int userId)
         {
-            var projects = await _ctx.ProjectMember.Include(m => m.Project).Where(m => m.UserId == UserId)
-                .Select(x => x.Project)
-                .ToListAsync();
-
-            return projects;
+            return _ctx.PlannedTask.Where(x => x.AssignedToUID == userId)
+                .ToList();
         }
 
-        public async Task<List<Group>> GetUserGroupsAsync(int UserId)
+        public PlannedTask? GetByIdForUser(int id, int userId)
         {
-            var Groups = await _ctx.UserGroup.Include(m => m.Group).Where(m => m.UserId == UserId)
-                .Select(x => x.Group)
-                .ToListAsync();
+            return _ctx.PlannedTask
+                .FirstOrDefault(t => t.Id == id && t.CreatorId == userId);
+        }
 
-            return Groups;
-        }
-        public async Task<List<PlannedTask>> GetUserTasksAsync(int UserId)
+        public PlannedTask Create(PlannedTask task)
         {
-            var tasks = await _ctx.PlannedTask.Where(x => x.AssignedToUID == UserId).ToListAsync();
-            return tasks;
-        }
-        public async Task<List<PlannedTask>> GetProjectTasksAsync(int UserId)
-        {
-            var tasks = await _ctx.PlannedTask.Include(t => t.Project)
-                .ThenInclude(p => p.Members)
-                .Where(t => t.Project != null && t.Project.Members.Any(m => m.UserId == UserId))
-                .ToListAsync();
+            _ctx.PlannedTask.Add(task);
+            _ctx.SaveChanges();
 
-            return tasks;
+            return task;
         }
-        public async Task<List<PlannedTask>> GetGroupTasksAsync(int UserId)
-        {
-            var tasks = await _ctx.PlannedTask.Include(t => t.Group)
-                .ThenInclude(g => g.UserGroups)
-                .Where(t => t.Group != null && t.Group.UserGroups.Any(m => m.UserId == UserId))
-                .ToListAsync();
 
-            return tasks;
+        public PlannedTask Update(PlannedTask task)
+        {
+            _ctx.PlannedTask.Update(task);
+            _ctx.SaveChanges();
+
+            return task;
         }
+
+        public void Delete(PlannedTask task)
+        {
+            _ctx.PlannedTask.Remove(task);
+            _ctx.SaveChanges();
+
+        }
+
+
     }
 }
