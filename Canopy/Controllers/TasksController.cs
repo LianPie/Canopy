@@ -1,0 +1,111 @@
+﻿using Canopy.Models;
+using Canopy.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+namespace Canopy.Controllers
+{
+    [Authorize]
+    [Route("api/tasks")]
+    [ApiController]
+    public class TasksController : ControllerBase
+    {
+
+        private readonly ITasksRepository _taskRepo;
+
+        public TasksController(ITasksRepository taskRepo)
+        {
+            _taskRepo = taskRepo;
+        }
+        private int GetUserId()
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+            return int.Parse(claim?.Value ?? throw new UnauthorizedAccessException("User not authenticated"));
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var tasks = _taskRepo.GetAllByUser(GetUserId());
+            return Ok(tasks);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var task = _taskRepo.GetByIdForUser(id, GetUserId());
+
+            if (task == null)
+                return NotFound();
+
+            return Ok(task);
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] PlannedTask task)
+        {
+            try
+            {
+                task.CreatorId = GetUserId();
+                task.AssignedToUID = GetUserId();
+                task.DateCreated = DateTime.UtcNow;
+
+                var created = _taskRepo.Create(task);
+                return Ok(created);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to create task");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] PlannedTask task)
+        {
+            try
+            {
+                var target = _taskRepo.GetByIdForUser(id, GetUserId());
+                if (target == null)
+                {
+                    return NotFound("Task not found or access denied");
+                }
+
+                target.Title = task.Title;
+                target.Description = task.Description;
+                target.DeadLine = task.DeadLine;
+                target.Status = task.Status;
+
+                _taskRepo.Update(target);
+
+                return Ok(target);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to Update task");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var target = _taskRepo.GetByIdForUser(id, GetUserId());
+                if (target == null)
+                {
+                    return NotFound("Task not found or access denied");
+                }
+                _taskRepo.Delete(target);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to remove task");
+            }
+        }
+
+    }
+}
