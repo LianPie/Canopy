@@ -34,6 +34,12 @@ namespace Canopy.Repositories
                         EF.Functions.Like(u.Email, identifier));
             }
 
+            public User? GetById(int Id)
+            {
+                return _ctx.Users
+                    .FirstOrDefault(u => u.Id == Id);
+            }
+
 
             public Task<bool> VerifyPasswordAsync(User user, string plainPassword) =>
                 Task.FromResult(PasswordHelper.VerifyPassword(plainPassword, user.Password));
