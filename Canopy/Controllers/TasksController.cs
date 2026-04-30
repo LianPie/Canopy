@@ -44,13 +44,22 @@ namespace Canopy.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] PlannedTask task)
+        public IActionResult Create([FromBody] TaskDataViewModel viewModel)
         {
             try
             {
-                task.CreatorId = GetUserId();
-                task.AssignedToUID = GetUserId();
-                task.DateCreated = DateTime.UtcNow;
+                var task = new PlannedTask
+                {
+                    Title = viewModel.Title,
+                    Description = viewModel.Description,
+                    DeadLine = viewModel.DeadLine,
+                    Status = viewModel.Status,
+
+                    CreatorId = GetUserId(),
+                    AssignedToUID = GetUserId(),
+                    DateCreated = DateTime.UtcNow
+                };
+
 
                 var created = _taskRepo.Create(task);
                 return Ok(created);
@@ -62,7 +71,7 @@ namespace Canopy.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] PlannedTask task)
+        public IActionResult Update(int id, [FromBody] TaskDataViewModel viewModel)
         {
             try
             {
@@ -72,10 +81,10 @@ namespace Canopy.Controllers
                     return NotFound("Task not found or access denied");
                 }
 
-                target.Title = task.Title;
-                target.Description = task.Description;
-                target.DeadLine = task.DeadLine;
-                target.Status = task.Status;
+                target.Title = viewModel.Title;
+                target.Description = viewModel.Description;
+                target.DeadLine = viewModel.DeadLine;
+                target.Status = viewModel.Status;
 
                 _taskRepo.Update(target);
 
@@ -105,6 +114,18 @@ namespace Canopy.Controllers
             {
                 return StatusCode(500, "Failed to remove task");
             }
+        }
+
+        [HttpPatch("{id}/status")]
+        public IActionResult ToggleStatus(int id)
+        {
+            var task = _taskRepo.GetByIdForUser(id, GetUserId());
+            if (task == null) return NotFound();
+
+            task.Status = !task.Status; 
+            _taskRepo.Update(task);
+
+            return Ok(new { task.Id, task.Status });
         }
 
     }

@@ -432,6 +432,21 @@
                                 </div>
                                 <div class="menu-item pt-5">
                                     <div class="menu-content">
+                                        <span class="menu-heading fw-bold text-uppercase fs-7">@V["5_TasksMenu"]</span>
+                                    </div>
+                                </div>
+
+                                <div class="menu-item">
+                                    <a class="menu-link" href="/dashboard/tasks" id="tasksMenu">
+                                        <span class="menu-icon">
+                                            <i class="ki-duotone ki-profile-circle"></i>
+                                            <i class="ki-solid ki-check-circle task-badge"></i>
+                                        </span>
+                                        <span class="menu-title">@V["5_TasksMenu"]</span>
+                                    </a>
+                                </div>
+                                <div class="menu-item pt-5">
+                                    <div class="menu-content">
                                         <span class="menu-heading fw-bold text-uppercase fs-7">@V["4_Settings"]</span>
                                     </div>
                                 </div>
@@ -497,7 +512,6 @@
 
 
         <script>
-            $("#DashboardMenu").addClass("active");
 
             $(document).ready(function() {
                 $.ajax({
@@ -516,6 +530,8 @@
                 });
             });
         </script>
+
+        @await RenderSectionAsync("Scripts", required: false)
     }
 
 

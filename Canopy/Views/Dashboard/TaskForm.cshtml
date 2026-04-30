@@ -1,0 +1,110 @@
+﻿@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@model Canopy.Models.TaskFormViewModel
+
+@inject IViewLocalizer _localizer
+
+@{
+    ViewData["Title"] = Model.IsEdit ? @_localizer["EditTaskTitle"] : @_localizer["NewTaskTitle"];
+    Layout = "~/views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="toolbar mb-5">
+    <h3>@ViewData["Title"]</h3>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form id="taskForm">
+            <input type="hidden" id="taskId" value="@Model.Id" />
+
+            <div class="mb-5">
+                <label class="form-label">@_localizer["Title"]</label>
+                <input type="text" id="taskTitle" class="form-control" required />
+            </div>
+
+            <div class="mb-5">
+                <label class="form-label">@_localizer["Description"]</label>
+                <textarea id="taskDesc" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="mb-5">
+                <label class="form-label">@_localizer["Deadline"]</label>
+                <input type="date" id="taskDeadline" class="form-control" />
+            </div>
+
+            @if (Model.IsEdit)
+            {
+                <div class="mb-5">
+                    <label class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="taskStatus" />
+                        <span class="form-check-label">@_localizer["Completed"]</span>
+                    </label>
+                </div>
+            }
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">@_localizer["Save"]</button>
+                <a href="/Dashboard/Tasks" class="btn btn-secondary">@_localizer["Cancel"]</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#tasksMenu").addClass("active");
+
+                $(document).ready(function() {
+            var taskId = $('#taskId').val();
+
+            //if editing
+            if (taskId) {
+                $.get('/api/tasks/' + taskId, function(task) {
+                    $('#taskTitle').val(task.title);
+                    $('#taskDesc').val(task.description);
+                    if (task.deadLine) {
+                        $('#taskDeadline').val(task.deadLine.split('T')[0]);
+                    }
+                    $('#taskStatus').prop('checked', task.status);
+                }).fail(function() {
+                            toastr.error('@_localizer["NotfoundMs"]');
+                            window.location.href = '/Dashboard/Tasks';
+                });
+            }
+
+            // submit
+            $('#taskForm').submit(function(e) {
+                e.preventDefault();
+
+                var data = {
+                    title: $('#taskTitle').val(),
+                    description: $('#taskDesc').val(),
+                    deadLine: $('#taskDeadline').val() || null,
+                    status: taskId ? $('#taskStatus').is(':checked') : false
+                };
+                console.log(data);
+
+                var url = taskId ? '/api/tasks/' + taskId : '/api/tasks';
+                var method = taskId ? 'PUT' : 'POST';
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function() {
+                            toastr.success("@_localizer["SavedMs"]!");
+                            window.location.href = '/Dashboard/Tasks';
+                    },
+                    error: function() {
+                            toastr.error('@_localizer["errorMs"]');
+                    }
+                });
+            });
+        });
+    </script>
+}

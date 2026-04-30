@@ -117,22 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_DarkMode" xml:space="preserve">
-    <value>Dark</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="2_LightMode" xml:space="preserve">
-    <value>Light</value>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
   </data>
-  <data name="3_Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Deadline" xml:space="preserve">
+    <value>Deadline</value>
   </data>
-  <data name="3_Profile" xml:space="preserve">
-    <value>Profile</value>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
   </data>
-  <data name="4_Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="NewTaskTitle" xml:space="preserve">
+    <value>New Task</value>
   </data>
-  <data name="5_TasksMenu" xml:space="preserve">
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Title" xml:space="preserve">
     <value>Tasks</value>
+  </data>
+  <data name="EditTaskTitle" xml:space="preserve">
+    <value>Edit Task</value>
+  </data>
+  <data name="NotfoundMs" xml:space="preserve">
+    <value>Task not found</value>
+  </data>
+  <data name="SavedMs" xml:space="preserve">
+    <value>Saved!</value>
+  </data>
+  <data name="errorMs" xml:space="preserve">
+    <value>hmmm Something went wrong...</value>
   </data>
 </root>
