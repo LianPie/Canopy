@@ -117,22 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_DarkMode" xml:space="preserve">
-    <value>Dark</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>انصراف</value>
   </data>
-  <data name="2_LightMode" xml:space="preserve">
-    <value>Light</value>
+  <data name="Completed" xml:space="preserve">
+    <value>انجام شده</value>
   </data>
-  <data name="3_Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Deadline" xml:space="preserve">
+    <value>مهلت</value>
   </data>
-  <data name="3_Profile" xml:space="preserve">
-    <value>Profile</value>
+  <data name="Description" xml:space="preserve">
+    <value>توضیحات</value>
   </data>
-  <data name="4_Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="NewTaskTitle" xml:space="preserve">
+    <value>تسک جدید</value>
   </data>
-  <data name="5_TasksMenu" xml:space="preserve">
-    <value>Tasks</value>
+  <data name="Save" xml:space="preserve">
+    <value>ذخیره</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>تسک‌ها</value>
+  </data>
+  <data name="EditTaskTitle" xml:space="preserve">
+    <value>ویرایش تسک</value>
+  </data>
+  <data name="NotfoundMs" xml:space="preserve">
+    <value>تسک پیدا نشد</value>
+  </data>
+  <data name="SavedMs" xml:space="preserve">
+    <value>ذخیره شد!</value>
+  </data>
+  <data name="errorMs" xml:space="preserve">
+    <value>همم یه مشکلی پیش اومده...</value>
   </data>
 </root>

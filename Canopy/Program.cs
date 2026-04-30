@@ -23,6 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Register repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 
 
 

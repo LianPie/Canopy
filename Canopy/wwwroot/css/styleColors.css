@@ -349,15 +349,15 @@
 
 [data-bs-theme=dark] {
     --bs-text-muted: #6c6660;
-    --bs-gray-100: #1b1b29;
+    --bs-gray-100: #3a3d38;
     --bs-gray-100-rgb: 27, 27, 41;
     --bs-gray-200: #2B2B40;
     --bs-gray-200-rgb: 43, 43, 64;
-    --bs-gray-300: #323248;
-    --bs-gray-300-rgb: 50, 50, 72;
-    --bs-gray-400: #474761;
+    --bs-gray-300: #566955;
+    --bs-gray-300-rgb: 104, 160, 104;
+    --bs-gray-400: #68a068;
     --bs-gray-400-rgb: 71, 71, 97;
-    --bs-gray-500: #565674;
+    --bs-gray-500: #435248;
     --bs-gray-500-rgb: 86, 86, 116;
     --bs-gray-600: #6D6D80;
     --bs-gray-600-rgb: 109, 109, 128;
@@ -375,9 +375,9 @@
     --bs-warning: #ffc700;
     --bs-danger: #f1416c;
     --bs-dark: #FFFFFF;
-    --bs-secondary: #323248;
+    --bs-secondary: #4c4745;
     --bs-primary-active: #6ee46e;
-    --bs-secondary-active: #474761;
+    --bs-secondary-active: #544e47;
     --bs-light-active: #323248;
     --bs-success-active: #47be7d;
     --bs-info-active: #5014d0;
@@ -446,7 +446,7 @@
     --bs-input-solid-bg-focus: var(--bs-gray-200);
     --bs-input-solid-placeholder-color: var(--bs-gray-500);
     --bs-tooltip-box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.15);
-    --bs-card-box-shadow: ;
+    --bs-card-box-shadow:;
     --bs-table-striped-bg: rgba(27, 27, 41, 0.75);
     --bs-table-loading-message-box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
     --bs-dropdown-bg: #1e1e2d;
@@ -482,7 +482,6 @@
     --bs-menu-link-bg-color-show: #474241;
     --bs-menu-link-bg-color-here: #474241;
     --bs-menu-link-bg-color-active: #665e5c;
-
     --bs-scrollbar-color: #373433;
     --bs-scrollbar-hover-color: #2d2a29;
     --bs-overlay-bg: rgba(255, 255, 255, 0.05);
@@ -558,6 +557,11 @@
     --bs-app-sidebar-light-header-menu-link-bg-color-active: #373433;
 }
 
+.form-check-input:checked {
+    background-color: #68a068;
+    border-color: #68a068;
+}
+
 app-sidebar-menu {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
@@ -606,3 +610,4 @@ app-sidebar-menu {
     max-width: 150px; /* Give it enough room to slide out */
     opacity: 1;
 }
+

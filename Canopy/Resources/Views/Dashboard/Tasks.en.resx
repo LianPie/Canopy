@@ -117,22 +117,85 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_DarkMode" xml:space="preserve">
-    <value>Dark</value>
+  <data name="ActionsColumn" xml:space="preserve">
+    <value>Actions</value>
   </data>
-  <data name="2_LightMode" xml:space="preserve">
-    <value>Light</value>
+  <data name="AddFirstTask" xml:space="preserve">
+    <value>Add your first task</value>
   </data>
-  <data name="3_Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="3_Profile" xml:space="preserve">
-    <value>Profile</value>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
   </data>
-  <data name="4_Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="Deadline" xml:space="preserve">
+    <value>Deadline</value>
   </data>
-  <data name="5_TasksMenu" xml:space="preserve">
+  <data name="DeadlineColumn" xml:space="preserve">
+    <value>Deadline</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this task?</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>Delete Task</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="EditTaskTitle" xml:space="preserve">
+    <value>Edit Task</value>
+  </data>
+  <data name="NewTask" xml:space="preserve">
+    <value>New Task</value>
+  </data>
+  <data name="NewTaskTitle" xml:space="preserve">
+    <value>New Task</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="NoTasks" xml:space="preserve">
+    <value>No tasks yet</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>Overdue</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="StatusColumn" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="TableTitle" xml:space="preserve">
+    <value>My Tasks</value>
+  </data>
+  <data name="TaskTitle" xml:space="preserve">
+    <value>Task Title</value>
+  </data>
+  <data name="Title" xml:space="preserve">
     <value>Tasks</value>
+  </data>
+  <data name="TitleColumn" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

@@ -117,22 +117,85 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_DarkMode" xml:space="preserve">
-    <value>Dark</value>
+  <data name="ActionsColumn" xml:space="preserve">
+    <value>عملیات</value>
   </data>
-  <data name="2_LightMode" xml:space="preserve">
-    <value>Light</value>
+  <data name="AddFirstTask" xml:space="preserve">
+    <value>افزودن اولین تسک</value>
   </data>
-  <data name="3_Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>انصراف</value>
   </data>
-  <data name="3_Profile" xml:space="preserve">
-    <value>Profile</value>
+  <data name="Completed" xml:space="preserve">
+    <value>انجام شده</value>
   </data>
-  <data name="4_Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="Deadline" xml:space="preserve">
+    <value>مهلت</value>
   </data>
-  <data name="5_TasksMenu" xml:space="preserve">
-    <value>Tasks</value>
+  <data name="DeadlineColumn" xml:space="preserve">
+    <value>مهلت</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="DeleteConfirm" xml:space="preserve">
+    <value>آیا از حذف این تسک مطمئنی؟</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>حذف تسک</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>توضیحات</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>انجام شده</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>ویرایش</value>
+  </data>
+  <data name="EditTaskTitle" xml:space="preserve">
+    <value>ویرایش تسک</value>
+  </data>
+  <data name="NewTask" xml:space="preserve">
+    <value>تسک جدید</value>
+  </data>
+  <data name="NewTaskTitle" xml:space="preserve">
+    <value>تسک جدید</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>خیر</value>
+  </data>
+  <data name="NoTasks" xml:space="preserve">
+    <value>هنوز تسکی وجود ندارد</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>عقب افتاده</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>در انتظار</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>ذخیره</value>
+  </data>
+  <data name="StatusColumn" xml:space="preserve">
+    <value>وضعیت</value>
+  </data>
+  <data name="TableTitle" xml:space="preserve">
+    <value>تسک های من</value>
+  </data>
+  <data name="TaskTitle" xml:space="preserve">
+    <value>عنوان تسک</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>تسک‌ها</value>
+  </data>
+  <data name="TitleColumn" xml:space="preserve">
+    <value>عنوان</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>امروز</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>بله</value>
   </data>
 </root>
