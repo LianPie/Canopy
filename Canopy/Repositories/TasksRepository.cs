@@ -47,5 +47,12 @@ namespace Canopy.Repositories
         }
 
 
+        //Project Tasks
+        public void AddRange(List<PlannedTask> task)
+        {
+            _ctx.PlannedTask.AddRange(task);
+            _ctx.SaveChanges();
+        }
+
     }
 }

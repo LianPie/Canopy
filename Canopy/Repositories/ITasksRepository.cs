@@ -10,6 +10,7 @@ namespace Canopy.Repositories
         PlannedTask Create(PlannedTask task);
         PlannedTask Update(PlannedTask task);
         void Delete(PlannedTask task);
+        void CreateProjectTasks(List<PlannedTask> task);
 
     }
 }
