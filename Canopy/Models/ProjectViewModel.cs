@@ -1,0 +1,23 @@
+﻿namespace Canopy.Models
+{
+    public class ProjectViewModel
+    {
+        public int? Id { get; set; }
+        public string CreatorName { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+        public DateTime? Deadline { get; set; }
+        public ICollection<TaskFormViewModel> Tasks { get; set; } = new List<TaskFormViewModel>();
+        public bool IsEdit => Id.HasValue;
+    }
+    public class ProjectDataViewModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime? Deadline { get; set; }
+        public ICollection<TaskDataViewModel> Tasks { get; set; } = new List<TaskDataViewModel>();
+    }
+}
