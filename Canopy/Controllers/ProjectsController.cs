@@ -1,0 +1,156 @@
+﻿using Canopy.Models;
+using Canopy.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+namespace Canopy.Controllers
+{
+    [Authorize]
+    [Route("api/tasks")]
+    [ApiController]
+    public class ProjectsController : ControllerBase
+    {
+
+        private readonly IProjectsRepository _projectRepo;
+        private readonly ITasksRepository _taskRepo;
+
+        public ProjectsController(ITasksRepository taskRepo, IProjectsRepository projectRepo)
+        {
+            _projectRepo = projectRepo;
+            _taskRepo = taskRepo;
+        }
+        private int GetUserId()
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+            return int.Parse(claim?.Value ?? throw new UnauthorizedAccessException("User not authenticated"));
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var tasks = _projectRepo.GetAllByUser(GetUserId());
+            return Ok(tasks);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var task = _projectRepo.GetByIdForUser(id, GetUserId());
+
+            if (task == null)
+                return NotFound();
+
+            return Ok(task);
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] ProjectDataViewModel viewModel)
+        {
+            try
+            {
+                var project = new Project
+                {
+                    Title = viewModel.Title,
+                    Description = viewModel.Description,
+                    Deadline = viewModel.Deadline,
+                    IsActive = true,
+
+                    CreatorId = GetUserId(),
+                    DateCreated = DateTime.UtcNow
+                };
+
+
+                var created = _projectRepo.Create(project);
+                if (viewModel.Tasks?.Count > 0)
+                {
+                    List<PlannedTask> projectTasks = new List<PlannedTask>();
+                    foreach (var task in viewModel.Tasks)
+                    {
+                        projectTasks.Add(new PlannedTask
+                        {
+                            Title = task.Title,
+                            Description = task.Description,
+                            DeadLine = task.DeadLine,
+                            Status = task.Status,
+
+                            CreatorId = GetUserId(),
+                            AssignedToUID = GetUserId(),
+                            ProjectId = created.Id,
+                            DateCreated = DateTime.UtcNow
+
+                        });
+                    }
+                    _taskRepo.AddRange(projectTasks);
+
+                }
+
+                return Ok(created);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to create task");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] ProjectDataViewModel viewModel)
+        {
+            try
+            {
+                var target = _projectRepo.GetByIdForUser(id, GetUserId());
+                if (target == null)
+                {
+                    return NotFound("Project not found or access denied");
+                }
+
+                target.Title = viewModel.Title;
+                target.Description = viewModel.Description;
+                target.Deadline = viewModel.Deadline;
+                target.IsActive = viewModel.IsActive;
+
+                _projectRepo.Update(target);
+
+                return Ok(target);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to Update task");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var target = _projectRepo.GetByIdForUser(id, GetUserId());
+                if (target == null)
+                {
+                    return NotFound("Project not found or access denied");
+                }
+                _projectRepo.Delete(target);
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to remove task");
+            }
+        }
+
+        [HttpPatch("{id}/status")]
+        public IActionResult ToggleStatus(int id)
+        {
+            var project = _projectRepo.GetByIdForUser(id, GetUserId());
+            if (project == null) return NotFound();
+
+            project.IsActive = !project.IsActive;
+            _projectRepo.Update(project);
+
+            return Ok(new { project.Id, project.IsActive });
+        }
+
+    }
+}

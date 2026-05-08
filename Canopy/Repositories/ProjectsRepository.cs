@@ -21,7 +21,8 @@ namespace Canopy.Repositories
         public Project? GetByIdForUser(int id, int userId)
         {
             return _ctx.Projects
-                .FirstOrDefault(t => t.Id == id && t.CreatorId == userId);
+                .Include(p => p.Creator)
+                .FirstOrDefault(p => p.Id == id && p.CreatorId == userId);
         }
 
         public Project Create(Project project)
