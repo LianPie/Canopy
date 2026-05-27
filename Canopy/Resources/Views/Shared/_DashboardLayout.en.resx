@@ -135,4 +135,7 @@
   <data name="5_TasksMenu" xml:space="preserve">
     <value>Tasks</value>
   </data>
+  <data name="6_projectsMenu" xml:space="preserve">
+    <value>Projects</value>
+  </data>
 </root>

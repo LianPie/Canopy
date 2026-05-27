@@ -22,6 +22,7 @@ namespace Canopy.Repositories
         {
             return _ctx.Projects
                 .Include(p => p.Creator)
+                .Include(p => p.Tasks)
                 .FirstOrDefault(p => p.Id == id && p.CreatorId == userId);
         }
 

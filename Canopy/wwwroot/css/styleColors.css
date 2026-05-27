@@ -100,7 +100,7 @@
     --bs-tertiary-color-rgb: 24, 28, 50;
     --bs-tertiary-bg: #F9F9F9;
     --bs-tertiary-bg-rgb: 249, 249, 249;
-    --bs-body-bg: #faf9f5;
+    --bs-body-bg: #f5f2e7;
     /* very light warm‑cream */
     --bs-body-bg-rgb: 250, 249, 245;
     --bs-heading-color: #181C32;
@@ -188,7 +188,7 @@
 
 [data-bs-theme=light] {
     --bs-text-muted: #A1A5B7;
-    --bs-gray-100: #F9F9F9;
+    --bs-gray-100: #eae6de;
     --bs-gray-100-rgb: 249, 249, 249;
     --bs-gray-200: #F4F4F4;
     --bs-gray-200-rgb: 244, 244, 244;
@@ -222,7 +222,7 @@
     --bs-warning-active: #f1bc00;
     --bs-danger-active: #d9214e;
     --bs-dark-active: #131628;
-    --bs-primary-light: #f1faff;
+    --bs-primary-light: #b0e3bf;
     --bs-secondary-light: #F9F9F9;
     --bs-success-light: #e8fff3;
     --bs-info-light: #f8f5ff;
@@ -344,7 +344,6 @@
     --bs-engage-btn-icon-color: #7E8299;
     --bs-engage-btn-color-active: #3F4254;
     --wave-color: #f7f5ed;
-
 }
 
 [data-bs-theme=dark] {
@@ -384,7 +383,7 @@
     --bs-warning-active: #f1bc00;
     --bs-danger-active: #d9214e;
     --bs-dark-active: white;
-    --bs-primary-light: #212e48;
+    --bs-primary-light: #474c45;
     --bs-success-light: #1c3238;
     --bs-info-light: #2f264f;
     --bs-warning-light: #392f28;
@@ -611,3 +610,13 @@ app-sidebar-menu {
     opacity: 1;
 }
 
+.btn.btn-primary {
+    color: #373433
+}
+    .btn.btn-primary i, .btn.btn-primary .svg-icon {
+        color: #373433
+    }
+
+.btn.btn-light-primary {
+    color: var(--bs-primary);
+}

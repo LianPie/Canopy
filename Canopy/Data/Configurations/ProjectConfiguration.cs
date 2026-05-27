@@ -18,16 +18,16 @@ namespace Canopy.Data.Configurations
                    .ValueGeneratedOnAdd();
 
             builder.Property(p => p.CreatorId)
-                  .HasColumnName("Creator_Id")
+                  .HasColumnName("Project_Creator")
                   .IsRequired();
 
             builder.Property(p => p.GroupId)
-                   .HasColumnName("Group_Id")
+                   .HasColumnName("Project_Group")
                    .IsRequired(false);
 
 
             builder.Property(p => p.IsActive)
-                   .HasColumnName("Project_IsActive")
+                   .HasColumnName("Project_Status")
                    .IsRequired()
                    .HasDefaultValue(true);               // defaults to active
 

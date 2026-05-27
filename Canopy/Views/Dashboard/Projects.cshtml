@@ -1,0 +1,182 @@
+﻿@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization 
+
+@using Canopy.Models
+@model List<Project>
+
+@inject IViewLocalizer _localizer
+
+@{
+    Layout = "~/views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="toolbar d-flex justify-content-between mb-5">
+    <h3>@_localizer["TableTitle"]</h3>
+    <a href="/Dashboard/ProjectForm" class="btn btn-primary">
+        <i class="ki-outline ki-plus fs-2"></i> @_localizer["NewProject"]
+    </a>
+</div>
+
+<table id="projectsTable" class="table table-row-dashed table-hover">
+    <thead>
+        <tr class="fw-bold text-muted">
+            <th>@_localizer["TitleColumn"]</th>
+            <th>@_localizer["StatusColumn"]</th>
+            <th>@_localizer["DeadlineColumn"]</th>
+            <th class="text-end">@_localizer["ActionsColumn"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center py-10">
+                    <div class="text-muted">
+                        <i class="ki-outline ki-element-11 fs-2tx mb-3"></i>
+                        <p>@_localizer["NoProjects"]</p>
+                        <a href="/Dashboard/ProjectForm" class="btn btn-sm btn-primary">@_localizer["AddFirstProject"]</a>
+                    </div>
+                </td>
+            </tr>
+        }
+        @foreach (var project in Model)
+        {
+            <tr>
+                <td>
+                    <span class="fw-bold">@project.Title</span>
+                    @if (!string.IsNullOrEmpty(project.Description))
+                    {
+                        <br />
+                        <small class="text-muted">@project.Description</small>
+                    }
+                </td>
+                <td>
+                    @if (project.IsActive)
+                    {
+                        <span class="badge badge-light-success fs-7">
+                            <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Active"]
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-light-secondary fs-7">
+                            <i class="ki-outline ki-archive fs-6 me-1"></i> @_localizer["Archived"]
+                        </span>
+                    }
+                </td>
+                <td>
+                    @if (project.Deadline.HasValue)
+                    {
+                        var isOverdue = project.Deadline.Value.Date < DateTime.Now.Date && project.IsActive;
+                        <span class="@(isOverdue ? "text-danger fw-bold" : "")">
+                            <i class="ki-outline ki-calendar fs-6 me-1"></i>
+                            @project.Deadline.Value.ToString("MMM dd, yyyy")
+                            @if (isOverdue)
+                            {
+                                <span class="badge badge-light-danger fs-8 ms-2">@_localizer["Overdue"]</span>
+                            }
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <a href="/Dashboard/ProjectForm?id=@project.Id"
+                       class="btn btn-sm btn-icon btn-light-primary me-1"
+                       data-bs-toggle="tooltip" title="@_localizer["Edit"]">
+                        <i class="ki-outline ki-pencil fs-2"></i>
+                    </a>
+                    <a class="btn btn-sm btn-icon btn-light-danger"
+                       data-bs-toggle="tooltip" title="@_localizer["Delete"]"
+                       onclick="showDeleteModal(@project.Id, '@project.Title')">
+                        <i class="ki-outline ki-trash fs-2"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@_localizer["DeleteTitle"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @_localizer["DeleteProjectConfirm"] "<span id="deleteProjectTitle"></span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">@_localizer["Delete"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#projectsMenu").addClass("active");
+
+        
+        function showDeleteModal(id, title) {
+            $('#deleteProjectTitle').text(title);
+            $('#confirmDeleteBtn').attr('onclick', `deleteProject(${id})` );
+            $('#deleteModal').modal('show');
+        }
+
+        function deleteProject(id) {
+                console.log("hello?")
+                $.ajax({
+                    url: '/api/tasks/' + id,
+                    type: 'DELETE',
+                    success: function() {
+                        location.reload();
+                    },
+                    error: function() {
+                        toastr.error('Failed to delete task');
+                    }
+                });
+        }
+
+        function toggleTaskStatus(checkbox) {
+            var taskId = $(checkbox).data('task-id');
+            var isDone = $(checkbox).is(':checked');
+
+            var $row = $(checkbox).closest('td');
+            var $statusCell = $row.find('.status-cell');
+
+            $statusCell.html('<span class="badge badge-light-info">...</span>');
+
+            $.ajax({
+                url: '/api/tasks/' + taskId + '/status',
+                type: 'PATCH',
+                contentType: 'application/json',
+                 success: function() {
+                    if (isDone) {
+                        $statusCell.html(`
+                            <span class="badge badge-light-success fs-7">
+                                <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Pending"]
+                            </span>
+                        `);
+                    } else {
+                        $statusCell.html(`
+                            <span class="badge badge-light-warning fs-7">
+                                <i class="ki-outline ki-information fs-6 me-1"></i> @_localizer["Done"]
+                            </span>
+                        `);
+                    }
+                },
+                error: function() {
+                    $(checkbox).prop('checked', !isDone);
+                }
+            });
+        }
+    </script>
+}

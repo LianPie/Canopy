@@ -9,7 +9,7 @@
         public string? Description { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public DateTime? Deadline { get; set; }
-        public ICollection<TaskFormViewModel> Tasks { get; set; } = new List<TaskFormViewModel>();
+        public ICollection<PlannedTask> Tasks { get; set; } = new List<PlannedTask>();
         public bool IsEdit => Id.HasValue;
     }
     public class ProjectDataViewModel
