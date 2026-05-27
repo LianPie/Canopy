@@ -117,25 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_DarkMode" xml:space="preserve">
-    <value>تیره</value>
+  <data name="AddTask" xml:space="preserve">
+    <value>افزودن تسک</value>
   </data>
-  <data name="2_LightMode" xml:space="preserve">
-    <value>روشن</value>
+  <data name="Completed" xml:space="preserve">
+    <value>انجام شده</value>
   </data>
-  <data name="3_Dashboard" xml:space="preserve">
-    <value>داشبورد</value>
+  <data name="Created" xml:space="preserve">
+    <value>ایجاد شده</value>
   </data>
-  <data name="3_Profile" xml:space="preserve">
-    <value>پروفایل</value>
+  <data name="EditProjectTitle" xml:space="preserve">
+    <value>ویرایش پروژه</value>
   </data>
-  <data name="4_Settings" xml:space="preserve">
-    <value>تنظیمات</value>
+  <data name="GroupAndMembers" xml:space="preserve">
+    <value>گروه و اعضا</value>
   </data>
-  <data name="5_TasksMenu" xml:space="preserve">
-    <value>تسک ها</value>
+  <data name="NewProjectTitle" xml:space="preserve">
+    <value>پروژه جدید</value>
   </data>
-  <data name="6_projectsMenu" xml:space="preserve">
-    <value>پروژه ها</value>
+  <data name="NoTasksYet" xml:space="preserve">
+    <value>هنوز تسکی اضافه نشده</value>
+  </data>
+  <data name="ProjectDetails" xml:space="preserve">
+    <value>جزئیات پروژه</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>ذخیره</value>
+  </data>
+  <data name="TaskTitle" xml:space="preserve">
+    <value>عنوان تسک</value>
+  </data>
+  <data name="Tasks" xml:space="preserve">
+    <value>تسک‌ها</value>
+  </data>
+  <data name="TitleColumn" xml:space="preserve">
+    <value>عنوان</value>
+  </data>
+  <data name="DeadlineColumn" xml:space="preserve">
+    <value>مهلت</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>توضیحات</value>
   </data>
 </root>

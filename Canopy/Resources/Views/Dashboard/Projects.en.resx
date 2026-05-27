@@ -117,25 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="1_DarkMode" xml:space="preserve">
-    <value>تیره</value>
+	<data name="ActionsColumn" xml:space="preserve">
+    <value>Actions</value>
   </data>
-  <data name="2_LightMode" xml:space="preserve">
-    <value>روشن</value>
+	<data name="Active" xml:space="preserve">
+    <value>Active</value>
   </data>
-  <data name="3_Dashboard" xml:space="preserve">
-    <value>داشبورد</value>
+	<data name="AddFirstProject" xml:space="preserve">
+    <value>Add your first project</value>
   </data>
-  <data name="3_Profile" xml:space="preserve">
-    <value>پروفایل</value>
+	<data name="Archived" xml:space="preserve">
+    <value>Archived</value>
   </data>
-  <data name="4_Settings" xml:space="preserve">
-    <value>تنظیمات</value>
+	<data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="5_TasksMenu" xml:space="preserve">
-    <value>تسک ها</value>
+	<data name="DeadlineColumn" xml:space="preserve">
+    <value>Deadline</value>
   </data>
-  <data name="6_projectsMenu" xml:space="preserve">
-    <value>پروژه ها</value>
+	<data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+	<data name="DeleteProjectConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete</value>
+  </data>
+	<data name="DeleteTitle" xml:space="preserve">
+    <value>Delete Project</value>
+  </data>
+	<data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+	<data name="NewProject" xml:space="preserve">
+    <value>New Project</value>
+  </data>
+	<data name="NoProjects" xml:space="preserve">
+    <value>No projects yet</value>
+  </data>
+	<data name="Overdue" xml:space="preserve">
+    <value>Overdue</value>
+  </data>
+	<data name="StatusColumn" xml:space="preserve">
+    <value>Status</value>
+  </data>
+	<data name="TableTitle" xml:space="preserve">
+    <value>Projects</value>
+  </data>
+	<data name="TitleColumn" xml:space="preserve">
+    <value>Title</value>
   </data>
 </root>
