@@ -12067,5 +12067,8 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--bs-body-bg);
+}
 /*# sourceMappingURL=bootstrap.css.map */

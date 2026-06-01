@@ -117,52 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-	<data name="ActionsColumn" xml:space="preserve">
+  <data name="ActionsColumn" xml:space="preserve">
     <value>عملیات</value>
   </data>
-	<data name="Active" xml:space="preserve">
+  <data name="Active" xml:space="preserve">
     <value>فعال</value>
   </data>
-	<data name="AddFirstProject" xml:space="preserve">
+  <data name="AddFirstProject" xml:space="preserve">
     <value>افزودن اولین پروژه</value>
   </data>
-	<data name="Archived" xml:space="preserve">
-    <value>بایگانی</value>
+  <data name="Pendig" xml:space="preserve">
+    <value>در انتظار</value>
   </data>
-	<data name="Cancel" xml:space="preserve">
+  <data name="Cancel" xml:space="preserve">
     <value>انصراف</value>
   </data>
-	<data name="DeadlineColumn" xml:space="preserve">
+  <data name="DeadlineColumn" xml:space="preserve">
     <value>مهلت</value>
   </data>
-	<data name="Delete" xml:space="preserve">
+  <data name="Delete" xml:space="preserve">
     <value>حذف</value>
   </data>
-	<data name="DeleteProjectConfirm" xml:space="preserve">
+  <data name="DeleteProjectConfirm" xml:space="preserve">
     <value>آیا از حذف این پروژه مطمئنی؟</value>
   </data>
-	<data name="DeleteTitle" xml:space="preserve">
+  <data name="DeleteTitle" xml:space="preserve">
     <value>حذف پروژه</value>
   </data>
-	<data name="Edit" xml:space="preserve">
+  <data name="done" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
     <value>ویرایش</value>
   </data>
-	<data name="NewProject" xml:space="preserve">
+  <data name="NewProject" xml:space="preserve">
     <value>پروژه جدید</value>
   </data>
-	<data name="NoProjects" xml:space="preserve">
+  <data name="NoProjects" xml:space="preserve">
     <value>هنوز پروژه‌ای نیست</value>
   </data>
-	<data name="Overdue" xml:space="preserve">
+  <data name="Overdue" xml:space="preserve">
     <value>عقب افتاده</value>
   </data>
-	<data name="StatusColumn" xml:space="preserve">
+  <data name="StatusColumn" xml:space="preserve">
     <value>وضعیت</value>
   </data>
-	<data name="TableTitle" xml:space="preserve">
+  <data name="TableTitle" xml:space="preserve">
     <value>پروژه‌ها</value>
   </data>
-	<data name="TitleColumn" xml:space="preserve">
+  <data name="TitleColumn" xml:space="preserve">
     <value>عنوان</value>
+  </data>
+  <data name="DeleteSuccess" xml:space="preserve">
+    <value>پروژه با موفقیت حذف شد.</value>
+  </data>
+  <data name="DeleteError" xml:space="preserve">
+    <value>هنگام حذف خطایی رخ داد.</value>
   </data>
 </root>

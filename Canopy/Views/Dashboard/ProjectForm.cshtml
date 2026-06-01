@@ -20,14 +20,15 @@
         <a href="/Dashboard/Projects" class="btn btn-secondary">
             @_localizer["Cancel"]
         </a>
-        <button type="submit" form="projectForm" class="btn btn-primary">
+        <button form="projectForm" class="btn btn-primary" onclick="">
             <i class="ki-outline ki-check-circle fs-2"></i> @_localizer["Save"]
         </button>
     </div>
 </div>
 
-<form id="projectForm" method="post">
+<form id="projectForm">
     <input type="hidden" id="projectId" value="@Model.Id" />
+
 
     <div class="row g-5">
 
@@ -40,8 +41,8 @@
                         <i class="ki-outline ki-plus fs-2"></i> @_localizer["AddTask"]
                     </button>
                 </div>
-                <div class="card-body">
-                    <div id="taskList">
+                <div class="card-body p-0">
+                    <div id="taskList" class="p-5" style="max-height: 500px; overflow-y: auto;">
                         <!-- Tasks added dynamically or loaded for edit -->
                         @if (Model.Tasks != null)
                         {
@@ -51,7 +52,7 @@
                                     <div class="d-flex justify-content-between mb-2">
                                         <input type="text" class="form-control form-control-sm task-title"
                                                placeholder="@_localizer["TaskTitle"]" value="@task.Title" />
-                                        <button type="button" class="btn btn-sm btn-icon btn-light-danger remove-task">
+                                        <button type="button" class="btn btn-sm btn-icon btn-light-danger remove-task ms-2 flex-shrink-0">
                                             <i class="ki-outline ki-trash fs-4"></i>
                                         </button>
                                     </div>
@@ -107,8 +108,8 @@
                         <div class="mb-5">
                             <label class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="projectActive"
-                                       @(Model.IsActive ? "checked" : "") />
-                                <span class="form-check-label">@_localizer["Active"]</span>
+                                       @(Model.Status ? "checked" : "") />
+                                <span class="form-check-label">@_localizer["done"]</span>
                             </label>
                         </div>
                     }
@@ -135,14 +136,18 @@
 
 @section Scripts {
     <script>
+        
+        var projectId = $('#projectId').val();
+        
+        // Submit form4        
+        $('#projectForm').submit(function(e) {
+            e.preventDefault();
+            submitProject();
+        });
+
         $(document).ready(function() {
-            var projectId = $('#projectId').val();
             var isEdit = projectId !== '';
 
-            // Load existing tasks if editing
-            if (isEdit) {
-                loadExistingTasks();
-            }
 
             // Add task button
             $('#addTaskBtn').click(function() {
@@ -155,11 +160,6 @@
                 toggleNoTasksMessage();
             });
 
-            // Submit form
-            $('#projectForm').submit(function(e) {
-                e.preventDefault();
-                submitProject();
-            });
         });
 
         const titlePlaceholder = '@_localizer["TaskTitle"]';
@@ -170,7 +170,7 @@
             var statusHtml = $('#projectId').val() ? `
                 <div class="form-check mt-2">
                     <input class="form-check-input task-status" type="checkbox" ${status ? 'checked' : ''} />
-                    <label class="form-check-label">Completed</label>
+                    <label class="form-check-label">@_localizer["Completed"]</label>
                 </div>` : '';
 
             var html = `
@@ -202,10 +202,10 @@
             var tasks = [];
             $('#taskList .task-item').each(function() {
                 tasks.push({
-                    title: $(this).find('.task-title').val(),
-                    description: $(this).find('.task-desc').val(),
-                    deadLine: $(this).find('.task-deadline').val() || null,
-                    status: $(this).find('.task-status').is(':checked')
+                    Title: $(this).find('.task-title').val(),
+                    Description: $(this).find('.task-desc').val(),
+                    DeadLine: $(this).find('.task-deadline').val() || null,
+                    Status: $(this).find('.task-status').is(':checked')
                 });
             });
             return tasks;
@@ -213,29 +213,35 @@
 
         function submitProject() {
             var data = {
-                title: $('#projectTitle').val(),
-                description: $('#projectDesc').val(),
-                deadline: $('#projectDeadline').val() || null,
-                isActive: $('#projectActive').is(':checked'),
-                tasks: collectTasks()
+                Title: $('#projectTitle').val(),
+                Description: $('#projectDesc').val(),
+                Deadline: $('#projectDeadline').val() || null,
+                Status: $('#projectActive').is(':checked') ?? false,
+                Group: 0,
+                Tasks: collectTasks()
             };
+
 
             var url = projectId ? '/api/projects/' + projectId : '/api/projects';
             var method = projectId ? 'PUT' : 'POST';
-
             $.ajax({
                 url: url,
                 type: method,
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function() {
-                    window.location.href = '/Dashboard/Projects';
+                    toastr.success('@_localizer["savedSuccessfully"]');
+                    setTimeout(function() {
+                        window.location.href = projectId ? '/Dashboard/ProjectForm/' + projectId : '/Dashboard/Projects';
+                    }, 2000);
+
                 },
                 error: function(xhr) {
-                    alert('Failed to save project. ' + (xhr.responseJSON?.message || ''));
+                    toastr.error('@_localizer["FailedSave"]' + (xhr.responseJSON?.message || ''));
                 }
             });
         }
 
+        
     </script>
 }

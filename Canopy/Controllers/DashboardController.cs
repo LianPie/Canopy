@@ -77,7 +77,7 @@ namespace Canopy.Controllers
                     model.Title = project.Title;
                     model.Description = project.Description;
                     model.Deadline = project.Deadline;
-                    model.IsActive = project.IsActive;
+                    model.Status = project.Status;
                     model.Tasks = project.Tasks; 
                     model.CreatorName = project.Creator?.UserName ?? "Unknown";
                 }
