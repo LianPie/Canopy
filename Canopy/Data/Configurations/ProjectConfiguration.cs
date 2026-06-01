@@ -26,7 +26,7 @@ namespace Canopy.Data.Configurations
                    .IsRequired(false);
 
 
-            builder.Property(p => p.IsActive)
+            builder.Property(p => p.Status)
                    .HasColumnName("Project_Status")
                    .IsRequired()
                    .HasDefaultValue(true);               // defaults to active

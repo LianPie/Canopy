@@ -159,4 +159,16 @@
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="done" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="FailedSave" xml:space="preserve">
+    <value>Failed to save project. </value>
+  </data>
+  <data name="savedSuccessfully" xml:space="preserve">
+    <value>Project saved successfully!</value>
+  </data>
 </root>

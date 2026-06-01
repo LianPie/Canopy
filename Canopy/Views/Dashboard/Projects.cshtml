@@ -1,7 +1,7 @@
 ﻿@namespace Canopy.Resources
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
-@using Microsoft.Extensions.Localization 
+@using Microsoft.Extensions.Localization
 
 @using Canopy.Models
 @model List<Project>
@@ -43,7 +43,7 @@
         }
         @foreach (var project in Model)
         {
-            <tr>
+            <tr id="project_@project.Id">
                 <td>
                     <span class="fw-bold">@project.Title</span>
                     @if (!string.IsNullOrEmpty(project.Description))
@@ -53,7 +53,7 @@
                     }
                 </td>
                 <td>
-                    @if (project.IsActive)
+                    @if (project.Status)
                     {
                         <span class="badge badge-light-success fs-7">
                             <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Active"]
@@ -61,15 +61,15 @@
                     }
                     else
                     {
-                        <span class="badge badge-light-secondary fs-7">
-                            <i class="ki-outline ki-archive fs-6 me-1"></i> @_localizer["Archived"]
+                        <span class="badge badge-light-warning fs-7">
+                            <i class="ki-outline ki-information fs-6 me-1"></i> @_localizer["Pendig"]
                         </span>
                     }
                 </td>
                 <td>
                     @if (project.Deadline.HasValue)
                     {
-                        var isOverdue = project.Deadline.Value.Date < DateTime.Now.Date && project.IsActive;
+                        var isOverdue = project.Deadline.Value.Date < DateTime.Now.Date && project.Status;
                         <span class="@(isOverdue ? "text-danger fw-bold" : "")">
                             <i class="ki-outline ki-calendar fs-6 me-1"></i>
                             @project.Deadline.Value.ToString("MMM dd, yyyy")
@@ -124,23 +124,24 @@
     <script>
         $("#projectsMenu").addClass("active");
 
-        
+
         function showDeleteModal(id, title) {
             $('#deleteProjectTitle').text(title);
             $('#confirmDeleteBtn').attr('onclick', `deleteProject(${id})` );
             $('#deleteModal').modal('show');
         }
 
-        function deleteProject(id) {
-                console.log("hello?")
+        function deleteProject(id,) {
                 $.ajax({
-                    url: '/api/tasks/' + id,
+                    url: '/api/Projects/' + id,
                     type: 'DELETE',
                     success: function() {
-                        location.reload();
+                        $(`#project_${id}`).remove();
+                        $('#deleteModal').modal('hide');
+                        toastr.success('@_localizer["DeleteSuccess"]');
                     },
                     error: function() {
-                        toastr.error('Failed to delete task');
+                        toastr.error('@_localizer["DeleteError"]');
                     }
                 });
         }

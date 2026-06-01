@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Canopy.Controllers
 {
     [Authorize]
-    [Route("api/tasks")]
+    [Route("api/Projects")]
     [ApiController]
     public class ProjectsController : ControllerBase
     {
@@ -55,7 +55,9 @@ namespace Canopy.Controllers
                     Title = viewModel.Title,
                     Description = viewModel.Description,
                     Deadline = viewModel.Deadline,
-                    IsActive = true,
+                    Status = false,
+
+                    GroupId = viewModel.Group,
 
                     CreatorId = GetUserId(),
                     DateCreated = DateTime.UtcNow
@@ -86,7 +88,7 @@ namespace Canopy.Controllers
 
                 }
 
-                return Ok(created);
+                return Ok();
             }
             catch (Exception)
             {
@@ -108,15 +110,15 @@ namespace Canopy.Controllers
                 target.Title = viewModel.Title;
                 target.Description = viewModel.Description;
                 target.Deadline = viewModel.Deadline;
-                target.IsActive = viewModel.IsActive;
+                target.Status = viewModel.Status;
 
                 _projectRepo.Update(target);
 
-                return Ok(target);
+                return Ok();
             }
             catch (Exception)
             {
-                return StatusCode(500, "Failed to Update task");
+                return StatusCode(500, "Failed to Update");
             }
         }
 
@@ -146,10 +148,10 @@ namespace Canopy.Controllers
             var project = _projectRepo.GetByIdForUser(id, GetUserId());
             if (project == null) return NotFound();
 
-            project.IsActive = !project.IsActive;
+            project.Status = !project.Status;
             _projectRepo.Update(project);
 
-            return Ok(new { project.Id, project.IsActive });
+            return Ok(new { project.Id, project.Status });
         }
 
     }

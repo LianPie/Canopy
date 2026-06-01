@@ -4,7 +4,7 @@
     {
         public int? Id { get; set; }
         public string CreatorName { get; set; } = string.Empty;
-        public bool IsActive { get; set; } = true;
+        public bool Status { get; set; } = true;
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
@@ -16,7 +16,8 @@
     {
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool Status { get; set; } = true;
+        public int Group { get; set; }
         public DateTime? Deadline { get; set; }
         public ICollection<TaskDataViewModel> Tasks { get; set; } = new List<TaskDataViewModel>();
     }

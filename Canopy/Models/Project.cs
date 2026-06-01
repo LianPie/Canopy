@@ -15,7 +15,7 @@ namespace Canopy.Models
         // Optional FK to a Group; 0 / null means “personal”
         public int? GroupId { get; set; }
         public Group? Group { get; set; }
-        public bool IsActive { get; set; } = true;  
+        public bool Status { get; set; } = true;  
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;

@@ -159,4 +159,16 @@
   <data name="Description" xml:space="preserve">
     <value>توضیحات</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>لغو</value>
+  </data>
+  <data name="done" xml:space="preserve">
+    <value>تکمیل شده</value>
+  </data>
+  <data name="FailedSave" xml:space="preserve">
+    <value>خطا در ذخیره سازی</value>
+  </data>
+  <data name="savedSuccessfully" xml:space="preserve">
+    <value>پروژه با موفقیت ذخیره سازی شد!</value>
+  </data>
 </root>

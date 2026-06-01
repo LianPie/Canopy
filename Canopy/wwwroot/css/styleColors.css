@@ -620,3 +620,10 @@ app-sidebar-menu {
 .btn.btn-light-primary {
     color: var(--bs-primary);
 }
+.form-check-label {
+    color: #68a068;
+
+}
+html, body {
+        font-size: 15px !important;
+    }
