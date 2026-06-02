@@ -117,6 +117,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -125,7 +127,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 
 
 app.UseRequestLocalization();
@@ -144,5 +145,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();
