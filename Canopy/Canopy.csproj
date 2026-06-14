@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ModelBinders\" />
     <Folder Include="Resources\Models\" />
     <Folder Include="wwwroot\js\Home\" />
   </ItemGroup>

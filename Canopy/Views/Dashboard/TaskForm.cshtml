@@ -33,7 +33,11 @@
 
             <div class="mb-5">
                 <label class="form-label">@_localizer["Deadline"]</label>
-                <input type="date" id="taskDeadline" class="form-control" />
+                <input type="text" class="form-control persian-date-input"
+                       id="projectDeadline"
+                       name="Deadline"
+                       data-gregorian-value="@Model.DeadLine?.ToString("yyyy-MM-dd")"
+                       value="@Model.DeadLine" />
             </div>
 
             @if (Model.IsEdit)
@@ -79,11 +83,12 @@
             // submit
             $('#taskForm').submit(function(e) {
                 e.preventDefault();
+                var deadlineRaw = $('#taskDeadline').val();
 
                 var data = {
                     title: $('#taskTitle').val(),
                     description: $('#taskDesc').val(),
-                    deadLine: $('#taskDeadline').val() || null,
+                    deadLine: normalizeToGregorian(deadlineRaw),
                     status: taskId ? $('#taskStatus').is(':checked') : false
                 };
                 console.log(data);

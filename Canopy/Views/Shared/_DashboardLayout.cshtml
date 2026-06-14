@@ -17,6 +17,8 @@
         <link href="~/css/bootstrap.rtl.min.css" rel="stylesheet" />
         <link href="~/css/style.bundle.rtl.css" rel="stylesheet" />
         <link href="~/datatables/datatables.bundle.rtl.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
+
 
     }
     else
@@ -518,7 +520,141 @@
         <script src="~/prismjs/prismjs.bundle.js"></script>
         <script src="~/js/scripts.bundle.js"></script>
         <script src="~/datatables/datatables.bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+        
+        <script>
+    $(document).ready(function() {
+        $('.persian-date-input').each(function() {
+            var $displayInput = $(this);
+            var fieldName = $displayInput.attr('name');
+            
+            // Check current language
+            var isPersian = $('html').attr('lang') === 'fa' || 
+                            $('html').attr('lang') === 'fa-IR';
+            
+            if (isPersian) {
+                 var $hiddenInput = $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', fieldName)
+                    .attr('id', fieldName + '_gregorian');
+                
+                $displayInput.attr('name', fieldName + '_display');
+                $displayInput.after($hiddenInput);
+                
+               var initialGregorian = $displayInput.data('gregorian-value') || $displayInput.val();
 
+                // 1. Get the raw Persian value from your input (e.g., "1405/3/24 0:00:00")
+                var rawPersian = $displayInput.val(); 
+                var initialPersian = '';
+
+                if (rawPersian) {
+                    // 2. Split by space to isolate "1405/3/24" from "0:00:00"
+                    var datePart = rawPersian.split(' ')[0]; 
+    
+                    // 3. Ensure leading zeros for month and day so the parser doesn't choke
+                    var parts = datePart.split('/');
+                    if (parts.length === 3) {
+                        var year = parts[0];
+                        var month = parts[1].padStart(2, '0');
+                        var day = parts[2].padStart(2, '0');
+        
+                        initialPersian = `${year}/${month}/${day}`;
+                    }
+                }
+                
+                $displayInput.persianDatepicker({
+                    format: 'YYYY/MM/DD',
+                    autoClose: true,
+                    initialValue: false, 
+                    initialValueType: 'persian', // Explicitly tell it we are passing a Persian string
+                    onSelect: function(unixDate) {
+                        var pd = new persianDate(unixDate);
+                        var gregorianDate = pd.toCalendar('gregorian').format('YYYY-MM-DD');
+                        $hiddenInput.val(gregorianDate);
+                        $hiddenInput.trigger('change');
+                    }
+                });
+
+                // 5. If we successfully parsed a date, force the picker to look at it
+                if (initialPersian) {
+                    $displayInput.persianDatepicker('setDate', initialPersian);
+                    $displayInput.val(initialPersian);
+                }
+            } else {
+                // ENGLISH MODE: Convert to HTML5 date input
+                var currentValue = $displayInput.val();
+                // Ensure it's a valid date string
+                var validDate = '';
+                if (currentValue && currentValue !== 'null') {
+                    // Check if it's already yyyy-MM-dd format
+                    if (currentValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        validDate = currentValue;
+                    } else {
+                        // Try to parse and reformat
+                        var date = new Date(currentValue);
+                        if (!isNaN(date.getTime())) {
+                            validDate = date.toISOString().split('T')[0];
+                        }
+                    }
+                }
+                
+                var $newInput = $('<input>')
+                    .attr('type', 'date')
+                    .attr('name', fieldName)
+                    .attr('id', $displayInput.attr('id'))
+                    .attr('class', $displayInput.attr('class'))
+                    .val(validDate);
+
+            console.log(validDate)
+                $displayInput.replaceWith($newInput);
+            }
+        });
+    });
+
+    function normalizeToGregorian(dateString) {
+        if (!dateString) return null;
+
+        // Helper to convert Persian/Arabic digits to English digits (for the input)
+        var englishNumbers = dateString.replace(/[۰-۹]/g, function (d) {
+            return d.charCodeAt(0) - 1776;
+        }).replace(/[٠-٩]/g, function (d) {
+            return d.charCodeAt(0) - 1632;
+        });
+
+        // 1. Clean up the input: grab just the date part if there's a time attached
+        var cleanString = englishNumbers.trim().split(' ')[0];
+    
+        // 2. Split into Year, Month, Day components
+        var parts = cleanString.split(/[-/]/); 
+        if (parts.length !== 3) return null;
+
+        var year = parseInt(parts[0], 10);
+        var month = parseInt(parts[1], 10);
+        var day = parseInt(parts[2], 10);
+
+        // 3. Check if it's a Persian year
+        if (year < 1700) {
+            try {
+                var pd = new persianDate([year, month, day]).toCalendar('gregorian');
+            
+                // FIX: Force the format method to output English digits
+                // In most versions of this library, passing 'gregorian' or setting the locale works:
+                pd.formatPersian = false; 
+                return pd.format('YYYY-MM-DD');
+            } catch (e) {
+                console.error("Failed to parse Persian date:", dateString);
+                return null;
+            }
+        }
+
+        // 4. If it's already Gregorian, pad month/day to ensure strict YYYY-MM-DD format
+        var strMonth = month.toString().padStart(2, '0');
+        var strDay = day.toString().padStart(2, '0');
+    
+        return `${year}-${strMonth}-${strDay}`;
+    }
+    </script>
 
         <script>
 

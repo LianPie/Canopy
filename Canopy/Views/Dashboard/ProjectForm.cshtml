@@ -99,8 +99,11 @@
 
                     <div class="mb-5">
                         <label class="form-label">@_localizer["DeadlineColumn"]</label>
-                        <input type="date" id="projectDeadline" class="form-control"
-                               value="@Model.Deadline?.ToString("yyyy-MM-dd")" />
+                        <input type="text" class="form-control persian-date-input"
+                               id="projectDeadline"
+                               name="Deadline"
+                               data-gregorian-value="@Model.Deadline?.ToString("yyyy-MM-dd")" 
+                               value="@Model.Deadline" />
                     </div>
 
                     @if (Model.IsEdit)
@@ -198,6 +201,8 @@
             $('#noTasksMsg').toggleClass('d-none', count > 0);
         }
 
+
+
         function collectTasks() {
             var tasks = [];
             $('#taskList .task-item').each(function() {
@@ -212,10 +217,14 @@
         }
 
         function submitProject() {
+            var deadlineRaw = $('#projectDeadline').val();
+            console.log(deadlineRaw)
+            console.log(normalizeToGregorian(deadlineRaw))
+
             var data = {
                 Title: $('#projectTitle').val(),
                 Description: $('#projectDesc').val(),
-                Deadline: $('#projectDeadline').val() || null,
+                Deadline: normalizeToGregorian(deadlineRaw),
                 Status: $('#projectActive').is(':checked') ?? false,
                 Group: 0,
                 Tasks: collectTasks()
