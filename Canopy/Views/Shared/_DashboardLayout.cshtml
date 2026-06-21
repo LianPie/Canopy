@@ -523,94 +523,98 @@
         <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
         
-        <script>
-    $(document).ready(function() {
-        $('.persian-date-input').each(function() {
-            var $displayInput = $(this);
-            var fieldName = $displayInput.attr('name');
-            
-            // Check current language
-            var isPersian = $('html').attr('lang') === 'fa' || 
-                            $('html').attr('lang') === 'fa-IR';
-            
-            if (isPersian) {
-                 var $hiddenInput = $('<input>')
-                    .attr('type', 'hidden')
-                    .attr('name', fieldName)
-                    .attr('id', fieldName + '_gregorian');
-                
-                $displayInput.attr('name', fieldName + '_display');
-                $displayInput.after($hiddenInput);
-                
-               var initialGregorian = $displayInput.data('gregorian-value') || $displayInput.val();
+        <script>// Reusable function that can target specific elements or containers
+            function initPersianDatepickers($selector) {
+                // If no specific selector is provided, target all uninitialized fields
+                var $elements = $selector ? $selector.find('.persian-date-input') : $('.persian-date-input');
 
-                // 1. Get the raw Persian value from your input (e.g., "1405/3/24 0:00:00")
-                var rawPersian = $displayInput.val(); 
-                var initialPersian = '';
-
-                if (rawPersian) {
-                    // 2. Split by space to isolate "1405/3/24" from "0:00:00"
-                    var datePart = rawPersian.split(' ')[0]; 
-    
-                    // 3. Ensure leading zeros for month and day so the parser doesn't choke
-                    var parts = datePart.split('/');
-                    if (parts.length === 3) {
-                        var year = parts[0];
-                        var month = parts[1].padStart(2, '0');
-                        var day = parts[2].padStart(2, '0');
+                $elements.each(function() {
+                    var $displayInput = $(this);
         
-                        initialPersian = `${year}/${month}/${day}`;
-                    }
-                }
-                
-                $displayInput.persianDatepicker({
-                    format: 'YYYY/MM/DD',
-                    autoClose: true,
-                    initialValue: false, 
-                    initialValueType: 'persian', // Explicitly tell it we are passing a Persian string
-                    onSelect: function(unixDate) {
-                        var pd = new persianDate(unixDate);
-                        var gregorianDate = pd.toCalendar('gregorian').format('YYYY-MM-DD');
-                        $hiddenInput.val(gregorianDate);
-                        $hiddenInput.trigger('change');
+                    // Prevent double initialization
+                    if ($displayInput.data('initialized')) return;
+                    $displayInput.data('initialized', true);
+
+                    var fieldName = $displayInput.attr('name') || 'task_deadline_' + Math.floor(Math.random() * 10000);
+        
+                    // Check current language
+                    var isPersian = $('html').attr('lang') === 'fa' || 
+                                    $('html').attr('lang') === 'fa-IR';
+        
+                    if (isPersian) {
+                         var $hiddenInput = $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', fieldName)
+                            .attr('id', fieldName + '_gregorian');
+            
+                        $displayInput.attr('name', fieldName + '_display');
+                        $displayInput.after($hiddenInput);
+            
+                        var initialGregorian = $displayInput.data('gregorian-value') || $displayInput.val();
+                        var rawPersian = $displayInput.val(); 
+                        var initialPersian = '';
+
+                        if (rawPersian) {
+                            var datePart = rawPersian.split(' ')[0]; 
+                            var parts = datePart.split('/');
+                            if (parts.length === 3) {
+                                var year = parts[0];
+                                var month = parts[1].padStart(2, '0');
+                                var day = parts[2].padStart(2, '0');
+    
+                                initialPersian = `${year}/${month}/${day}`;
+                            }
+                        }
+            
+                        $displayInput.persianDatepicker({
+                            format: 'YYYY/MM/DD',
+                            autoClose: true,
+                            initialValue: false, 
+                            initialValueType: 'persian',
+                            onSelect: function(unixDate) {
+                                var pd = new persianDate(unixDate);
+                                var gregorianDate = pd.toCalendar('gregorian').format('YYYY-MM-DD');
+                                $hiddenInput.val(gregorianDate);
+                                $hiddenInput.trigger('change');
+                            }
+                        });
+
+                        if (initialPersian) {
+                            $displayInput.persianDatepicker('setDate', initialPersian);
+                            $displayInput.val(initialPersian);
+                        }
+                    } else {
+                        // ENGLISH MODE: Convert to HTML5 date input
+                        var currentValue = $displayInput.val();
+                        var validDate = '';
+                        if (currentValue && currentValue !== 'null') {
+                            if (currentValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                validDate = currentValue;
+                            } else {
+                                var date = new Date(currentValue);
+                                if (!isNaN(date.getTime())) {
+                                    validDate = date.toISOString().split('T')[0];
+                                }
+                            }
+                        }
+            
+                        var $newInput = $('<input>')
+                            .attr('type', 'date')
+                            .attr('name', fieldName)
+                            .attr('id', $displayInput.attr('id'))
+                            .attr('class', $displayInput.attr('class'))
+                            .val(validDate)
+                            .data('initialized', true); // Mark the converted element as initialized
+
+                        $displayInput.replaceWith($newInput);
                     }
                 });
-
-                // 5. If we successfully parsed a date, force the picker to look at it
-                if (initialPersian) {
-                    $displayInput.persianDatepicker('setDate', initialPersian);
-                    $displayInput.val(initialPersian);
-                }
-            } else {
-                // ENGLISH MODE: Convert to HTML5 date input
-                var currentValue = $displayInput.val();
-                // Ensure it's a valid date string
-                var validDate = '';
-                if (currentValue && currentValue !== 'null') {
-                    // Check if it's already yyyy-MM-dd format
-                    if (currentValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        validDate = currentValue;
-                    } else {
-                        // Try to parse and reformat
-                        var date = new Date(currentValue);
-                        if (!isNaN(date.getTime())) {
-                            validDate = date.toISOString().split('T')[0];
-                        }
-                    }
-                }
-                
-                var $newInput = $('<input>')
-                    .attr('type', 'date')
-                    .attr('name', fieldName)
-                    .attr('id', $displayInput.attr('id'))
-                    .attr('class', $displayInput.attr('class'))
-                    .val(validDate);
-
-            console.log(validDate)
-                $displayInput.replaceWith($newInput);
             }
-        });
-    });
+
+            // Initialize on page load
+            $(document).ready(function() {
+                initPersianDatepickers();
+            });
 
     function normalizeToGregorian(dateString) {
         if (!dateString) return null;

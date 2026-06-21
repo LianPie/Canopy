@@ -13,7 +13,9 @@ namespace Canopy.Repositories
 
         public List<PlannedTask> GetAllByUser(int userId)
         {
-            return _ctx.PlannedTask.Where(x => x.AssignedToUID == userId)
+            return _ctx.PlannedTask
+                .Include(p => p.Project)
+                .Where(x => x.AssignedToUID == userId)
                 .ToList();
         }
 
@@ -53,6 +55,16 @@ namespace Canopy.Repositories
             _ctx.PlannedTask.AddRange(task);
             _ctx.SaveChanges();
         }
-
+        public void RemoveRange(List<PlannedTask> task)
+        {
+            _ctx.PlannedTask.RemoveRange(task);
+            _ctx.SaveChanges();
+        }
+        public List<PlannedTask> GetByProjectId(int projectId, int userId)
+        {
+            return _ctx.PlannedTask
+                .Where(t => t.ProjectId == projectId && t.Project.CreatorId == userId)
+                .ToList();
+        }
     }
 }

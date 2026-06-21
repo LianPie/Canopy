@@ -50,6 +50,7 @@
                             {
                                 <div class="task-item border rounded p-3 mb-3">
                                     <div class="d-flex justify-content-between mb-2">
+                                        <input type="text" class="task-id" value="@task.Id" hidden />
                                         <input type="text" class="form-control form-control-sm task-title"
                                                placeholder="@_localizer["TaskTitle"]" value="@task.Title" />
                                         <button type="button" class="btn btn-sm btn-icon btn-light-danger remove-task ms-2 flex-shrink-0">
@@ -58,8 +59,8 @@
                                     </div>
                                     <input type="text" class="form-control form-control-sm task-desc mb-2"
                                            placeholder="@_localizer["Description"]" value="@task.Description" />
-                                    <input type="date" class="form-control form-control-sm task-deadline"
-                                           value="@task.DeadLine?.ToString("yyyy-MM-dd")" />
+                                    <input type="text" class="form-control form-control-sm task-deadline persian-date-input"
+                                           value="@task.DeadLine" />
                                     @if (Model.IsEdit)
                                     {
                                         <div class="form-check mt-2">
@@ -170,31 +171,36 @@
 
 
         function addTaskRow(title, desc, deadline, status) {
-            var statusHtml = $('#projectId').val() ? `
-                <div class="form-check mt-2">
-                    <input class="form-check-input task-status" type="checkbox" ${status ? 'checked' : ''} />
-                    <label class="form-check-label">@_localizer["Completed"]</label>
-                </div>` : '';
+                var statusHtml = $('#projectId').val() ? `
+                    <div class="form-check mt-2">
+                        <input class="form-check-input task-status" type="checkbox" ${status ? 'checked' : ''} />
+                        <label class="form-check-label">@_localizer["Completed"]</label>
+                    </div>` : '';
 
-            var html = `
-                <div class="task-item border rounded p-3 mb-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <input type="text" class="form-control form-control-sm task-title"
-                               placeholder="${titlePlaceholder}" value="${title || ''}" />
-                        <button type="button" class="btn btn-sm btn-icon btn-light-danger remove-task">
-                            <i class="ki-outline ki-trash fs-4"></i>
-                        </button>
-                    </div>
-                    <input type="text" class="form-control form-control-sm task-desc mb-2"
-                           placeholder="${dscPlaceholder}" value="${desc || ''}" />
-                    <input type="date" class="form-control form-control-sm task-deadline"
-                           value="${deadline || ''}" />
-                    ${statusHtml}
-                </div>`;
+                // 1. Convert string template to jQuery object
+                var $newRow = $(`
+                    <div class="task-item border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <input type="hidden" class="task-id" value="0" />
+                            <input type="text" class="form-control form-control-sm task-title"
+                                   placeholder="${titlePlaceholder}" value="${title || ''}" />
+                            <button type="button" class="btn btn-sm btn-icon btn-light-danger remove-task">
+                                <i class="ki-outline ki-trash fs-4"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="form-control form-control-sm task-desc mb-2"
+                               placeholder="${dscPlaceholder}" value="${desc || ''}" />
+                        <input type="text" class="form-control form-control-sm task-deadline persian-date-input"
+                               value="${deadline || ''}" />
+                        ${statusHtml}
+                    </div>`);
 
-            $('#taskList').append(html);
-            toggleNoTasksMessage();
-        }
+                // 2. Run initialization specifically targeting this row container
+                initPersianDatepickers($newRow);
+
+                $('#taskList').append($newRow);
+                toggleNoTasksMessage();
+            }
 
         function toggleNoTasksMessage() {
             var count = $('#taskList .task-item').length;
@@ -207,9 +213,10 @@
             var tasks = [];
             $('#taskList .task-item').each(function() {
                 tasks.push({
+                    Id: parseInt($(this).find('.task-id').val()) || 0,
                     Title: $(this).find('.task-title').val(),
                     Description: $(this).find('.task-desc').val(),
-                    DeadLine: $(this).find('.task-deadline').val() || null,
+                    DeadLine: normalizeToGregorian($(this).find('.task-deadline').val()),
                     Status: $(this).find('.task-status').is(':checked')
                 });
             });
@@ -218,8 +225,6 @@
 
         function submitProject() {
             var deadlineRaw = $('#projectDeadline').val();
-            console.log(deadlineRaw)
-            console.log(normalizeToGregorian(deadlineRaw))
 
             var data = {
                 Title: $('#projectTitle').val(),
