@@ -114,6 +114,60 @@ namespace Canopy.Controllers
 
                 _projectRepo.Update(target);
 
+                var existingTasks = _taskRepo.GetByProjectId(id, GetUserId());
+
+                if (viewModel.Tasks == null)
+                {
+                    viewModel.Tasks = new List<TaskDataViewModel>();
+                }
+
+                var incomingTaskIds = viewModel.Tasks.Where(t => t.Id > 0).Select(t => t.Id).ToList();
+                var tasksToDelete = existingTasks.Where(t => !incomingTaskIds.Contains(t.Id)).ToList();
+                if (tasksToDelete.Any())
+                {
+                    _taskRepo.RemoveRange(tasksToDelete); 
+                }
+
+                var tasksToAdd = new List<PlannedTask>();
+
+                foreach (var incomingTask in viewModel.Tasks)
+                {
+                    if (incomingTask.Id == 0)
+                    {
+                        // It's a new task
+                        tasksToAdd.Add(new PlannedTask
+                        {
+                            Title = incomingTask.Title,
+                            Description = incomingTask.Description,
+                            DeadLine = incomingTask.DeadLine,
+                            Status = incomingTask.Status,
+                            ProjectId = id,
+                            CreatorId = GetUserId(),
+                            AssignedToUID = GetUserId(),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
+                    else
+                    {
+                        // It's an existing task, update it
+                        var dbTask = existingTasks.FirstOrDefault(t => t.Id == incomingTask.Id);
+                        if (dbTask != null)
+                        {
+                            dbTask.Title = incomingTask.Title;
+                            dbTask.Description = incomingTask.Description;
+                            dbTask.DeadLine = incomingTask.DeadLine;
+                            dbTask.Status = incomingTask.Status;
+
+                            _taskRepo.Update(dbTask); // Save individual task changes
+                        }
+                    }
+                }
+
+                if (tasksToAdd.Any())
+                {
+                    _taskRepo.AddRange(tasksToAdd);
+                }
+
                 return Ok();
             }
             catch (Exception)
