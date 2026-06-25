@@ -37,7 +37,7 @@ namespace Canopy.Data.Configurations
                    .WithMany(u => u.MessageSeenStatuses) // add ICollection<MessageSeenStatus> on User
                    .HasForeignKey(m => m.UserId)
                    .HasConstraintName("FK_MessageSeenStatus_User")
-                   .OnDelete(DeleteBehavior.Cascade);   // delete rows if a user is removed
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

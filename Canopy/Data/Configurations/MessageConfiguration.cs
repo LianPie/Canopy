@@ -44,6 +44,12 @@ namespace Canopy.Data.Configurations
                    .HasConstraintName("FK_Message_Chat")
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(m => m.User)
+                   .WithMany()
+                   .HasForeignKey(m => m.UserId)
+                   .HasConstraintName("FK_Message_User")
+                   .OnDelete(DeleteBehavior.NoAction);
+
             builder.HasMany(m => m.MessageAttachments)
                    .WithOne(a => a.Message)
                    .HasForeignKey(a => a.MessageId)

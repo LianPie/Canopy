@@ -18,6 +18,8 @@ namespace Canopy.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<PlannedTask> PlannedTask { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         public DbSet<Chat> Chat { get; set; }
         public DbSet<Message> Message { get; set; }
         public DbSet<MessageAttachment> MessageAttachment { get; set; }
@@ -35,6 +37,7 @@ namespace Canopy.Data
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration());
             modelBuilder.ApplyConfiguration(new PlannedTaskConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new ChatConfiguration());
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
             modelBuilder.ApplyConfiguration(new MessageAttachmentConfiguration());
