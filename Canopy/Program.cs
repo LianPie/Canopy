@@ -133,10 +133,10 @@ app.UseRequestLocalization();
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.MapControllers();
-
 app.UseAuthentication();
-app.UseAuthorization();   
+app.UseAuthorization();
+
+app.MapControllers();   
 
 app.MapStaticAssets();
 
