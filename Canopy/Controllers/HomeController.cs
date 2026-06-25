@@ -284,6 +284,14 @@ namespace Canopy.Controllers
             return RedirectToAction("Welcome", "Home");
         }
 
+        [HttpGet("/Logout")]
+        public IActionResult Logout()
+        {
+            CookieHelper.Delete(Response, "access_token");
+            CookieHelper.Delete(Response, "session_type");
+            return RedirectToAction("Login", "Home");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
