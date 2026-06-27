@@ -11,10 +11,12 @@ namespace Canopy.Controllers
     {
         private readonly ITasksRepository _tasksRepo;
         private readonly IProjectsRepository _projectRepo;
-        public DashboardController(ITasksRepository taskRepo, IProjectsRepository projectRepo)
+        private readonly IGroupsRepository _groupRepo;
+        public DashboardController(ITasksRepository taskRepo, IProjectsRepository projectRepo, IGroupsRepository groupRepo)
         {
             _tasksRepo = taskRepo;
             _projectRepo = projectRepo;
+            _groupRepo = groupRepo;
         }
         private int GetUserId()
         {
@@ -60,6 +62,12 @@ namespace Canopy.Controllers
             var model = _projectRepo.GetAllByUser(GetUserId());
 
 
+            return View(model);
+        }
+
+        public IActionResult Groups()
+        {
+            var model = _groupRepo.GetAllByUser(GetUserId());
             return View(model);
         }
 

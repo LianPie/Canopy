@@ -1,0 +1,353 @@
+@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@using Canopy.Models
+@model List<Group>
+
+@inject IViewLocalizer _localizer
+@{
+    Layout = "~/views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="toolbar d-flex justify-content-between align-items-center mb-5">
+    <h3>Groups</h3>
+    <div class="d-flex gap-2">
+        <button class="btn btn-light-warning" id="pendingInvitesBtn">
+            <i class="ki-outline ki-notification fs-2"></i> Invites
+        </button>
+        <button class="btn btn-primary" id="createGroupBtn">
+            <i class="ki-outline ki-plus fs-2"></i> New Group
+        </button>
+    </div>
+</div>
+
+<div id="groupsList">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-10" id="emptyState">
+            <i class="ki-outline ki-people fs-2tx text-muted mb-3 d-block"></i>
+            <p class="text-muted">No groups yet. Create one to get started.</p>
+        </div>
+    }
+    @foreach (var group in Model)
+    {
+        <div class="card mb-3" id="group_@group.Id">
+            <div class="card-body d-flex justify-content-between align-items-center py-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="symbol symbol-40px">
+                        <div class="symbol-label bg-light-primary">
+                            <i class="ki-outline ki-people fs-2 text-primary"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fw-bold fs-5">@group.Title</span>
+                        <br />
+                        <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() members · Created @group.DateCreated.ToString("MMM dd, yyyy")</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    @if (group.CreatorId == int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value))
+                    {
+                        <button class="btn btn-sm btn-icon btn-light-primary invite-btn" data-group-id="@group.Id" data-group-title="@group.Title" title="Invite">
+                            <i class="ki-outline ki-user-edit fs-2"></i>
+                        </button>
+                        <button class="btn btn-sm btn-icon btn-light-danger delete-btn" data-group-id="@group.Id" data-group-title="@group.Title" title="Delete">
+                            <i class="ki-outline ki-trash fs-2"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Create Group Modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Group Name</label>
+                    <input type="text" id="groupTitle" class="form-control" placeholder="Enter group name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmCreateGroup">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invite User Modal -->
+<div class="modal fade" id="inviteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invite to <span id="inviteGroupTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label fw-semibold">Username or Email</label>
+                <div class="position-relative">
+                    <input type="text" id="inviteInput" class="form-control" placeholder="Search by username or email">
+                    <div id="inviteStatus" class="mt-2"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmInvite" disabled>Send Invite</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Invites Modal -->
+<div class="modal fade" id="pendingInvitesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invites</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="receivedTab" href="#">Received</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="sentTab" href="#">Sent</a>
+                    </li>
+                </ul>
+                <div id="pendingInvitesList">
+                    <div class="text-center text-muted py-5">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete "<span id="deleteGroupTitle"></span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    $("#groupsMenu").addClass("active");
+
+    let activeGroupId = null;
+    let checkTimeout = null;
+    let userFound = false;
+
+    // Create group
+    $('#createGroupBtn').click(() => $('#createGroupModal').modal('show'));
+
+    $('#confirmCreateGroup').click(function () {
+        const title = $('#groupTitle').val().trim();
+        if (!title) { toastr.warning('Enter a group name'); return; }
+
+        $.ajax({
+            url: '/api/Groups',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ title }),
+            success: function (res) {
+                $('#createGroupModal').modal('hide');
+                $('#groupTitle').val('');
+                toastr.success('Group created');
+                setTimeout(() => location.reload(), 800);
+            },
+            error: () => toastr.error('Failed to create group')
+        });
+    });
+
+    // Invite
+    $(document).on('click', '.invite-btn', function () {
+        activeGroupId = $(this).data('group-id');
+        $('#inviteGroupTitle').text($(this).data('group-title'));
+        $('#inviteInput').val('');
+        $('#inviteStatus').html('');
+        $('#confirmInvite').prop('disabled', true);
+        userFound = false;
+        $('#inviteModal').modal('show');
+    });
+
+    $('#inviteInput').on('input', function () {
+        clearTimeout(checkTimeout);
+        const val = $(this).val().trim();
+        $('#inviteStatus').html('');
+        $('#confirmInvite').prop('disabled', true);
+        userFound = false;
+
+        if (val.length < 2) return;
+
+        checkTimeout = setTimeout(function () {
+            const isEmail = val.includes('@@');
+            const endpoint = isEmail
+                ? `/api/Account/checkEmail?email=${encodeURIComponent(val)}`
+                : `/api/Account/checkUser?username=${encodeURIComponent(val)}`;
+
+            $.get(endpoint, function (res) {
+                const exists = isEmail ? res.emailTaken : res.userNameTaken;
+                if (exists) {
+                    $('#inviteStatus').html('<span class="text-success"><i class="ki-outline ki-check fs-5"></i> User found</span>');
+                    $('#confirmInvite').prop('disabled', false);
+                    userFound = true;
+                } else {
+                    $('#inviteStatus').html('<span class="text-danger"><i class="ki-outline ki-cross fs-5"></i> User not found</span>');
+                }
+            });
+        }, 400);
+    });
+
+    $('#confirmInvite').click(function () {
+        if (!userFound) return;
+        $.ajax({
+            url: `/api/Groups/${activeGroupId}/invite`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ usernameOrEmail: $('#inviteInput').val().trim() }),
+            success: function () {
+                $('#inviteModal').modal('hide');
+                toastr.success('Invite sent');
+            },
+            error: function (xhr) {
+                toastr.error(xhr.responseJSON || 'Failed to send invite');
+            }
+        });
+    });
+
+    // Invites modal tabs
+    let activeInviteTab = 'received';
+
+    $('#pendingInvitesBtn').click(function () {
+        activeInviteTab = 'received';
+        $('#receivedTab').addClass('active');
+        $('#sentTab').removeClass('active');
+        $('#pendingInvitesModal').modal('show');
+        loadReceivedInvites();
+    });
+
+    $('#receivedTab').click(function (e) {
+        e.preventDefault();
+        if (activeInviteTab === 'received') return;
+        activeInviteTab = 'received';
+        $(this).addClass('active');
+        $('#sentTab').removeClass('active');
+        loadReceivedInvites();
+    });
+
+    $('#sentTab').click(function (e) {
+        e.preventDefault();
+        if (activeInviteTab === 'sent') return;
+        activeInviteTab = 'sent';
+        $(this).addClass('active');
+        $('#receivedTab').removeClass('active');
+        loadSentInvites();
+    });
+
+    function loadReceivedInvites() {
+        $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
+        $.get('/api/Groups/invites/pending', function (invites) {
+            if (!invites.length) {
+                $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>');
+                return;
+            }
+            let html = '';
+            invites.forEach(inv => {
+                html += `
+                    <div class="d-flex align-items-center justify-content-between py-3 border-bottom" id="invite_${inv.id}">
+                        <div>
+                            <span class="fw-bold">${inv.group.title}</span><br>
+                            <small class="text-muted">Invited by ${inv.invitedBy.userName}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id}, 'accept')">Accept</button>
+                            <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id}, 'decline')">Decline</button>
+                        </div>
+                    </div>`;
+            });
+            $('#pendingInvitesList').html(html);
+        });
+    }
+
+    function loadSentInvites() {
+        $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
+        $.get('/api/Groups/invites/sent', function (invites) {
+            if (!invites.length) {
+                $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No sent invites</div>');
+                return;
+            }
+            let html = '';
+            invites.forEach(inv => {
+                html += `
+                    <div class="d-flex align-items-center justify-content-between py-3 border-bottom">
+                        <div>
+                            <span class="fw-bold">${inv.group.title}</span><br>
+                            <small class="text-muted">Sent to ${inv.user.userName}</small>
+                        </div>
+                        <span class="badge badge-light-warning">Pending</span>
+                    </div>`;
+            });
+            $('#pendingInvitesList').html(html);
+        });
+    }
+
+    function respondInvite(id, action) {
+        $.ajax({
+            url: `/api/Groups/invites/${id}/${action}`,
+            type: 'POST',
+            success: function () {
+                $(`#invite_${id}`).remove();
+                if (!$('#pendingInvitesList').children().length) {
+                    $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>');
+                }
+                toastr.success(action === 'accept' ? 'Joined group!' : 'Invite declined');
+                if (action === 'accept') setTimeout(() => location.reload(), 800);
+            },
+            error: () => toastr.error('Something went wrong')
+        });
+    }
+
+    // Delete
+    $(document).on('click', '.delete-btn', function () {
+        activeGroupId = $(this).data('group-id');
+        $('#deleteGroupTitle').text($(this).data('group-title'));
+        $('#deleteGroupModal').modal('show');
+    });
+
+    $('#confirmDelete').click(function () {
+        $.ajax({
+            url: `/api/Groups/${activeGroupId}`,
+            type: 'DELETE',
+            success: function () {
+                $(`#group_${activeGroupId}`).remove();
+                $('#deleteGroupModal').modal('hide');
+                toastr.success('Group deleted');
+            },
+            error: () => toastr.error('Failed to delete group')
+        });
+    });
+</script>
+}
