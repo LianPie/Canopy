@@ -231,7 +231,7 @@
                 Description: $('#projectDesc').val(),
                 Deadline: normalizeToGregorian(deadlineRaw),
                 Status: $('#projectActive').is(':checked') ?? false,
-                Group: 0,
+                Group: null,
                 Tasks: collectTasks()
             };
 
