@@ -54,7 +54,8 @@ namespace Canopy.Controllers
                     Description = viewModel.Description,
                     DeadLine = viewModel.DeadLine,
                     Status = viewModel.Status,
-
+                    ProjectId = viewModel.ProjectId,
+                    GroupId = viewModel.GroupId,
                     CreatorId = GetUserId(),
                     AssignedToUID = GetUserId(),
                     DateCreated = DateTime.UtcNow

@@ -156,6 +156,9 @@
   <data name="EditTaskTitle" xml:space="preserve">
     <value>ویرایش تسک</value>
   </data>
+  <data name="GroupsColumn" xml:space="preserve">
+    <value>گروه</value>
+  </data>
   <data name="NewTask" xml:space="preserve">
     <value>تسک جدید</value>
   </data>

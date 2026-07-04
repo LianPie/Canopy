@@ -25,6 +25,7 @@
             <th>@_localizer["TitleColumn"]</th>
             <th>@_localizer["StatusColumn"]</th>
             <th>@_localizer["DeadlineColumn"]</th>
+            <th>@_localizer["GroupsColumn"]</th>
             <th class="text-end">@_localizer["ActionsColumn"]</th>
         </tr>
     </thead>
@@ -78,6 +79,18 @@
                                 <span class="badge badge-light-danger fs-8 ms-2">@_localizer["Overdue"]</span>
                             }
                         </span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+
+                <td class="align-content-center">
+
+                    @if (project.Group != null)
+                    {
+                        <span class="fw-bold">@project.Group?.Title</span>
                     }
                     else
                     {

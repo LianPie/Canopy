@@ -18,6 +18,8 @@
         public string? Description { get; set; }
         public DateTime? DeadLine { get; set; }
         public bool Status { get; set; }
+        public int? ProjectId { get; set; }
+        public int? GroupId { get; set; }
     }
 
 }

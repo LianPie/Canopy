@@ -14,7 +14,8 @@ namespace Canopy.Repositories
         public List<Project> GetAllByUser(int userId)
         {
             //TO DO: modify this to also acount for projects from groups
-            return _ctx.Projects.Where(x => x.CreatorId == userId)
+            return _ctx.Projects
+                .Include(p => p.Group).Where(x => x.CreatorId == userId)
                 .ToList();
         }
 

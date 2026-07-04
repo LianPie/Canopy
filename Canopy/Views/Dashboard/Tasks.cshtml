@@ -28,6 +28,7 @@
             <th>@_localizer["StatusColumn"]</th>
             <th>@_localizer["DeadlineColumn"]</th>
             <th>@_localizer["ProjectColumn"]</th>
+            <th>@_localizer["GroupsColumn"]</th>
             <th class="text-end">@_localizer["ActionsColumn"]</th>
         </tr>
     </thead>
@@ -101,7 +102,25 @@
                     }
                 </td>
                 <td class="align-content-center">
-                    <span class="fw-bold">@task.Project?.Title</span>
+                    @if (task.Project != null)
+                    {
+                        <span class="fw-bold">@task.Project?.Title</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+                <td class="align-content-center">
+
+                    @if (task.Group != null)
+                    {
+                        <span class="fw-bold">@task.Group?.Title</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
                 </td>
                 <td class="text-end">
                     <a href="/Dashboard/TaskForm?id=@task.Id"

@@ -81,6 +81,24 @@ namespace Canopy.Repositories
                 .ToList();
         }
 
+        public List<Project> GetGroupProjects(int groupId)
+        {
+            return _ctx.Projects
+                .Where(p => p.GroupId == groupId)
+                .Include(p => p.Creator)
+                .Include(p => p.Tasks)
+                .ToList();
+        }
+
+        public List<PlannedTask> GetGroupTasks(int groupId)
+        {
+            return _ctx.PlannedTask
+                .Where(t => (t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId)
+                .Include(t => t.Project)
+                .Include(t => t.AssignedTo)
+                .ToList();
+        }
+
         public UserGroup Invite(UserGroup userGroup)
         {
             _ctx.UserGroup.Add(userGroup);

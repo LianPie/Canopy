@@ -16,6 +16,8 @@ namespace Canopy.Repositories
         UserGroup? GetMembershipById(int userGroupId, int userId);
         List<UserGroup> GetPendingInvites(int userId);
         List<UserGroup> GetSentInvites(int userId);
+        List<Project> GetGroupProjects(int groupId);
+        List<PlannedTask> GetGroupTasks(int groupId);
         UserGroup Invite(UserGroup userGroup);
         UserGroup UpdateMembership(UserGroup userGroup);
     }

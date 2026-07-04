@@ -11,56 +11,228 @@
     Layout = "~/views/Shared/_DashboardLayout.cshtml";
 }
 
-<div class="toolbar d-flex justify-content-between align-items-center mb-5">
+<style>
+    .groups-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 16px;
+        height: calc(100vh - 180px);
+    }
+
+    .groups-layout .g-panel {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bs-card-bg, #fff);
+        border: 1px solid var(--bs-border-color, #e4e6ef);
+        border-radius: 12px;
+    }
+
+    .groups-layout .g-panel-header {
+        padding: 16px;
+        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .groups-layout .g-panel-body {
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .groups-layout .g-group-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+        transition: background 0.15s;
+    }
+
+    .groups-layout .g-group-item:hover { background: var(--bs-tertiary-bg); }
+    .groups-layout .g-group-item.active { background: var(--bs-tertiary-bg); border-left: 3px solid var(--bs-primary); }
+
+    .groups-layout .g-group-item-actions { margin-left: auto; display: none; gap: 4px; }
+    .groups-layout .g-group-item:hover .g-group-item-actions { display: flex; }
+
+    .groups-layout .g-detail-panel {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        border: 1px solid var(--bs-border-color, #e4e6ef);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .groups-layout .g-detail-panel.split {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .groups-layout .g-detail-col {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .groups-layout .g-detail-col + .g-detail-col {
+        border-left: 1px solid var(--bs-border-color, #e4e6ef);
+    }
+
+    .groups-layout .g-task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+    }
+
+    .groups-layout .g-task-item .task-status-toggle { cursor: pointer; }
+    .groups-layout .g-task-item .g-row-actions,
+    .groups-layout .g-project-item .g-row-actions { display: none; gap: 4px; flex-shrink: 0; }
+    .groups-layout .g-task-item:hover .g-row-actions,
+    .groups-layout .g-project-item:hover .g-row-actions { display: flex; }
+
+    .groups-layout .g-project-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+        transition: background 0.15s;
+    }
+
+    .groups-layout .g-project-item:hover { background: var(--bs-tertiary-bg); }
+    .groups-layout .g-project-item.active { background: var(--bs-tertiary-bg); border-left: 3px solid var(--bs-primary); }
+
+    .groups-layout .g-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--bs-text-muted);
+    }
+</style>
+
+<div class="toolbar d-flex justify-content-between align-items-center mb-4">
     <h3>Groups</h3>
     <div class="d-flex gap-2">
-        <button class="btn btn-light-warning" id="pendingInvitesBtn">
-            <i class="ki-outline ki-notification fs-2"></i> Invites
+        <button class="btn btn-light-warning btn-sm" id="pendingInvitesBtn">
+            <i class="ki-outline ki-notification fs-4"></i> Invites
         </button>
-        <button class="btn btn-primary" id="createGroupBtn">
-            <i class="ki-outline ki-plus fs-2"></i> New Group
+        <button class="btn btn-primary btn-sm" id="createGroupBtn">
+            <i class="ki-outline ki-plus fs-4"></i> New Group
         </button>
     </div>
 </div>
 
-<div id="groupsList">
-    @if (!Model.Any())
-    {
-        <div class="text-center py-10" id="emptyState">
-            <i class="ki-outline ki-people fs-2tx text-muted mb-3 d-block"></i>
-            <p class="text-muted">No groups yet. Create one to get started.</p>
+<div class="groups-layout">
+
+    <!-- LEFT: Group List -->
+    <div class="g-panel">
+        <div class="g-panel-header">
+            <span class="fw-bold text-gray-700">My Groups</span>
         </div>
-    }
-    @foreach (var group in Model)
-    {
-        <div class="card mb-3" id="group_@group.Id">
-            <div class="card-body d-flex justify-content-between align-items-center py-4">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="symbol symbol-40px">
+        <div class="g-panel-body">
+            @if (!Model.Any())
+            {
+                <div class="g-empty py-10">
+                    <i class="ki-outline ki-people fs-2tx mb-3"></i>
+                    <p class="text-muted">No groups yet</p>
+                </div>
+            }
+            @foreach (var group in Model)
+            {
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+                var isCreator = group.CreatorId == userId;
+                <div class="g-group-item" id="group_@group.Id"
+                     data-group-id="@group.Id" data-group-title="@group.Title"
+                     data-is-creator="@isCreator.ToString().ToLower()">
+                    <div class="symbol symbol-35px">
                         <div class="symbol-label bg-light-primary">
-                            <i class="ki-outline ki-people fs-2 text-primary"></i>
+                            <i class="ki-outline ki-people fs-3 text-primary"></i>
                         </div>
                     </div>
-                    <div>
-                        <span class="fw-bold fs-5">@group.Title</span>
-                        <br />
-                        <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() members · Created @group.DateCreated.ToString("MMM dd, yyyy")</small>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-semibold text-truncate">@group.Title</div>
+                        <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() members</small>
                     </div>
-                </div>
-                <div class="d-flex gap-2">
-                    @if (group.CreatorId == int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value))
+                    @if (isCreator)
                     {
-                        <button class="btn btn-sm btn-icon btn-light-primary invite-btn" data-group-id="@group.Id" data-group-title="@group.Title" title="Invite">
-                            <i class="ki-outline ki-user-edit fs-2"></i>
-                        </button>
-                        <button class="btn btn-sm btn-icon btn-light-danger delete-btn" data-group-id="@group.Id" data-group-title="@group.Title" title="Delete">
-                            <i class="ki-outline ki-trash fs-2"></i>
-                        </button>
+                        <div class="g-group-item-actions">
+                            <button class="btn btn-xs btn-icon btn-light-primary invite-btn"
+                                    data-group-id="@group.Id" data-group-title="@group.Title" title="Invite">
+                                <i class="ki-outline ki-user-edit fs-4"></i>
+                            </button>
+                            <button class="btn btn-xs btn-icon btn-light-danger delete-btn"
+                                    data-group-id="@group.Id" data-group-title="@group.Title" title="Delete">
+                                <i class="ki-outline ki-trash fs-4"></i>
+                            </button>
+                        </div>
                     }
                 </div>
+            }
+        </div>
+    </div>
+
+    <!-- RIGHT: Detail Panel (always 2 columns) -->
+    <div class="g-detail-panel" id="detailPanel">
+
+        <!-- Col 1: Projects list -->
+        <div class="g-detail-col" id="col1">
+            <div class="g-empty" id="noGroupSelected">
+                <i class="ki-outline ki-people fs-2tx mb-3"></i>
+                <p>Select a group to view details</p>
+            </div>
+
+            <div id="projectsCol" style="display:none; flex-direction:column; height:100%;">
+                <div class="g-panel-header">
+                    <span class="fw-bold">Projects</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge badge-light-primary" id="overviewProjectCount"></span>
+                        <button class="btn btn-xs btn-icon btn-light-primary" id="addProjectBtn" title="New Project">
+                            <i class="ki-outline ki-plus fs-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="g-panel-body" id="projectsList"></div>
             </div>
         </div>
-    }
+
+        <!-- Col 2: Tasks (all group tasks, or project tasks when project selected) -->
+        <div class="g-detail-col" id="col2" style="display:none;">
+            <div class="g-empty" id="noGroupSelected2">
+                <i class="ki-outline ki-check-circle fs-2tx mb-3"></i>
+                <p>Select a group to view tasks</p>
+            </div>
+
+            <div id="tasksCol" style="display:none; flex-direction:column; height:100%;">
+                <div class="g-panel-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-xs btn-icon btn-light" id="backToAllTasks" style="display:none;" title="Back to all tasks">
+                            <i class="ki-outline ki-arrow-left fs-4"></i>
+                        </button>
+                        <div>
+                            <span class="fw-bold" id="tasksColTitle">All Tasks</span>
+                            <small class="text-muted ms-2" id="tasksColMeta"></small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge badge-light-primary" id="overviewTaskCount"></span>
+                        <button class="btn btn-xs btn-icon btn-light-primary" id="addTaskBtn" title="New Task">
+                            <i class="ki-outline ki-plus fs-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="g-panel-body" id="allTasksList"></div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <!-- Create Group Modal -->
@@ -72,10 +244,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Group Name</label>
-                    <input type="text" id="groupTitle" class="form-control" placeholder="Enter group name">
-                </div>
+                <label class="form-label fw-semibold">Group Name</label>
+                <input type="text" id="groupTitle" class="form-control" placeholder="Enter group name">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -95,10 +265,8 @@
             </div>
             <div class="modal-body">
                 <label class="form-label fw-semibold">Username or Email</label>
-                <div class="position-relative">
-                    <input type="text" id="inviteInput" class="form-control" placeholder="Search by username or email">
-                    <div id="inviteStatus" class="mt-2"></div>
-                </div>
+                <input type="text" id="inviteInput" class="form-control" placeholder="Search by username or email">
+                <div id="inviteStatus" class="mt-2"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -108,7 +276,7 @@
     </div>
 </div>
 
-<!-- Pending Invites Modal -->
+<!-- Invites Modal -->
 <div class="modal fade" id="pendingInvitesModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -118,35 +286,122 @@
             </div>
             <div class="modal-body">
                 <ul class="nav nav-tabs mb-4">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="receivedTab" href="#">Received</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="sentTab" href="#">Sent</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link active" id="receivedTab" href="#">Received</a></li>
+                    <li class="nav-item"><a class="nav-link" id="sentTab" href="#">Sent</a></li>
                 </ul>
-                <div id="pendingInvitesList">
-                    <div class="text-center text-muted py-5">Loading...</div>
-                </div>
+                <div id="pendingInvitesList"><div class="text-center text-muted py-5">Loading...</div></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Delete Confirm Modal -->
-<div class="modal fade" id="deleteGroupModal" tabindex="-1">
-    <div class="modal-dialog">
+<!-- Shared Delete Confirm Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-danger"><i class="ki-outline ki-trash fs-2 me-2"></i>Delete <span id="deleteConfirmType"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-2">
+                Are you sure you want to delete <strong id="deleteConfirmName"></strong>? This cannot be undone.
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Project Modal -->
+<div class="modal fade" id="newProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Delete Group</h5>
+                <h5 class="modal-title" id="npModalTitle">New Project</h5>
+                <input type="hidden" id="npId">
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete "<span id="deleteGroupTitle"></span>"?
+                <div class="row g-5">
+                    <!-- LEFT: Tasks -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Tasks</h5>
+                                <button type="button" class="btn btn-sm btn-light-primary" id="npAddTaskBtn">
+                                    <i class="ki-outline ki-plus fs-2"></i> Add Task
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="npTaskList" class="p-5" style="max-height:380px; overflow-y:auto;"></div>
+                                <p id="npNoTasksMsg" class="text-muted text-center py-5">No tasks yet</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- RIGHT: Details -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header"><h5 class="mb-0">Project Details</h5></div>
+                            <div class="card-body">
+                                <div class="mb-5">
+                                    <label class="form-label fw-semibold required">Title</label>
+                                    <input type="text" id="npTitle" class="form-control" placeholder="Project name">
+                                </div>
+                                <div class="mb-5">
+                                    <label class="form-label fw-semibold">Description</label>
+                                    <textarea id="npDescription" class="form-control" rows="3" placeholder="Optional description"></textarea>
+                                </div>
+                                <div class="mb-5">
+                                    <label class="form-label fw-semibold">Deadline</label>
+                                    <input type="text" id="npDeadline" class="form-control persian-date-input" placeholder="Pick a date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                <button type="button" class="btn btn-primary" id="confirmNewProject">Create Project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New/Edit Task Modal -->
+<div class="modal fade" id="newTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ntModalTitle">New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="ntId">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                    <input type="text" id="ntTitle" class="form-control" placeholder="Task name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description</label>
+                    <textarea id="ntDescription" class="form-control" rows="2" placeholder="Optional description"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Deadline</label>
+                    <input type="date" id="ntDeadline" class="form-control">
+                </div>
+                <div id="ntProjectRow" class="mb-1 mt-2 alert alert-info py-2 px-3" style="display:none;">
+                    <small>Linked to project: <span class="fw-semibold" id="ntProjectLabel"></span></small>
+                </div>
+                <div id="ntGroupRow" class="mb-1 mt-2 alert alert-light py-2 px-3" style="display:none;">
+                    <small>Standalone group task — not linked to any project</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmNewTask">Save</button>
             </div>
         </div>
     </div>
@@ -157,24 +412,190 @@
     $("#groupsMenu").addClass("active");
 
     let activeGroupId = null;
+    let activeProjectId = null;
     let checkTimeout = null;
     let userFound = false;
 
-    // Create group
+    // ── Group item click (ignores action buttons) ────────────────
+    $(document).on('click', '.g-group-item', function (e) {
+        if ($(e.target).closest('.g-group-item-actions').length) return;
+        const id = $(this).data('group-id');
+        const title = $(this).data('group-title');
+        selectGroup(id, title);
+    });
+
+    // ── Group selection ──────────────────────────────────────────
+    function selectGroup(groupId, title) {
+        activeGroupId = groupId;
+        activeProjectId = null;
+
+        $('.g-group-item').removeClass('active');
+        $(`#group_${groupId}`).addClass('active');
+
+        // show both columns
+        $('#noGroupSelected').hide();
+        $('#noGroupSelected2').hide();
+        $('#detailPanel').addClass('split');
+        $('#col2').css('display', 'flex');
+        $('#projectsCol').css('display', 'flex');
+        $('#tasksCol').css('display', 'flex');
+        $('#tasksColTitle').text('All Tasks');
+        $('#tasksColMeta').text('');
+        $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
+
+        loadGroupProjects(groupId);
+        loadAllGroupTasks(groupId);
+    }
+
+    function loadGroupProjects(groupId) {
+        $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
+        $.get(`/api/Groups/${groupId}/projects`, function (projects) {
+            $('#overviewProjectCount').text(projects.length + ' projects');
+            if (!projects.length) {
+                $('#projectsList').html('<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>No projects yet</p></div>');
+                return;
+            }
+            let html = '';
+            projects.forEach(p => {
+                const total = p.tasks ? p.tasks.length : 0;
+                const done = p.tasks ? p.tasks.filter(t => t.status).length : 0;
+                const pct = total ? Math.round(done / total * 100) : 0;
+                html += `
+                <div class="g-project-item" data-project-id="${p.id}" data-project-title="${p.title.replace(/"/g,'&quot;')}" data-project-total="${total}" data-project-done="${done}">
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">${p.title}</div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <div class="progress h-4px flex-grow-1" style="max-width:120px">
+                                <div class="progress-bar bg-primary" style="width:${pct}%"></div>
+                            </div>
+                            <small class="text-muted">${done}/${total}</small>
+                        </div>
+                    </div>
+                    <div class="g-row-actions">
+                        <button class="btn btn-xs btn-icon btn-light-primary edit-project-btn"
+                            data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
+                            data-desc="${(p.description||'').replace(/"/g,'&quot;')}"
+                            data-deadline="${p.deadline ? new Date(p.deadline).toISOString().split('T')[0] : ''}"
+                            title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
+                        <button class="btn btn-xs btn-icon btn-light-danger delete-project-btn"
+                            data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
+                            title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
+                    </div>
+                    <i class="ki-outline ki-arrow-right fs-4 text-muted ms-1"></i>
+                </div>`;
+            });
+            $('#projectsList').html(html);
+        });
+    }
+
+    function loadAllGroupTasks(groupId) {
+        activeProjectId = null;
+        $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
+        $('#tasksColTitle').text('All Tasks');
+        $('#tasksColMeta').text('');
+        $('#backToAllTasks').hide();
+        $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
+        $('.g-project-item').removeClass('active');
+        $.get(`/api/Groups/${groupId}/tasks`, function (tasks) {
+            $('#overviewTaskCount').text(tasks.length + ' tasks');
+            renderTaskList(tasks, true);
+        });
+    }
+
+    function renderTaskList(tasks, groupByProject) {
+        if (!tasks.length) {
+            $('#allTasksList').html('<div class="g-empty py-10"><i class="ki-outline ki-check-circle fs-2tx mb-3"></i><p>No tasks yet</p></div>');
+            return;
+        }
+        let html = '';
+        if (groupByProject) {
+            const byProject = {};
+            tasks.forEach(t => {
+                const key = t.project ? t.project.title : 'Unassigned';
+                if (!byProject[key]) byProject[key] = [];
+                byProject[key].push(t);
+            });
+            for (const [proj, ptasks] of Object.entries(byProject)) {
+                html += `<div class="px-4 pt-3 pb-1"><small class="text-muted text-uppercase fw-bold">${proj}</small></div>`;
+                ptasks.forEach(t => { html += taskHtml(t); });
+            }
+        } else {
+            tasks.forEach(t => { html += taskHtml(t); });
+        }
+        $('#allTasksList').html(html);
+    }
+
+    function taskHtml(t) {
+        const done = t.status;
+        const overdue = t.deadLine && !done && new Date(t.deadLine) < new Date();
+        const deadlineVal = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
+        return `
+        <div class="g-task-item" data-task-id="${t.id}">
+            <div class="form-check mt-1">
+                <input class="form-check-input task-status-toggle" type="checkbox" ${done ? 'checked' : ''} data-task-id="${t.id}">
+            </div>
+            <div class="flex-grow-1">
+                <span class="${done ? 'text-decoration-line-through text-muted' : 'fw-semibold'}">${t.title}</span>
+                ${t.description ? `<br><small class="text-muted">${t.description}</small>` : ''}
+                ${t.deadLine ? `<br><small class="${overdue ? 'text-danger' : 'text-muted'}"><i class="ki-outline ki-calendar fs-7 me-1"></i>${new Date(t.deadLine).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</small>` : ''}
+            </div>
+            ${t.assignedTo ? `<small class="badge badge-light me-2">${t.assignedTo.userName}</small>` : ''}
+            <div class="g-row-actions">
+                <button class="btn btn-xs btn-icon btn-light-primary edit-task-btn"
+                    data-id="${t.id}" data-title="${t.title.replace(/"/g,'&quot;')}"
+                    data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
+                    data-deadline="${deadlineVal}" data-status="${done}"
+                    title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
+                <button class="btn btn-xs btn-icon btn-light-danger delete-task-btn"
+                    data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
+            </div>
+        </div>`;
+    }
+
+    // ── Project item click (ignores action buttons) ──────────────
+    $(document).on('click', '.g-project-item', function (e) {
+        if ($(e.target).closest('.g-row-actions').length) return;
+        const $row = $(this);
+        selectProject(
+            $row.data('project-id'),
+            $row.data('project-title'),
+            $row.data('project-total'),
+            $row.data('project-done')
+        );
+    });
+
+    // ── Project selection ─────────────────────────────────────────
+    function selectProject(projectId, title, total, done) {
+        activeProjectId = projectId;
+
+        $('.g-project-item').removeClass('active');
+        $(`.g-project-item[data-project-id="${projectId}"]`).addClass('active');
+
+        $('#tasksColTitle').text(title);
+        $('#tasksColMeta').text(`${done}/${total} tasks completed`);
+        $('#backToAllTasks').show();
+        $('#overviewTaskCount').text(done === total && total > 0 ? 'Done' : 'In Progress')
+            .removeClass().addClass(`badge badge-light-${done === total && total > 0 ? 'success' : 'warning'}`);
+        $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
+
+        $.get(`/api/Groups/${activeGroupId}/tasks`, function (tasks) {
+            const ptasks = tasks.filter(t => t.projectId === projectId || (t.project && t.project.id === projectId));
+            $('#overviewTaskCount').text(ptasks.length + ' tasks');
+            renderTaskList(ptasks, false);
+        });
+    }
+
+    // ── Create group ─────────────────────────────────────────────
     $('#createGroupBtn').click(() => $('#createGroupModal').modal('show'));
 
     $('#confirmCreateGroup').click(function () {
         const title = $('#groupTitle').val().trim();
         if (!title) { toastr.warning('Enter a group name'); return; }
-
         $.ajax({
-            url: '/api/Groups',
-            type: 'POST',
-            contentType: 'application/json',
+            url: '/api/Groups', type: 'POST', contentType: 'application/json',
             data: JSON.stringify({ title }),
-            success: function (res) {
+            success: function () {
                 $('#createGroupModal').modal('hide');
-                $('#groupTitle').val('');
                 toastr.success('Group created');
                 setTimeout(() => location.reload(), 800);
             },
@@ -182,8 +603,9 @@
         });
     });
 
-    // Invite
-    $(document).on('click', '.invite-btn', function () {
+    // ── Invite ───────────────────────────────────────────────────
+    $(document).on('click', '.invite-btn', function (e) {
+        e.stopPropagation();
         activeGroupId = $(this).data('group-id');
         $('#inviteGroupTitle').text($(this).data('group-title'));
         $('#inviteInput').val('');
@@ -199,7 +621,6 @@
         $('#inviteStatus').html('');
         $('#confirmInvite').prop('disabled', true);
         userFound = false;
-
         if (val.length < 2) return;
 
         checkTimeout = setTimeout(function () {
@@ -207,7 +628,6 @@
             const endpoint = isEmail
                 ? `/api/Account/checkEmail?email=${encodeURIComponent(val)}`
                 : `/api/Account/checkUser?username=${encodeURIComponent(val)}`;
-
             $.get(endpoint, function (res) {
                 const exists = isEmail ? res.emailTaken : res.userNameTaken;
                 if (exists) {
@@ -224,27 +644,19 @@
     $('#confirmInvite').click(function () {
         if (!userFound) return;
         $.ajax({
-            url: `/api/Groups/${activeGroupId}/invite`,
-            type: 'POST',
-            contentType: 'application/json',
+            url: `/api/Groups/${activeGroupId}/invite`, type: 'POST', contentType: 'application/json',
             data: JSON.stringify({ usernameOrEmail: $('#inviteInput').val().trim() }),
-            success: function () {
-                $('#inviteModal').modal('hide');
-                toastr.success('Invite sent');
-            },
-            error: function (xhr) {
-                toastr.error(xhr.responseJSON || 'Failed to send invite');
-            }
+            success: function () { $('#inviteModal').modal('hide'); toastr.success('Invite sent'); },
+            error: xhr => toastr.error(xhr.responseJSON || 'Failed to send invite')
         });
     });
 
-    // Invites modal tabs
+    // ── Invites modal ────────────────────────────────────────────
     let activeInviteTab = 'received';
 
     $('#pendingInvitesBtn').click(function () {
         activeInviteTab = 'received';
-        $('#receivedTab').addClass('active');
-        $('#sentTab').removeClass('active');
+        $('#receivedTab').addClass('active'); $('#sentTab').removeClass('active');
         $('#pendingInvitesModal').modal('show');
         loadReceivedInvites();
     });
@@ -253,8 +665,7 @@
         e.preventDefault();
         if (activeInviteTab === 'received') return;
         activeInviteTab = 'received';
-        $(this).addClass('active');
-        $('#sentTab').removeClass('active');
+        $(this).addClass('active'); $('#sentTab').removeClass('active');
         loadReceivedInvites();
     });
 
@@ -262,31 +673,23 @@
         e.preventDefault();
         if (activeInviteTab === 'sent') return;
         activeInviteTab = 'sent';
-        $(this).addClass('active');
-        $('#receivedTab').removeClass('active');
+        $(this).addClass('active'); $('#receivedTab').removeClass('active');
         loadSentInvites();
     });
 
     function loadReceivedInvites() {
         $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
         $.get('/api/Groups/invites/pending', function (invites) {
-            if (!invites.length) {
-                $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>');
-                return;
-            }
+            if (!invites.length) { $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>'); return; }
             let html = '';
             invites.forEach(inv => {
-                html += `
-                    <div class="d-flex align-items-center justify-content-between py-3 border-bottom" id="invite_${inv.id}">
-                        <div>
-                            <span class="fw-bold">${inv.group.title}</span><br>
-                            <small class="text-muted">Invited by ${inv.invitedBy.userName}</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id}, 'accept')">Accept</button>
-                            <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id}, 'decline')">Decline</button>
-                        </div>
-                    </div>`;
+                html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom" id="invite_${inv.id}">
+                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">From ${inv.invitedBy.userName}</small></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id},'accept')">Accept</button>
+                        <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id},'decline')">Decline</button>
+                    </div>
+                </div>`;
             });
             $('#pendingInvitesList').html(html);
         });
@@ -295,20 +698,13 @@
     function loadSentInvites() {
         $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
         $.get('/api/Groups/invites/sent', function (invites) {
-            if (!invites.length) {
-                $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No sent invites</div>');
-                return;
-            }
+            if (!invites.length) { $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No sent invites</div>'); return; }
             let html = '';
             invites.forEach(inv => {
-                html += `
-                    <div class="d-flex align-items-center justify-content-between py-3 border-bottom">
-                        <div>
-                            <span class="fw-bold">${inv.group.title}</span><br>
-                            <small class="text-muted">Sent to ${inv.user.userName}</small>
-                        </div>
-                        <span class="badge badge-light-warning">Pending</span>
-                    </div>`;
+                html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom">
+                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">To ${inv.user.userName}</small></div>
+                    <span class="badge badge-light-warning">Pending</span>
+                </div>`;
             });
             $('#pendingInvitesList').html(html);
         });
@@ -316,13 +712,11 @@
 
     function respondInvite(id, action) {
         $.ajax({
-            url: `/api/Groups/invites/${id}/${action}`,
-            type: 'POST',
+            url: `/api/Groups/invites/${id}/${action}`, type: 'POST',
             success: function () {
                 $(`#invite_${id}`).remove();
-                if (!$('#pendingInvitesList').children().length) {
+                if (!$('#pendingInvitesList .border-bottom').length)
                     $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>');
-                }
                 toastr.success(action === 'accept' ? 'Joined group!' : 'Invite declined');
                 if (action === 'accept') setTimeout(() => location.reload(), 800);
             },
@@ -330,23 +724,293 @@
         });
     }
 
-    // Delete
-    $(document).on('click', '.delete-btn', function () {
-        activeGroupId = $(this).data('group-id');
-        $('#deleteGroupTitle').text($(this).data('group-title'));
-        $('#deleteGroupModal').modal('show');
-    });
+    // ── Shared delete modal ───────────────────────────────────────
+    let pendingDeleteFn = null;
+
+    function openDeleteModal(type, name, onConfirm) {
+        $('#deleteConfirmType').text(type);
+        $('#deleteConfirmName').text(name);
+        pendingDeleteFn = onConfirm;
+        $('#deleteConfirmModal').modal('show');
+    }
 
     $('#confirmDelete').click(function () {
+        if (pendingDeleteFn) pendingDeleteFn();
+        $('#deleteConfirmModal').modal('hide');
+        pendingDeleteFn = null;
+    });
+
+    // ── Edit / Delete task ────────────────────────────────────────
+    $(document).on('click', '.edit-task-btn', function (e) {
+        e.stopPropagation();
+        const $b = $(this);
+        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'));
+    });
+
+    $(document).on('click', '.delete-task-btn', function (e) {
+        e.stopPropagation();
+        const id = $(this).data('id');
+        const title = $(this).closest('.g-task-item').find('.flex-grow-1 span').first().text();
+        openDeleteModal('Task', title, function () {
+            $.ajax({
+                url: `/api/Tasks/${id}`, type: 'DELETE',
+                success: function () {
+                    toastr.success('Task deleted');
+                    if (activeProjectId) {
+                        const $row = $(`.g-project-item[data-project-id="${activeProjectId}"]`);
+                        selectProject(activeProjectId, $row.data('project-title'), 0, 0);
+                    } else {
+                        loadAllGroupTasks(activeGroupId);
+                    }
+                },
+                error: () => toastr.error('Failed to delete task')
+            });
+        });
+    });
+
+    // ── Edit / Delete project ─────────────────────────────────────
+    $(document).on('click', '.edit-project-btn', function (e) {
+        e.stopPropagation();
+        const $b = $(this);
+        openProjectModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'));
+    });
+
+    $(document).on('click', '.delete-project-btn', function (e) {
+        e.stopPropagation();
+        const id = $(this).data('id');
+        const title = $(this).data('title');
+        openDeleteModal('Project', title, function () {
+            $.ajax({
+                url: `/api/Projects/${id}`, type: 'DELETE',
+                success: function () {
+                    toastr.success('Project deleted');
+                    if (activeProjectId == id) loadAllGroupTasks(activeGroupId);
+                    loadGroupProjects(activeGroupId);
+                },
+                error: () => toastr.error('Failed to delete project')
+            });
+        });
+    });
+
+    $(document).on('change', '.task-status-toggle', function () {
+        const id = $(this).data('task-id');
+        const $cb = $(this);
         $.ajax({
-            url: `/api/Groups/${activeGroupId}`,
-            type: 'DELETE',
+            url: `/api/Tasks/${id}/status`, type: 'PATCH',
+            success: function () { updateTaskUI($cb); },
+            error: function () {
+                $cb.prop('checked', !$cb.prop('checked'));
+                toastr.error('Failed to update task');
+            }
+        });
+    });
+
+    function updateTaskUI($cb) {
+        const done = $cb.prop('checked');
+        const $span = $cb.closest('.g-task-item').find('.flex-grow-1 > span').first();
+        $span.toggleClass('text-decoration-line-through text-muted', done)
+             .toggleClass('fw-semibold', !done);
+
+        // recalculate progress from current DOM state
+        const total = $('#allTasksList .task-status-toggle').length;
+        const checked = $('#allTasksList .task-status-toggle:checked').length;
+        $('#overviewTaskCount').text(checked + '/' + total + ' done');
+
+        // update project item progress bar if a project is active
+        if (activeProjectId) {
+            const pct = total ? Math.round(checked / total * 100) : 0;
+            $(`.g-project-item[onclick*="${activeProjectId}"] .progress-bar`).css('width', pct + '%');
+            $(`.g-project-item[onclick*="${activeProjectId}"] small.text-muted`).last().text(`${checked}/${total}`);
+            $('#tasksColMeta').text(`${checked}/${total} tasks completed`);
+            const allDone = total > 0 && checked === total;
+            $('#overviewTaskCount').removeClass()
+                .addClass(`badge badge-light-${allDone ? 'success' : 'warning'}`);
+        }
+    }
+
+    $('#backToAllTasks').click(function () {
+        loadAllGroupTasks(activeGroupId);
+    });
+
+    // ── New Project ──────────────────────────────────────────────
+    function openProjectModal(id, title, desc, deadline) {
+        $('#npId').val(id || '');
+        $('#npModalTitle').text(id ? 'Edit Project' : 'New Project');
+        $('#npTitle').val(title || '');
+        $('#npDescription').val(desc || '');
+        $('#npDeadline').val(deadline || '');
+        $('#npTaskList').empty();
+        $('#npNoTasksMsg').show();
+        if (id) {
+            // load existing tasks
+            $.get(`/api/Projects/${id}`, function (p) {
+                (p.tasks || []).forEach(t => {
+                    const $row = $(`
+                        <div class="np-task-item border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <input type="hidden" class="np-task-id" value="${t.id}">
+                                <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title" value="${t.title}">
+                                <button type="button" class="btn btn-sm btn-icon btn-light-danger np-remove-task ms-2 flex-shrink-0">
+                                    <i class="ki-outline ki-trash fs-4"></i>
+                                </button>
+                            </div>
+                            <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description" value="${t.description || ''}">
+                            <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input" value="${t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : ''}">
+                        </div>`);
+                    initPersianDatepickers($row);
+                    $('#npTaskList').append($row);
+                    $('#npNoTasksMsg').hide();
+                });
+            });
+        }
+        initPersianDatepickers($('#newProjectModal'));
+        $('#newProjectModal').modal('show');
+    }
+
+    $('#addProjectBtn').click(function () { openProjectModal(); });
+
+    $('#npAddTaskBtn').click(function () {
+        const $row = $(`
+            <div class="np-task-item border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title">
+                    <button type="button" class="btn btn-sm btn-icon btn-light-danger np-remove-task ms-2 flex-shrink-0">
+                        <i class="ki-outline ki-trash fs-4"></i>
+                    </button>
+                </div>
+                <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description">
+                <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input" placeholder="Deadline">
+            </div>`);
+        initPersianDatepickers($row);
+        $('#npTaskList').append($row);
+        $('#npNoTasksMsg').hide();
+    });
+
+    $(document).on('click', '.np-remove-task', function () {
+        $(this).closest('.np-task-item').remove();
+        if (!$('#npTaskList .np-task-item').length) $('#npNoTasksMsg').show();
+    });
+
+    function npCollectTasks() {
+        const tasks = [];
+        $('#npTaskList .np-task-item').each(function () {
+            tasks.push({
+                Id: parseInt($(this).find('.np-task-id').val()) || 0,
+                Title: $(this).find('.np-task-title').val(),
+                Description: $(this).find('.np-task-desc').val(),
+                DeadLine: normalizeToGregorian($(this).find('.np-task-deadline').val())
+            });
+        });
+        return tasks;
+    }
+
+    $('#confirmNewProject').click(function () {
+        const title = $('#npTitle').val().trim();
+        if (!title) { toastr.warning('Enter a project title'); return; }
+        const id = $('#npId').val();
+        const isEdit = !!id;
+        $.ajax({
+            url: isEdit ? `/api/Projects/${id}` : '/api/Projects',
+            type: isEdit ? 'PUT' : 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                Title: title,
+                Description: $('#npDescription').val().trim() || null,
+                Deadline: normalizeToGregorian($('#npDeadline').val()),
+                Group: activeGroupId,
+                Status: true,
+                Tasks: npCollectTasks()
+            }),
             success: function () {
-                $(`#group_${activeGroupId}`).remove();
-                $('#deleteGroupModal').modal('hide');
-                toastr.success('Group deleted');
+                $('#newProjectModal').modal('hide');
+                toastr.success(isEdit ? 'Project updated' : 'Project created');
+                loadGroupProjects(activeGroupId);
+                if (isEdit && activeProjectId == id) loadAllGroupTasks(activeGroupId);
             },
-            error: () => toastr.error('Failed to delete group')
+            error: () => toastr.error(isEdit ? 'Failed to update project' : 'Failed to create project')
+        });
+    });
+
+    // ── New/Edit Task ─────────────────────────────────────────────
+    function openTaskModal(id, title, desc, deadline) {
+        $('#ntId').val(id || '');
+        $('#ntModalTitle').text(id ? 'Edit Task' : 'New Task');
+        $('#ntTitle').val(title || '');
+        $('#ntDescription').val(desc || '');
+        $('#ntDeadline').val(deadline || '');
+        if (!id) {
+            if (activeProjectId) {
+                $('#ntProjectLabel').text($('.g-project-item.active .fw-semibold').first().text());
+                $('#ntProjectRow').show();
+                $('#ntGroupRow').hide();
+            } else {
+                $('#ntProjectRow').hide();
+                $('#ntGroupRow').show();
+            }
+        } else {
+            $('#ntProjectRow').hide();
+            $('#ntGroupRow').hide();
+        }
+        $('#newTaskModal').modal('show');
+    }
+
+    $('#addTaskBtn').click(function () { openTaskModal(); });
+
+    $('#confirmNewTask').click(function () {
+        const title = $('#ntTitle').val().trim();
+        if (!title) { toastr.warning('Enter a task title'); return; }
+        const id = $('#ntId').val();
+        const isEdit = !!id;
+        const payload = {
+            title,
+            description: $('#ntDescription').val().trim() || null,
+            deadLine: $('#ntDeadline').val() || null,
+            status: false,
+            projectId: !isEdit ? (activeProjectId || null) : undefined,
+            groupId: !isEdit ? (!activeProjectId ? activeGroupId : null) : undefined
+        };
+        $.ajax({
+            url: isEdit ? `/api/Tasks/${id}` : '/api/Tasks',
+            type: isEdit ? 'PUT' : 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function () {
+                $('#newTaskModal').modal('hide');
+                toastr.success(isEdit ? 'Task updated' : 'Task created');
+                if (activeProjectId) {
+                    selectProject(activeProjectId,
+                        $('.g-project-item.active .fw-semibold').first().text(), 0, 0);
+                } else {
+                    loadAllGroupTasks(activeGroupId);
+                }
+            },
+            error: () => toastr.error(isEdit ? 'Failed to update task' : 'Failed to create task')
+        });
+    });
+
+    // ── Delete group ──────────────────────────────────────────────
+    $(document).on('click', '.delete-btn', function (e) {
+        e.stopPropagation();
+        const id = $(this).data('group-id');
+        const title = $(this).data('group-title');
+        openDeleteModal('Group', title, function () {
+            $.ajax({
+                url: `/api/Groups/${id}`, type: 'DELETE',
+                success: function () {
+                    $(`#group_${id}`).remove();
+                    if (activeGroupId == id) {
+                        activeGroupId = null;
+                        activeProjectId = null;
+                        $('#detailPanel').removeClass('split');
+                        $('#col2').hide();
+                        $('#projectsCol').hide();
+                        $('#tasksCol').hide();
+                        $('#noGroupSelected').show();
+                    }
+                    toastr.success('Group deleted');
+                },
+                error: () => toastr.error('Failed to delete group')
+            });
         });
     });
 </script>

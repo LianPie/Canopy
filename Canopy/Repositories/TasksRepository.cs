@@ -15,6 +15,7 @@ namespace Canopy.Repositories
         {
             return _ctx.PlannedTask
                 .Include(p => p.Project)
+                .Include(p => p.Group)
                 .Where(x => x.AssignedToUID == userId)
                 .ToList();
         }
