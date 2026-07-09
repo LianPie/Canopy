@@ -26,6 +26,12 @@ namespace Canopy.Repositories
                 .FirstOrDefault(t => t.Id == id && t.CreatorId == userId);
         }
 
+        public PlannedTask? GetAssignedByIdForUser(int id, int userId)
+        {
+            return _ctx.PlannedTask
+                .FirstOrDefault(t => t.Id == id && t.AssignedToUID == userId || t.CreatorId == userId);
+        }
+
         public PlannedTask Create(PlannedTask task)
         {
             _ctx.PlannedTask.Add(task);

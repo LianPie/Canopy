@@ -136,6 +136,9 @@
     <value>Tasks</value>
   </data>
   <data name="6_projectsMenu" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="7_groupsMenu" xml:space="preserve">
     <value>Projects</value>
   </data>
 </root>

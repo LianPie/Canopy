@@ -7,6 +7,7 @@ namespace Canopy.Repositories
     {
         List<PlannedTask> GetAllByUser(int userId);
         PlannedTask? GetByIdForUser(int id, int userId);
+        PlannedTask? GetAssignedByIdForUser(int id, int userId);
         List<PlannedTask> GetByProjectId(int projectId, int userId);
         PlannedTask Create(PlannedTask task);
         PlannedTask Update(PlannedTask task);

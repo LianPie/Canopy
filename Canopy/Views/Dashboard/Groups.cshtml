@@ -119,13 +119,13 @@
 </style>
 
 <div class="toolbar d-flex justify-content-between align-items-center mb-4">
-    <h3>Groups</h3>
+    <h3>@_localizer["PageTitle"]</h3>
     <div class="d-flex gap-2">
         <button class="btn btn-light-warning btn-sm" id="pendingInvitesBtn">
-            <i class="ki-outline ki-notification fs-4"></i> Invites
+            <i class="ki-outline ki-notification fs-4"></i> @_localizer["Invites"]
         </button>
         <button class="btn btn-primary btn-sm" id="createGroupBtn">
-            <i class="ki-outline ki-plus fs-4"></i> New Group
+            <i class="ki-outline ki-plus fs-4"></i> @_localizer["NewGroup"]
         </button>
     </div>
 </div>
@@ -135,14 +135,14 @@
     <!-- LEFT: Group List -->
     <div class="g-panel">
         <div class="g-panel-header">
-            <span class="fw-bold text-gray-700">My Groups</span>
+            <span class="fw-bold text-gray-700">@_localizer["MyGroups"]</span>
         </div>
         <div class="g-panel-body">
             @if (!Model.Any())
             {
                 <div class="g-empty py-10">
                     <i class="ki-outline ki-people fs-2tx mb-3"></i>
-                    <p class="text-muted">No groups yet</p>
+                    <p class="text-muted">@_localizer["NoGroupsYet"]</p>
                 </div>
             }
             @foreach (var group in Model)
@@ -160,17 +160,17 @@
                     </div>
                     <div class="flex-grow-1 overflow-hidden">
                         <div class="fw-semibold text-truncate">@group.Title</div>
-                        <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() members</small>
+                        <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() @_localizer["Members"]</small>
                     </div>
                     @if (isCreator)
                     {
                         <div class="g-group-item-actions">
                             <button class="btn btn-xs btn-icon btn-light-primary invite-btn"
-                                    data-group-id="@group.Id" data-group-title="@group.Title" title="Invite">
+                                    data-group-id="@group.Id" data-group-title="@group.Title" title="@_localizer["InviteTo"]">
                                 <i class="ki-outline ki-user-edit fs-4"></i>
                             </button>
                             <button class="btn btn-xs btn-icon btn-light-danger delete-btn"
-                                    data-group-id="@group.Id" data-group-title="@group.Title" title="Delete">
+                                    data-group-id="@group.Id" data-group-title="@group.Title" title="@_localizer["Delete"]">
                                 <i class="ki-outline ki-trash fs-4"></i>
                             </button>
                         </div>
@@ -187,15 +187,15 @@
         <div class="g-detail-col" id="col1">
             <div class="g-empty" id="noGroupSelected">
                 <i class="ki-outline ki-people fs-2tx mb-3"></i>
-                <p>Select a group to view details</p>
+                <p>@_localizer["SelectGroupPrompt"]</p>
             </div>
 
             <div id="projectsCol" style="display:none; flex-direction:column; height:100%;">
                 <div class="g-panel-header">
-                    <span class="fw-bold">Projects</span>
+                    <span class="fw-bold">@_localizer["Projects"]</span>
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge badge-light-primary" id="overviewProjectCount"></span>
-                        <button class="btn btn-xs btn-icon btn-light-primary" id="addProjectBtn" title="New Project">
+                        <button class="btn btn-xs btn-icon btn-light-primary" id="addProjectBtn" title="@_localizer["NewProject"]">
                             <i class="ki-outline ki-plus fs-4"></i>
                         </button>
                     </div>
@@ -208,23 +208,23 @@
         <div class="g-detail-col" id="col2" style="display:none;">
             <div class="g-empty" id="noGroupSelected2">
                 <i class="ki-outline ki-check-circle fs-2tx mb-3"></i>
-                <p>Select a group to view tasks</p>
+                <p>@_localizer["SelectGroupTasksPrompt"]</p>
             </div>
 
             <div id="tasksCol" style="display:none; flex-direction:column; height:100%;">
                 <div class="g-panel-header">
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-xs btn-icon btn-light" id="backToAllTasks" style="display:none;" title="Back to all tasks">
+                        <button class="btn btn-xs btn-icon btn-light" id="backToAllTasks" style="display:none;" title="@_localizer["AllTasks"]">
                             <i class="ki-outline ki-arrow-left fs-4"></i>
                         </button>
                         <div>
-                            <span class="fw-bold" id="tasksColTitle">All Tasks</span>
+                            <span class="fw-bold" id="tasksColTitle">@_localizer["AllTasks"]</span>
                             <small class="text-muted ms-2" id="tasksColMeta"></small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge badge-light-primary" id="overviewTaskCount"></span>
-                        <button class="btn btn-xs btn-icon btn-light-primary" id="addTaskBtn" title="New Task">
+                        <button class="btn btn-xs btn-icon btn-light-primary" id="addTaskBtn" title="@_localizer["NewTask"]">
                             <i class="ki-outline ki-plus fs-4"></i>
                         </button>
                     </div>
@@ -241,16 +241,16 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Create Group</h5>
+                <h5 class="modal-title">@_localizer["CreateGroup"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <label class="form-label fw-semibold">Group Name</label>
-                <input type="text" id="groupTitle" class="form-control" placeholder="Enter group name">
+                <label class="form-label fw-semibold">@_localizer["GroupName"]</label>
+                <input type="text" id="groupTitle" class="form-control" placeholder="@_localizer["GroupNamePlaceholder"]">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmCreateGroup">Create</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                <button type="button" class="btn btn-primary" id="confirmCreateGroup">@_localizer["Create"]</button>
             </div>
         </div>
     </div>
@@ -261,17 +261,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Invite to <span id="inviteGroupTitle"></span></h5>
+                <h5 class="modal-title">@_localizer["InviteTo"] <span id="inviteGroupTitle"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <label class="form-label fw-semibold">Username or Email</label>
-                <input type="text" id="inviteInput" class="form-control" placeholder="Search by username or email">
+                <label class="form-label fw-semibold">@_localizer["UsernameOrEmail"]</label>
+                <input type="text" id="inviteInput" class="form-control" placeholder="@_localizer["SearchPlaceholder"]">
                 <div id="inviteStatus" class="mt-2"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmInvite" disabled>Send Invite</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                <button type="button" class="btn btn-primary" id="confirmInvite" disabled>@_localizer["SendInvite"]</button>
             </div>
         </div>
     </div>
@@ -282,13 +282,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Invites</h5>
+                <h5 class="modal-title">@_localizer["InvitesTitle"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <ul class="nav nav-tabs mb-4">
-                    <li class="nav-item"><a class="nav-link active" id="receivedTab" href="#">Received</a></li>
-                    <li class="nav-item"><a class="nav-link" id="sentTab" href="#">Sent</a></li>
+                    <li class="nav-item"><a class="nav-link active" id="receivedTab" href="#">@_localizer["Received"]</a></li>
+                    <li class="nav-item"><a class="nav-link" id="sentTab" href="#">@_localizer["Sent"]</a></li>
                 </ul>
                 <div id="pendingInvitesList"><div class="text-center text-muted py-5">Loading...</div></div>
             </div>
@@ -301,15 +301,15 @@
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title text-danger"><i class="ki-outline ki-trash fs-2 me-2"></i>Delete <span id="deleteConfirmType"></span></h5>
+                <h5 class="modal-title text-danger"><i class="ki-outline ki-trash fs-2 me-2"></i>@_localizer["Delete"] <span id="deleteConfirmType"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-2">
-                Are you sure you want to delete <strong id="deleteConfirmName"></strong>? This cannot be undone.
+                @_localizer["AreYouSureDelete"] <strong id="deleteConfirmName"></strong>? @_localizer["DeleteCannotBeUndone"]
             </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">@_localizer["Delete"]</button>
             </div>
         </div>
     </div>
@@ -320,7 +320,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="npModalTitle">New Project</h5>
+                <h5 class="modal-title" id="npModalTitle">@_localizer["NewProject"]</h5>
                 <input type="hidden" id="npId">
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -330,33 +330,33 @@
                     <div class="col-lg-6">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Tasks</h5>
+                                <h5 class="mb-0">@_localizer["Tasks"]</h5>
                                 <button type="button" class="btn btn-sm btn-light-primary" id="npAddTaskBtn">
-                                    <i class="ki-outline ki-plus fs-2"></i> Add Task
+                                    <i class="ki-outline ki-plus fs-2"></i> @_localizer["AddTask"]
                                 </button>
                             </div>
                             <div class="card-body p-0">
                                 <div id="npTaskList" class="p-5" style="max-height:380px; overflow-y:auto;"></div>
-                                <p id="npNoTasksMsg" class="text-muted text-center py-5">No tasks yet</p>
+                                <p id="npNoTasksMsg" class="text-muted text-center py-5">@_localizer["NoTasksYet"]</p>
                             </div>
                         </div>
                     </div>
                     <!-- RIGHT: Details -->
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h5 class="mb-0">Project Details</h5></div>
+                            <div class="card-header"><h5 class="mb-0">@_localizer["ProjectDetails"]</h5></div>
                             <div class="card-body">
                                 <div class="mb-5">
-                                    <label class="form-label fw-semibold required">Title</label>
-                                    <input type="text" id="npTitle" class="form-control" placeholder="Project name">
+                                    <label class="form-label fw-semibold required">@_localizer["Title"]</label>
+                                    <input type="text" id="npTitle" class="form-control" placeholder="@_localizer["ProjectName"]">
                                 </div>
                                 <div class="mb-5">
-                                    <label class="form-label fw-semibold">Description</label>
-                                    <textarea id="npDescription" class="form-control" rows="3" placeholder="Optional description"></textarea>
+                                    <label class="form-label fw-semibold">@_localizer["Description"]</label>
+                                    <textarea id="npDescription" class="form-control" rows="3" placeholder="@_localizer["OptionalDescription"]"></textarea>
                                 </div>
                                 <div class="mb-5">
-                                    <label class="form-label fw-semibold">Deadline</label>
-                                    <input type="text" id="npDeadline" class="form-control persian-date-input" placeholder="Pick a date">
+                                    <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
+                                    <input type="text" id="npDeadline" class="form-control persian-date-input" placeholder="@_localizer["Deadline"]">
                                 </div>
                             </div>
                         </div>
@@ -364,8 +364,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmNewProject">Save Project</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                <button type="button" class="btn btn-primary" id="confirmNewProject">@_localizer["Save"]</button>
             </div>
         </div>
     </div>
@@ -376,39 +376,39 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ntModalTitle">New Task</h5>
+                <h5 class="modal-title" id="ntModalTitle">@_localizer["NewTask"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="ntId">
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
-                    <input type="text" id="ntTitle" class="form-control" placeholder="Task name">
+                    <label class="form-label fw-semibold">@_localizer["Title"] <span class="text-danger">*</span></label>
+                    <input type="text" id="ntTitle" class="form-control" placeholder="@_localizer["TaskName"]">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Description</label>
-                    <textarea id="ntDescription" class="form-control" rows="2" placeholder="Optional description"></textarea>
+                    <label class="form-label fw-semibold">@_localizer["Description"]</label>
+                    <textarea id="ntDescription" class="form-control" rows="2" placeholder="@_localizer["OptionalDescription"]"></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Deadline</label>
+                    <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
                     <input type="date" id="ntDeadline" class="form-control">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Assign To</label>
+                    <label class="form-label fw-semibold">@_localizer["AssignTo"]</label>
                     <select id="ntAssignee" class="form-select">
-                        <option value="">— Unassigned —</option>
+                        <option value="">@_localizer["Unassigned"]</option>
                     </select>
                 </div>
                 <div id="ntProjectRow" class="mb-1 mt-2 alert alert-info py-2 px-3" style="display:none;">
-                    <small>Linked to project: <span class="fw-semibold" id="ntProjectLabel"></span></small>
+                    <small>@_localizer["LinkedToProject"] <span class="fw-semibold" id="ntProjectLabel"></span></small>
                 </div>
                 <div id="ntGroupRow" class="mb-1 mt-2 alert alert-light py-2 px-3" style="display:none;">
-                    <small>Standalone group task — not linked to any project</small>
+                    <small>@_localizer["StandaloneTask"]</small>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmNewTask">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                <button type="button" class="btn btn-primary" id="confirmNewTask">@_localizer["Save"]</button>
             </div>
         </div>
     </div>
@@ -417,6 +417,56 @@
 @section Scripts {
 <script>
     $("#groupsMenu").addClass("active");
+
+    const L = {
+        allTasks:          '@_localizer["AllTasks"]',
+        noProjectsYet:     '@_localizer["NoProjectsYet"]',
+        noTasksYet:        '@_localizer["NoTasksYet"]',
+        noReceivedInvites: '@_localizer["NoReceivedInvites"]',
+        noSentInvites:     '@_localizer["NoSentInvites"]',
+        from:              '@_localizer["From"]',
+        to:                '@_localizer["To"]',
+        accept:            '@_localizer["Accept"]',
+        decline:           '@_localizer["Decline"]',
+        pending:           '@_localizer["Pending"]',
+        userFound:         '@_localizer["UserFound"]',
+        userNotFound:      '@_localizer["UserNotFound"]',
+        unassigned:        '@_localizer["Unassigned"]',
+        newProject:        '@_localizer["NewProject"]',
+        editProject:       '@_localizer["EditProject"]',
+        newTask:           '@_localizer["NewTask"]',
+        editTask:          '@_localizer["EditTask"]',
+        enterGroupName:    '@_localizer["EnterGroupName"]',
+        enterProjectTitle: '@_localizer["EnterProjectTitle"]',
+        enterTaskTitle:    '@_localizer["EnterTaskTitle"]',
+        projectsLabel:     '@_localizer["ProjectsLabel"]',
+        tasksLabel:        '@_localizer["TasksLabel"]',
+        doneLabel:         '@_localizer["DoneLabel"]',
+        inProgressLabel:   '@_localizer["InProgressLabel"]',
+        doneCount:         '@_localizer["DoneCount"]',
+        tasksCompleted:    '@_localizer["TasksCompleted"]',
+        groupCreated:      '@_localizer["GroupCreated"]',
+        groupDeleted:      '@_localizer["GroupDeleted"]',
+        inviteSent:        '@_localizer["InviteSent"]',
+        joinedGroup:       '@_localizer["JoinedGroup"]',
+        inviteDeclined:    '@_localizer["InviteDeclined"]',
+        projectCreated:    '@_localizer["ProjectCreated"]',
+        projectUpdated:    '@_localizer["ProjectUpdated"]',
+        projectDeleted:    '@_localizer["ProjectDeleted"]',
+        taskCreated:       '@_localizer["TaskCreated"]',
+        taskUpdated:       '@_localizer["TaskUpdated"]',
+        taskDeleted:       '@_localizer["TaskDeleted"]',
+        errCreateGroup:    '@_localizer["ErrCreateGroup"]',
+        errSendInvite:     '@_localizer["ErrSendInvite"]',
+        errSomethingWrong: '@_localizer["ErrSomethingWentWrong"]',
+        errDeleteTask:     '@_localizer["ErrDeleteTask"]',
+        errUpdateTask:     '@_localizer["ErrUpdateTask"]',
+        errDeleteProject:  '@_localizer["ErrDeleteProject"]',
+        errCreateProject:  '@_localizer["ErrCreateProject"]',
+        errUpdateProject:  '@_localizer["ErrUpdateProject"]',
+        errCreateTask:     '@_localizer["ErrCreateTask"]',
+        errDeleteGroup:    '@_localizer["ErrDeleteGroup"]',
+    };
 
     const groupMembers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
         Model.ToDictionary(
@@ -458,7 +508,7 @@
         $('#col2').css('display', 'flex');
         $('#projectsCol').css('display', 'flex');
         $('#tasksCol').css('display', 'flex');
-        $('#tasksColTitle').text('All Tasks');
+        $('#tasksColTitle').text(L.allTasks);
         $('#tasksColMeta').text('');
         $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
 
@@ -469,9 +519,9 @@
     function loadGroupProjects(groupId) {
         $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
         $.get(`/api/Groups/${groupId}/projects`, function (projects) {
-            $('#overviewProjectCount').text(projects.length + ' projects');
+            $('#overviewProjectCount').text(projects.length + ' ' + L.projectsLabel);
             if (!projects.length) {
-                $('#projectsList').html('<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>No projects yet</p></div>');
+                $('#projectsList').html(`<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>${L.noProjectsYet}</p></div>`);
                 return;
             }
             let html = '';
@@ -510,20 +560,20 @@
     function loadAllGroupTasks(groupId) {
         activeProjectId = null;
         $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
-        $('#tasksColTitle').text('All Tasks');
+        $('#tasksColTitle').text(L.allTasks);
         $('#tasksColMeta').text('');
         $('#backToAllTasks').hide();
         $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
         $('.g-project-item').removeClass('active');
         $.get(`/api/Groups/${groupId}/tasks`, function (tasks) {
-            $('#overviewTaskCount').text(tasks.length + ' tasks');
+                $('#overviewTaskCount').text(tasks.length + ' ' + L.tasksLabel);
             renderTaskList(tasks, true);
         });
     }
 
     function renderTaskList(tasks, groupByProject) {
         if (!tasks.length) {
-            $('#allTasksList').html('<div class="g-empty py-10"><i class="ki-outline ki-check-circle fs-2tx mb-3"></i><p>No tasks yet</p></div>');
+            $('#allTasksList').html(`<div class="g-empty py-10"><i class="ki-outline ki-check-circle fs-2tx mb-3"></i><p>${L.noTasksYet}</p></div>`);
             return;
         }
         let html = '';
@@ -592,15 +642,15 @@
         $(`.g-project-item[data-project-id="${projectId}"]`).addClass('active');
 
         $('#tasksColTitle').text(title);
-        $('#tasksColMeta').text(`${done}/${total} tasks completed`);
+        $('#tasksColMeta').text(`${done}/${total} ${L.tasksCompleted}`);
         $('#backToAllTasks').show();
-        $('#overviewTaskCount').text(done === total && total > 0 ? 'Done' : 'In Progress')
+        $('#overviewTaskCount').text(done === total && total > 0 ? L.doneLabel : L.inProgressLabel)
             .removeClass().addClass(`badge badge-light-${done === total && total > 0 ? 'success' : 'warning'}`);
         $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
 
         $.get(`/api/Groups/${activeGroupId}/tasks`, function (tasks) {
             const ptasks = tasks.filter(t => t.projectId === projectId || (t.project && t.project.id === projectId));
-            $('#overviewTaskCount').text(ptasks.length + ' tasks');
+                $('#overviewTaskCount').text(ptasks.length + ' ' + L.tasksLabel);
             renderTaskList(ptasks, false);
         });
     }
@@ -610,16 +660,16 @@
 
     $('#confirmCreateGroup').click(function () {
         const title = $('#groupTitle').val().trim();
-        if (!title) { toastr.warning('Enter a group name'); return; }
+        if (!title) { toastr.warning(L.enterGroupName); return; }
         $.ajax({
             url: '/api/Groups', type: 'POST', contentType: 'application/json',
             data: JSON.stringify({ title }),
             success: function () {
                 $('#createGroupModal').modal('hide');
-                toastr.success('Group created');
+                toastr.success(L.groupCreated);
                 setTimeout(() => location.reload(), 800);
             },
-            error: () => toastr.error('Failed to create group')
+            error: () => toastr.error(L.errCreateGroup)
         });
     });
 
@@ -651,11 +701,11 @@
             $.get(endpoint, function (res) {
                 const exists = isEmail ? res.emailTaken : res.userNameTaken;
                 if (exists) {
-                    $('#inviteStatus').html('<span class="text-success"><i class="ki-outline ki-check fs-5"></i> User found</span>');
+                    $('#inviteStatus').html(`<span class="text-success"><i class="ki-outline ki-check fs-5"></i> ${L.userFound}</span>`);
                     $('#confirmInvite').prop('disabled', false);
                     userFound = true;
                 } else {
-                    $('#inviteStatus').html('<span class="text-danger"><i class="ki-outline ki-cross fs-5"></i> User not found</span>');
+                    $('#inviteStatus').html(`<span class="text-danger"><i class="ki-outline ki-cross fs-5"></i> ${L.userNotFound}</span>`);
                 }
             });
         }, 400);
@@ -666,8 +716,8 @@
         $.ajax({
             url: `/api/Groups/${activeGroupId}/invite`, type: 'POST', contentType: 'application/json',
             data: JSON.stringify({ usernameOrEmail: $('#inviteInput').val().trim() }),
-            success: function () { $('#inviteModal').modal('hide'); toastr.success('Invite sent'); },
-            error: xhr => toastr.error(xhr.responseJSON || 'Failed to send invite')
+            success: function () { $('#inviteModal').modal('hide'); toastr.success(L.inviteSent); },
+            error: xhr => toastr.error(xhr.responseJSON || L.errSendInvite)
         });
     });
 
@@ -700,14 +750,14 @@
     function loadReceivedInvites() {
         $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
         $.get('/api/Groups/invites/pending', function (invites) {
-            if (!invites.length) { $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>'); return; }
+            if (!invites.length) { $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noReceivedInvites}</div>`); return; }
             let html = '';
             invites.forEach(inv => {
                 html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom" id="invite_${inv.id}">
-                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">From ${inv.invitedBy.userName}</small></div>
+                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">${L.from} ${inv.invitedBy.userName}</small></div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id},'accept')">Accept</button>
-                        <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id},'decline')">Decline</button>
+                        <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id},'accept')">${L.accept}</button>
+                        <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id},'decline')">${L.decline}</button>
                     </div>
                 </div>`;
             });
@@ -718,12 +768,12 @@
     function loadSentInvites() {
         $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
         $.get('/api/Groups/invites/sent', function (invites) {
-            if (!invites.length) { $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No sent invites</div>'); return; }
+            if (!invites.length) { $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noSentInvites}</div>`); return; }
             let html = '';
             invites.forEach(inv => {
                 html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom">
-                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">To ${inv.user.userName}</small></div>
-                    <span class="badge badge-light-warning">Pending</span>
+                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">${L.to} ${inv.user.userName}</small></div>
+                    <span class="badge badge-light-warning">${L.pending}</span>
                 </div>`;
             });
             $('#pendingInvitesList').html(html);
@@ -736,11 +786,11 @@
             success: function () {
                 $(`#invite_${id}`).remove();
                 if (!$('#pendingInvitesList .border-bottom').length)
-                    $('#pendingInvitesList').html('<div class="text-center text-muted py-5">No received invites</div>');
-                toastr.success(action === 'accept' ? 'Joined group!' : 'Invite declined');
+                    $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noReceivedInvites}</div>`);
+                toastr.success(action === 'accept' ? L.joinedGroup : L.inviteDeclined);
                 if (action === 'accept') setTimeout(() => location.reload(), 800);
             },
-            error: () => toastr.error('Something went wrong')
+            error: () => toastr.error(L.errSomethingWrong)
         });
     }
 
@@ -775,7 +825,7 @@
             $.ajax({
                 url: `/api/Tasks/${id}`, type: 'DELETE',
                 success: function () {
-                    toastr.success('Task deleted');
+                    toastr.success(L.taskDeleted);
                     if (activeProjectId) {
                         const $row = $(`.g-project-item[data-project-id="${activeProjectId}"]`);
                         selectProject(activeProjectId, $row.data('project-title'), 0, 0);
@@ -783,7 +833,7 @@
                         loadAllGroupTasks(activeGroupId);
                     }
                 },
-                error: () => toastr.error('Failed to delete task')
+                error: () => toastr.error(L.errDeleteTask)
             });
         });
     });
@@ -803,11 +853,11 @@
             $.ajax({
                 url: `/api/Projects/${id}`, type: 'DELETE',
                 success: function () {
-                    toastr.success('Project deleted');
+                    toastr.success(L.projectDeleted);
                     if (activeProjectId == id) loadAllGroupTasks(activeGroupId);
                     loadGroupProjects(activeGroupId);
                 },
-                error: () => toastr.error('Failed to delete project')
+                error: () => toastr.error(L.errDeleteProject)
             });
         });
     });
@@ -820,7 +870,7 @@
             success: function () { updateTaskUI($cb); },
             error: function () {
                 $cb.prop('checked', !$cb.prop('checked'));
-                toastr.error('Failed to update task');
+                toastr.error(L.errUpdateTask);
             }
         });
     });
@@ -834,14 +884,14 @@
         // recalculate progress from current DOM state
         const total = $('#allTasksList .task-status-toggle').length;
         const checked = $('#allTasksList .task-status-toggle:checked').length;
-        $('#overviewTaskCount').text(checked + '/' + total + ' done');
+        $('#overviewTaskCount').text(checked + '/' + total + ' ' + L.doneCount);
 
         // update project item progress bar if a project is active
         if (activeProjectId) {
             const pct = total ? Math.round(checked / total * 100) : 0;
             $(`.g-project-item[onclick*="${activeProjectId}"] .progress-bar`).css('width', pct + '%');
             $(`.g-project-item[onclick*="${activeProjectId}"] small.text-muted`).last().text(`${checked}/${total}`);
-            $('#tasksColMeta').text(`${checked}/${total} tasks completed`);
+            $('#tasksColMeta').text(`${checked}/${total} ${L.tasksCompleted}`);
             const allDone = total > 0 && checked === total;
             $('#overviewTaskCount').removeClass()
                 .addClass(`badge badge-light-${allDone ? 'success' : 'warning'}`);
@@ -855,7 +905,7 @@
     // ── New Project ──────────────────────────────────────────────
     function openProjectModal(id, title, desc, deadline) {
         $('#npId').val(id || '');
-        $('#npModalTitle').text(id ? 'Edit Project' : 'New Project');
+        $('#npModalTitle').text(id ? L.editProject : L.newProject);
         $('#npTitle').val(title || '');
         $('#npDescription').val(desc || '');
         $('#npDeadline').val(deadline || '');
@@ -880,7 +930,7 @@
     $('#addProjectBtn').click(function () { openProjectModal(); });
 
     function npMemberOptions(selectedId) {
-        let opts = '<option value="">— Unassigned —</option>';
+        let opts = `<option value="">${L.unassigned}</option>`;
         activeGroupMembers.forEach(m => {
             opts += `<option value="${m.id}" ${m.id == selectedId ? 'selected' : ''}>${m.name}</option>`;
         });
@@ -934,7 +984,7 @@
 
     $('#confirmNewProject').click(function () {
         const title = $('#npTitle').val().trim();
-        if (!title) { toastr.warning('Enter a project title'); return; }
+        if (!title) { toastr.warning(L.enterProjectTitle); return; }
         const id = $('#npId').val();
         const isEdit = !!id;
         $.ajax({
@@ -951,24 +1001,24 @@
             }),
             success: function () {
                 $('#newProjectModal').modal('hide');
-                toastr.success(isEdit ? 'Project updated' : 'Project created');
+                toastr.success(isEdit ? L.projectUpdated : L.projectCreated);
                 loadGroupProjects(activeGroupId);
                 if (isEdit && activeProjectId == id) loadAllGroupTasks(activeGroupId);
             },
-            error: () => toastr.error(isEdit ? 'Failed to update project' : 'Failed to create project')
+            error: () => toastr.error(isEdit ? L.errUpdateProject : L.errCreateProject)
         });
     });
 
     // ── New/Edit Task ─────────────────────────────────────────────
     function openTaskModal(id, title, desc, deadline, assigneeId) {
         $('#ntId').val(id || '');
-        $('#ntModalTitle').text(id ? 'Edit Task' : 'New Task');
+        $('#ntModalTitle').text(id ? L.editTask : L.newTask);
         $('#ntTitle').val(title || '');
         $('#ntDescription').val(desc || '');
         $('#ntDeadline').val(deadline || '');
 
         const $select = $('#ntAssignee');
-        $select.html('<option value="">— Unassigned —</option>');
+        $select.html(`<option value="">${L.unassigned}</option>`);
         activeGroupMembers.forEach(m => {
             $select.append(`<option value="${m.id}" ${m.id == assigneeId ? 'selected' : ''}>${m.name}</option>`);
         });
@@ -992,7 +1042,7 @@
 
     $('#confirmNewTask').click(function () {
         const title = $('#ntTitle').val().trim();
-        if (!title) { toastr.warning('Enter a task title'); return; }
+        if (!title) { toastr.warning(L.enterTaskTitle); return; }
         const id = $('#ntId').val();
         const isEdit = !!id;
         const assigneeId = $('#ntAssignee').val();
@@ -1012,7 +1062,7 @@
             data: JSON.stringify(payload),
             success: function () {
                 $('#newTaskModal').modal('hide');
-                toastr.success(isEdit ? 'Task updated' : 'Task created');
+                toastr.success(isEdit ? L.taskUpdated : L.taskCreated);
                 if (activeProjectId) {
                     selectProject(activeProjectId,
                         $('.g-project-item.active .fw-semibold').first().text(), 0, 0);
@@ -1020,7 +1070,7 @@
                     loadAllGroupTasks(activeGroupId);
                 }
             },
-            error: () => toastr.error(isEdit ? 'Failed to update task' : 'Failed to create task')
+            error: () => toastr.error(isEdit ? L.errUpdateTask : L.errCreateTask)
         });
     });
 
@@ -1043,9 +1093,9 @@
                         $('#tasksCol').hide();
                         $('#noGroupSelected').show();
                     }
-                    toastr.success('Group deleted');
+                    toastr.success(L.groupDeleted);
                 },
-                error: () => toastr.error('Failed to delete group')
+                error: () => toastr.error(L.errDeleteGroup)
             });
         });
     });

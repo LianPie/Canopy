@@ -121,7 +121,7 @@ namespace Canopy.Controllers
         [HttpPatch("{id}/status")]
         public IActionResult ToggleStatus(int id)
         {
-            var task = _taskRepo.GetByIdForUser(id, GetUserId());
+            var task = _taskRepo.GetAssignedByIdForUser(id, GetUserId());
             if (task == null) return NotFound();
 
             task.Status = !task.Status; 
