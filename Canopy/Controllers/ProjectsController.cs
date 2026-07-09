@@ -78,7 +78,7 @@ namespace Canopy.Controllers
                             Status = task.Status,
 
                             CreatorId = GetUserId(),
-                            AssignedToUID = GetUserId(),
+                            AssignedToUID = task.AssigneeId ?? GetUserId(),
                             ProjectId = created.Id,
                             DateCreated = DateTime.UtcNow
 
@@ -143,7 +143,7 @@ namespace Canopy.Controllers
                             Status = incomingTask.Status,
                             ProjectId = id,
                             CreatorId = GetUserId(),
-                            AssignedToUID = GetUserId(),
+                            AssignedToUID = incomingTask.AssigneeId ?? GetUserId(),
                             DateCreated = DateTime.UtcNow
                         });
                     }
@@ -157,6 +157,8 @@ namespace Canopy.Controllers
                             dbTask.Description = incomingTask.Description;
                             dbTask.DeadLine = incomingTask.DeadLine;
                             dbTask.Status = incomingTask.Status;
+                            if (incomingTask.AssigneeId.HasValue)
+                                dbTask.AssignedToUID = incomingTask.AssigneeId.Value;
 
                             _taskRepo.Update(dbTask); // Save individual task changes
                         }

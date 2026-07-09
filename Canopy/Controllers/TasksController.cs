@@ -57,7 +57,7 @@ namespace Canopy.Controllers
                     ProjectId = viewModel.ProjectId,
                     GroupId = viewModel.GroupId,
                     CreatorId = GetUserId(),
-                    AssignedToUID = GetUserId(),
+                    AssignedToUID = viewModel.AssigneeId ?? GetUserId(),
                     DateCreated = DateTime.UtcNow
                 };
 
@@ -86,6 +86,7 @@ namespace Canopy.Controllers
                 target.Description = viewModel.Description;
                 target.DeadLine = viewModel.DeadLine;
                 target.Status = viewModel.Status;
+                target.AssignedToUID = viewModel.AssigneeId ?? GetUserId();
 
                 _taskRepo.Update(target);
 

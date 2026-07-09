@@ -151,7 +151,8 @@
                 var isCreator = group.CreatorId == userId;
                 <div class="g-group-item" id="group_@group.Id"
                      data-group-id="@group.Id" data-group-title="@group.Title"
-                     data-is-creator="@isCreator.ToString().ToLower()">
+                     data-is-creator="@isCreator.ToString().ToLower()"
+">
                     <div class="symbol symbol-35px">
                         <div class="symbol-label bg-light-primary">
                             <i class="ki-outline ki-people fs-3 text-primary"></i>
@@ -364,7 +365,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmNewProject">Create Project</button>
+                <button type="button" class="btn btn-primary" id="confirmNewProject">Save Project</button>
             </div>
         </div>
     </div>
@@ -392,6 +393,12 @@
                     <label class="form-label fw-semibold">Deadline</label>
                     <input type="date" id="ntDeadline" class="form-control">
                 </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Assign To</label>
+                    <select id="ntAssignee" class="form-select">
+                        <option value="">— Unassigned —</option>
+                    </select>
+                </div>
                 <div id="ntProjectRow" class="mb-1 mt-2 alert alert-info py-2 px-3" style="display:none;">
                     <small>Linked to project: <span class="fw-semibold" id="ntProjectLabel"></span></small>
                 </div>
@@ -411,8 +418,18 @@
 <script>
     $("#groupsMenu").addClass("active");
 
+    const groupMembers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.ToDictionary(
+            g => g.Id,
+            g => g.UserGroups
+                .Where(ug => ug.Status == InvitationStatus.Accepted)
+                .Select(ug => new { id = ug.UserId, name = ug.User!.UserName })
+        )
+    ));
+
     let activeGroupId = null;
     let activeProjectId = null;
+    let activeGroupMembers = [];
     let checkTimeout = null;
     let userFound = false;
 
@@ -431,6 +448,8 @@
 
         $('.g-group-item').removeClass('active');
         $(`#group_${groupId}`).addClass('active');
+        activeGroupMembers = groupMembers[groupId] || [];
+
 
         // show both columns
         $('#noGroupSelected').hide();
@@ -545,6 +564,7 @@
                     data-id="${t.id}" data-title="${t.title.replace(/"/g,'&quot;')}"
                     data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
                     data-deadline="${deadlineVal}" data-status="${done}"
+                    data-assignee-id="${t.assignedToUID || ''}"
                     title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
                 <button class="btn btn-xs btn-icon btn-light-danger delete-task-btn"
                     data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
@@ -744,7 +764,7 @@
     $(document).on('click', '.edit-task-btn', function (e) {
         e.stopPropagation();
         const $b = $(this);
-        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'));
+        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'), $b.data('assignee-id'));
     });
 
     $(document).on('click', '.delete-task-btn', function (e) {
@@ -845,18 +865,8 @@
             // load existing tasks
             $.get(`/api/Projects/${id}`, function (p) {
                 (p.tasks || []).forEach(t => {
-                    const $row = $(`
-                        <div class="np-task-item border rounded p-3 mb-3">
-                            <div class="d-flex justify-content-between mb-2">
-                                <input type="hidden" class="np-task-id" value="${t.id}">
-                                <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title" value="${t.title}">
-                                <button type="button" class="btn btn-sm btn-icon btn-light-danger np-remove-task ms-2 flex-shrink-0">
-                                    <i class="ki-outline ki-trash fs-4"></i>
-                                </button>
-                            </div>
-                            <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description" value="${t.description || ''}">
-                            <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input" value="${t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : ''}">
-                        </div>`);
+                    const deadline = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
+                    const $row = $(npTaskRow(t.id, t.title, t.description, deadline, t.assignedToUID));
                     initPersianDatepickers($row);
                     $('#npTaskList').append($row);
                     $('#npNoTasksMsg').hide();
@@ -869,18 +879,34 @@
 
     $('#addProjectBtn').click(function () { openProjectModal(); });
 
-    $('#npAddTaskBtn').click(function () {
-        const $row = $(`
+    function npMemberOptions(selectedId) {
+        let opts = '<option value="">— Unassigned —</option>';
+        activeGroupMembers.forEach(m => {
+            opts += `<option value="${m.id}" ${m.id == selectedId ? 'selected' : ''}>${m.name}</option>`;
+        });
+        return opts;
+    }
+
+    function npTaskRow(id, title, desc, deadline, assigneeId) {
+        return `
             <div class="np-task-item border rounded p-3 mb-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title">
+                    <input type="hidden" class="np-task-id" value="${id || 0}">
+                    <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title" value="${title || ''}">
                     <button type="button" class="btn btn-sm btn-icon btn-light-danger np-remove-task ms-2 flex-shrink-0">
                         <i class="ki-outline ki-trash fs-4"></i>
                     </button>
                 </div>
-                <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description">
-                <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input" placeholder="Deadline">
-            </div>`);
+                <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description" value="${desc || ''}">
+                <div class="d-flex gap-2">
+                    <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input flex-grow-1" placeholder="Deadline" value="${deadline || ''}">
+                    <select class="form-select form-select-sm np-task-assignee" style="max-width:140px;">${npMemberOptions(assigneeId)}</select>
+                </div>
+            </div>`;
+    }
+
+    $('#npAddTaskBtn').click(function () {
+        const $row = $(npTaskRow());
         initPersianDatepickers($row);
         $('#npTaskList').append($row);
         $('#npNoTasksMsg').hide();
@@ -894,11 +920,13 @@
     function npCollectTasks() {
         const tasks = [];
         $('#npTaskList .np-task-item').each(function () {
+            const assigneeVal = $(this).find('.np-task-assignee').val();
             tasks.push({
                 Id: parseInt($(this).find('.np-task-id').val()) || 0,
                 Title: $(this).find('.np-task-title').val(),
                 Description: $(this).find('.np-task-desc').val(),
-                DeadLine: normalizeToGregorian($(this).find('.np-task-deadline').val())
+                DeadLine: normalizeToGregorian($(this).find('.np-task-deadline').val()),
+                AssigneeId: assigneeVal ? parseInt(assigneeVal) : null
             });
         });
         return tasks;
@@ -932,12 +960,18 @@
     });
 
     // ── New/Edit Task ─────────────────────────────────────────────
-    function openTaskModal(id, title, desc, deadline) {
+    function openTaskModal(id, title, desc, deadline, assigneeId) {
         $('#ntId').val(id || '');
         $('#ntModalTitle').text(id ? 'Edit Task' : 'New Task');
         $('#ntTitle').val(title || '');
         $('#ntDescription').val(desc || '');
         $('#ntDeadline').val(deadline || '');
+
+        const $select = $('#ntAssignee');
+        $select.html('<option value="">— Unassigned —</option>');
+        activeGroupMembers.forEach(m => {
+            $select.append(`<option value="${m.id}" ${m.id == assigneeId ? 'selected' : ''}>${m.name}</option>`);
+        });
         if (!id) {
             if (activeProjectId) {
                 $('#ntProjectLabel').text($('.g-project-item.active .fw-semibold').first().text());
@@ -961,11 +995,13 @@
         if (!title) { toastr.warning('Enter a task title'); return; }
         const id = $('#ntId').val();
         const isEdit = !!id;
+        const assigneeId = $('#ntAssignee').val();
         const payload = {
             title,
             description: $('#ntDescription').val().trim() || null,
             deadLine: $('#ntDeadline').val() || null,
             status: false,
+            assigneeId: assigneeId ? parseInt(assigneeId) : null,
             projectId: !isEdit ? (activeProjectId || null) : undefined,
             groupId: !isEdit ? (!activeProjectId ? activeGroupId : null) : undefined
         };
