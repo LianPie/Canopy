@@ -2,6 +2,7 @@ using Canopy.Data;
 using Canopy.Repositories;
 using Canopy.Repositories.TaskManager.Repositories;
 using Canopy.Services;
+using Canopy.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -32,7 +33,7 @@ builder.Services.AddScoped<IProjectsRepository, ProjectsRepository>();
 builder.Services.AddScoped<IGroupsRepository, GroupsRepository>();
 
 
-
+builder.Services.AddSignalR();
 
 //so we can use distributed cache(distributed cache -> cache that can be used everywhere in the program) like session
 builder.Services.AddDistributedMemoryCache();
@@ -140,6 +141,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("hubs/chat");
+app.MapHub<NotificationHub>("hubs/notification");
+
 
 app.MapControllers();   
 
