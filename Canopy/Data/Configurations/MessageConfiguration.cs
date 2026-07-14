@@ -36,25 +36,11 @@ namespace Canopy.Data.Configurations
                    .IsRequired()
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            // FK to Chat – already configured in ChatConfiguration,
-            // but we can still set column name / constraint name here:
-            builder.HasOne(m => m.Chat)
-                   .WithMany(c => c.Messages)
-                   .HasForeignKey(m => m.ChatId)
-                   .HasConstraintName("FK_Message_Chat")
-                   .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasOne(m => m.User)
                    .WithMany()
                    .HasForeignKey(m => m.UserId)
                    .HasConstraintName("FK_Message_User")
                    .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasMany(m => m.MessageAttachments)
-                   .WithOne(a => a.Message)
-                   .HasForeignKey(a => a.MessageId)
-                   .HasConstraintName("FK_MessageAttachment_Message")
-                   .OnDelete(DeleteBehavior.Cascade);   // delete messages attachment when message is deleted
         }
     }
 }

@@ -36,6 +36,13 @@ namespace Canopy.Data.Configurations
                 .HasForeignKey(g => g.CreatorId)    // Foreign Key
                 .OnDelete(DeleteBehavior.Restrict); // when User is deleted -> don't delete Group
 
+
+            builder.HasOne(g => g.Chatroom)
+            .WithOne(g => g.Group)
+            .HasForeignKey<Chat>(c => c.GroupId)
+            .HasConstraintName("FK_Chat_Group")
+            .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

@@ -34,7 +34,10 @@ namespace Canopy.Data.Configurations
                    .WithOne(m => m.Chat)
                    .HasForeignKey(m => m.ChatId)
                    .HasConstraintName("FK_Message_Chat")
-                   .OnDelete(DeleteBehavior.Cascade);   // delete messages when a chat is deleted
+                   .OnDelete(DeleteBehavior.Cascade);
+
+
+
 
         }
     }
