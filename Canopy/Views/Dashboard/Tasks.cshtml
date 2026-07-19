@@ -168,7 +168,6 @@
         }
 
         function deleteTask(id) {
-                console.log("hello?")
                 $.ajax({
                     url: '/api/tasks/' + id,
                     type: 'DELETE',
@@ -198,13 +197,13 @@
                     if (isDone) {
                         $statusCell.html(`
                             <span class="badge badge-light-success fs-7">
-                                <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Pending"]
+                                <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Done"]
                             </span>
                         `);
                     } else {
                         $statusCell.html(`
                             <span class="badge badge-light-warning fs-7">
-                                <i class="ki-outline ki-information fs-6 me-1"></i> @_localizer["Done"]
+                                <i class="ki-outline ki-information fs-6 me-1"></i> @_localizer["Pending"]
                             </span>
                         `);
                     }

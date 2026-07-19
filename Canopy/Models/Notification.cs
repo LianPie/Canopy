@@ -15,5 +15,7 @@ public enum NotificationType
 {
     GroupInvitation = 0,
     GroupInvitationAccepted = 1,
-    GroupInvitationDeclined = 2
+    GroupInvitationDeclined = 2,
+    TaskAssigned = 3,
+    ProjectAssigned = 4
 }

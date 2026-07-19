@@ -1,8 +1,10 @@
 ﻿using Canopy.Models;
 using Canopy.Repositories;
+using Canopy.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Canopy.Controllers
@@ -15,11 +17,13 @@ namespace Canopy.Controllers
 
         private readonly IProjectsRepository _projectRepo;
         private readonly ITasksRepository _taskRepo;
+        private readonly INotificationService _notificationService;
 
-        public ProjectsController(ITasksRepository taskRepo, IProjectsRepository projectRepo)
+        public ProjectsController(ITasksRepository taskRepo, IProjectsRepository projectRepo, INotificationService notificationService)
         {
             _projectRepo = projectRepo;
             _taskRepo = taskRepo;
+            _notificationService = notificationService;
         }
         private int GetUserId()
         {
@@ -46,28 +50,26 @@ namespace Canopy.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] ProjectDataViewModel viewModel)
+        public async Task<IActionResult> Create([FromBody] ProjectDataViewModel viewModel)
         {
             try
             {
+                var userId = GetUserId();
                 var project = new Project
                 {
                     Title = viewModel.Title,
                     Description = viewModel.Description,
                     Deadline = viewModel.Deadline,
                     Status = false,
-
                     GroupId = viewModel.Group,
-
-                    CreatorId = GetUserId(),
+                    CreatorId = userId,
                     DateCreated = DateTime.UtcNow
                 };
-
 
                 var created = _projectRepo.Create(project);
                 if (viewModel.Tasks?.Count > 0)
                 {
-                    List<PlannedTask> projectTasks = new List<PlannedTask>();
+                    var projectTasks = new List<PlannedTask>();
                     foreach (var task in viewModel.Tasks)
                     {
                         projectTasks.Add(new PlannedTask
@@ -76,28 +78,34 @@ namespace Canopy.Controllers
                             Description = task.Description,
                             DeadLine = task.DeadLine,
                             Status = task.Status,
-
-                            CreatorId = GetUserId(),
-                            AssignedToUID = task.AssigneeId ?? GetUserId(),
+                            CreatorId = userId,
+                            AssignedToUID = task.AssigneeId ?? userId,
                             ProjectId = created.Id,
                             DateCreated = DateTime.UtcNow
-
                         });
                     }
                     _taskRepo.AddRange(projectTasks);
 
+                    var payload = JsonSerializer.Serialize(new { projectId = created.Id, projectTitle = created.Title, assignedBy = User.Identity!.Name });
+                    var assigneeIds = viewModel.Tasks
+                        .Select(t => t.AssigneeId ?? userId)
+                        .Where(id => id != userId)
+                        .Distinct();
+
+                    foreach (var assigneeId in assigneeIds)
+                        await _notificationService.SendAsync(assigneeId, NotificationType.ProjectAssigned, payload);
                 }
 
                 return Ok();
             }
             catch (Exception)
             {
-                return StatusCode(500, "Failed to create task");
+                return StatusCode(500, "Failed to create project");
             }
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] ProjectDataViewModel viewModel)
+        public async Task<IActionResult> Update(int id, [FromBody] ProjectDataViewModel viewModel)
         {
             try
             {
@@ -169,6 +177,17 @@ namespace Canopy.Controllers
                 {
                     _taskRepo.AddRange(tasksToAdd);
                 }
+
+                var userId = GetUserId();
+                var payload = JsonSerializer.Serialize(new { projectId = id, projectTitle = target.Title, assignedBy = User.Identity!.Name });
+                var previousAssigneeIds = existingTasks.Select(t => t.AssignedToUID).ToHashSet();
+                var newAssigneeIds = viewModel.Tasks
+                    .Select(t => t.AssigneeId ?? userId)
+                    .Where(aid => aid != userId && !previousAssigneeIds.Contains(aid))
+                    .Distinct();
+
+                foreach (var assigneeId in newAssigneeIds)
+                    await _notificationService.SendAsync(assigneeId, NotificationType.ProjectAssigned, payload);
 
                 return Ok();
             }

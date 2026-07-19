@@ -295,6 +295,29 @@
                             </div>
                         </div>
                         <div class="app-navbar flex-shrink-0">
+                            <!-- Notification Bell -->
+                            <div class="app-navbar-item ms-1 ms-md-3">
+                                <div data-kt-menu-trigger="{default:'click', lg: 'click'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                                    <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px position-relative">
+                                        <i class="ki-outline ki-notification fs-2"></i>
+                                        <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge badge-circle badge-danger fs-9" style="display:none;"></span>
+                                    </div>
+                                </div>
+                                <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true" id="notifDropdown">
+                                    <div class="d-flex flex-column bgi-no-repeat rounded-top" style="padding:16px;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h3 class="text-white fw-semibold fs-5 mb-0">Notifications</h3>
+                                            <button class="btn btn-sm btn-light-primary py-1 px-2 fs-8" id="markAllReadBtn">Mark all read</button>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div id="notifList" style="max-height:320px; overflow-y:auto;">
+                                            <div class="text-center text-muted py-5">Loading...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Notification Bell -->
                             <div class="app-navbar-item ms-1 ms-md-3">
                                 <a href="#"
                                    class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-30px h-30px w-md-40px h-md-40px"
@@ -685,6 +708,101 @@
                         }
                     }
                 });
+            });
+        </script>
+        <script src="~/js/signalr.min.js"></script>
+        <script>
+            const notifConnection = new signalR.HubConnectionBuilder()
+                .withUrl("/hubs/notification")
+                .withAutomaticReconnect()
+                .build();
+
+            notifConnection.on("ReceiveNotification", function (n) {
+                addNotifToList(n);
+                updateBadge(1);
+                showNotifToast(n);
+            });
+
+            notifConnection.start().then(loadNotifications);
+
+            function loadNotifications() {
+                $.get('/api/Notifications', function (items) {
+                    const unread = items.filter(n => !n.isRead).length;
+                    updateBadge(unread);
+                    renderNotifList(items);
+                });
+            }
+
+            function renderNotifList(items) {
+                if (!items.length) {
+                    $('#notifList').html('<div class="text-center text-muted py-5">No notifications</div>');
+                    return;
+                }
+                let html = '';
+                items.forEach(n => { html += notifItemHtml(n); });
+                $('#notifList').html(html);
+            }
+
+            function addNotifToList(n) {
+                if ($('#notifList .text-center').length) $('#notifList').html('');
+                $('#notifList').prepend(notifItemHtml(n));
+            }
+
+            function notifItemHtml(n) {
+                const payload = tryParseJson(n.payload);
+                const text = buildNotifText(n.type, payload);
+                const dot = n.isRead ? '' : '<span class="bullet bullet-dot bg-primary me-2"></span>';
+                const time = new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `<div class="d-flex align-items-center px-4 py-3 border-bottom ${n.isRead ? '' : 'bg-light-primary'}">
+                    ${dot}
+                    <div class="flex-grow-1">
+                        <span class="fs-7">${text}</span>
+                        <br><small class="text-muted">${time}</small>
+                    </div>
+                </div>`;
+            }
+
+            function buildNotifText(type, p) {
+                switch (type) {
+                    case 0: return `<b>${p.invitedBy}</b> invited you to join <b>${p.groupTitle}</b>`;
+                    case 1: return `<b>${p.acceptedBy}</b> accepted your invite to <b>${p.groupTitle}</b>`;
+                    case 2: return `<b>${p.declinedBy}</b> declined your invite to <b>${p.groupTitle}</b>`;
+                    case 3: return `<b>${p.assignedBy}</b> assigned you a task: <b>${p.taskTitle}</b>`;
+                    case 4: return `<b>${p.assignedBy}</b> assigned you to project <b>${p.projectTitle}</b>`;
+                    default: return p.toString();
+                }
+            }
+
+            function updateBadge(count) {
+                if (count > 0) {
+                    $('#notifBadge').text(count).show();
+                } else {
+                    $('#notifBadge').hide();
+                }
+            }
+
+            function showNotifToast(n) {
+                const payload = tryParseJson(n.payload);
+                toastr.info(buildNotifText(n.type, payload), 'Notification');
+            }
+
+            function tryParseJson(str) {
+                try { return JSON.parse(str); } catch { return {}; }
+            }
+
+            $('#markAllReadBtn').click(function () {
+                $.ajax({
+                    url: '/api/Notifications/read-all', type: 'PATCH',
+                    success: function () {
+                        $('#notifBadge').hide();
+                        $('#notifList .bg-light-primary').removeClass('bg-light-primary');
+                        $('#notifList .bullet-dot').remove();
+                    }
+                });
+            });
+
+            $(document).on('click', '#notifDropdown', function () {
+                loadNotifications();
             });
         </script>
 

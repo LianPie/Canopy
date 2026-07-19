@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Canopy.Models;
+using Canopy.Services;
+using System.Text.Json;
 
 namespace Canopy.Controllers
 {
@@ -13,11 +15,13 @@ namespace Canopy.Controllers
     {
         private readonly IGroupsRepository _repo;
         private readonly IUserRepository _userRepo;
+        private readonly INotificationService _notificationService;
 
-        public GroupsController(IGroupsRepository repo, IUserRepository userRepo)
+        public GroupsController(IGroupsRepository repo, IUserRepository userRepo, INotificationService notificationService)
         {
             _repo = repo;
             _userRepo = userRepo;
+            _notificationService = notificationService;
         }
 
         private int GetUserId()
@@ -114,7 +118,7 @@ namespace Canopy.Controllers
         }
 
         [HttpPost("{id}/invite")]
-        public IActionResult Invite(int id, [FromBody] InviteUserViewModel model)
+        public async Task<IActionResult> Invite(int id, [FromBody] InviteUserViewModel model)
         {
             try
             {
@@ -139,6 +143,13 @@ namespace Canopy.Controllers
                 };
 
                 _repo.Invite(userGroup);
+
+                await _notificationService.SendAsync(
+                    target.Id,
+                    NotificationType.GroupInvitation,
+                    JsonSerializer.Serialize(new { groupId = id, groupTitle = group.Title, invitedBy = User.Identity!.Name })
+                );
+
                 return Ok();
             }
             catch (Exception)
@@ -148,7 +159,7 @@ namespace Canopy.Controllers
         }
 
         [HttpPost("invites/{userGroupId}/accept")]
-        public IActionResult Accept(int userGroupId)
+        public async Task<IActionResult> Accept(int userGroupId)
         {
             try
             {
@@ -160,6 +171,13 @@ namespace Canopy.Controllers
                 membership.IsActive = true;
 
                 _repo.UpdateMembership(membership);
+
+                await _notificationService.SendAsync(
+                    membership.InvitedById,
+                    NotificationType.GroupInvitationAccepted,
+                    JsonSerializer.Serialize(new { groupId = membership.GroupId, groupTitle = membership.Group!.Title, acceptedBy = User.Identity!.Name })
+                );
+
                 return Ok();
             }
             catch (Exception)
@@ -169,7 +187,7 @@ namespace Canopy.Controllers
         }
 
         [HttpPost("invites/{userGroupId}/decline")]
-        public IActionResult Decline(int userGroupId)
+        public async Task<IActionResult> Decline(int userGroupId)
         {
             try
             {
@@ -179,6 +197,13 @@ namespace Canopy.Controllers
                 membership.Status = InvitationStatus.Declined;
 
                 _repo.UpdateMembership(membership);
+
+                await _notificationService.SendAsync(
+                    membership.InvitedById,
+                    NotificationType.GroupInvitationDeclined,
+                    JsonSerializer.Serialize(new { groupId = membership.GroupId, groupTitle = membership.Group!.Title, declinedBy = User.Identity!.Name })
+                );
+
                 return Ok();
             }
             catch (Exception)
