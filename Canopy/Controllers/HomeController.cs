@@ -170,8 +170,8 @@ namespace Canopy.Controllers
 
             //session and cookie
             var token = model.RememberMe
-                ? _tokenService.GenerateToken(user.Id, expiryDays: 7)
-                : _tokenService.GenerateToken(user.Id);
+                ? _tokenService.GenerateToken(user.Id, user.UserName, expiryDays: 7)
+                : _tokenService.GenerateToken(user.Id, user.UserName);
 
             if (model.RememberMe)
             {

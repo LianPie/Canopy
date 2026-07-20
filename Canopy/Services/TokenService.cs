@@ -26,13 +26,14 @@ namespace Canopy.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         }
 
-        public string GenerateToken(int userId, int? expiryDays = null)
+        public string GenerateToken(int userId, string userName, int? expiryDays = null)
         {
             _logger.LogInformation($"Generating token for user {userId}");
 
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(ClaimTypes.Name, userName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("generated_at", DateTime.UtcNow.ToString())
         };

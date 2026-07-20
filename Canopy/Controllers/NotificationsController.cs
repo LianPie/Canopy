@@ -1,11 +1,8 @@
 ﻿using Canopy.Models;
 using Canopy.Repositories;
-using Canopy.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Canopy.Controllers
 {
@@ -28,10 +25,12 @@ namespace Canopy.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetPage([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var tasks = _Repo.GetAllByUser(GetUserId());
-            return Ok(tasks);
+            var userId = GetUserId();
+            var items = _Repo.GetPageByUser(userId, page, pageSize);
+            var unreadCount = page == 1 ? _Repo.GetUnreadCount(userId) : (int?)null;
+            return Ok(new { items, unreadCount, hasMore = items.Count == pageSize });
         }
 
         [HttpGet("{id}")]

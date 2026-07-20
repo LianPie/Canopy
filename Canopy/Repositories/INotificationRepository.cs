@@ -4,7 +4,8 @@ namespace Canopy.Repositories
 {
     public interface INotificationRepository
     {
-        List<Notification> GetAllByUser(int userId);
+        List<Notification> GetPageByUser(int userId, int page, int pageSize);
+        int GetUnreadCount(int userId);
         Notification? GetByIdForUser(int id, int userId);
         Notification Create(Notification notification);
         Notification Update(Notification notification);

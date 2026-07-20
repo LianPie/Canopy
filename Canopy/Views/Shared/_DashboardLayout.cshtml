@@ -12,6 +12,7 @@
 @section Head {
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <link rel="stylesheet" href="~/css/notyf.min.css" />
     @if (isRTL)
     {
         <link href="~/css/bootstrap.rtl.min.css" rel="stylesheet" />
@@ -89,6 +90,15 @@
 
         #kt_docs_ckeditor_document {
             border: 1px solid var(--bs-gray-300) !important;
+        }
+
+        @@keyframes skeleton-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .notif-skeleton .skeleton-line,
+        .notif-skeleton .skeleton-circle {
+            animation: skeleton-pulse 1.4s ease-in-out infinite;
         }
 
         .wave {
@@ -710,50 +720,129 @@
                 });
             });
         </script>
+        <script src="~/js/notyf.min.js"></script>
         <script src="~/js/signalr.min.js"></script>
         <script>
+            // ─── Notyf ───────────────────────────────────────────────────────────────
+            const notyf = new Notyf({
+                duration: 5000,
+                position: { x: 'right', y: 'top' },
+                types: [{
+                    type: 'notification',
+                    background: 'var(--bs-primary)',
+                    icon: { className: 'ki-outline ki-notification fs-4', tagName: 'i' }
+                }]
+            });
+
+            // ─── State ───────────────────────────────────────────────────────────────
+            const notif = {
+                page: 1,
+                pageSize: 10,
+                loading: false,
+                hasMore: true,
+                loaded: false,
+                unreadCount: 0
+            };
+
+            // ─── SignalR ─────────────────────────────────────────────────────────────
             const notifConnection = new signalR.HubConnectionBuilder()
                 .withUrl("/hubs/notification")
                 .withAutomaticReconnect()
                 .build();
 
             notifConnection.on("ReceiveNotification", function (n) {
-                addNotifToList(n);
-                updateBadge(1);
+                prependNotif(n);
+                setUnreadCount(notif.unreadCount + 1);
                 showNotifToast(n);
             });
 
-            notifConnection.start().then(loadNotifications);
+            notifConnection.start();
 
-            function loadNotifications() {
-                $.get('/api/Notifications', function (items) {
-                    const unread = items.filter(n => !n.isRead).length;
-                    updateBadge(unread);
-                    renderNotifList(items);
+            // ─── Open bell ───────────────────────────────────────────────────────────
+            document.getElementById('notifDropdown').closest('.app-navbar-item')
+                .querySelector('[data-kt-menu-trigger]').addEventListener('click', function () {
+                    if (!notif.loaded) {
+                        resetAndLoad();
+                    }
+                });
+
+            // ─── Infinite scroll ─────────────────────────────────────────────────────
+            document.getElementById('notifList').addEventListener('scroll', function () {
+                const el = this;
+                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20) {
+                    loadNextPage();
+                }
+            });
+
+            // ─── Mark all read ───────────────────────────────────────────────────────
+            document.getElementById('markAllReadBtn').addEventListener('click', function () {
+                $.ajax({
+                    url: '/api/Notifications/read-all', type: 'PATCH',
+                    success: function () {
+                        setUnreadCount(0);
+                        document.querySelectorAll('#notifList .notif-item.unread').forEach(el => {
+                            el.classList.remove('unread', 'bg-light-primary');
+                            el.querySelector('.bullet-dot')?.remove();
+                        });
+                    }
+                });
+            });
+
+            // ─── Load ─────────────────────────────────────────────────────────────────
+            function resetAndLoad() {
+                notif.page = 1;
+                notif.hasMore = true;
+                notif.loaded = false;
+                document.getElementById('notifList').innerHTML = '';
+                loadNextPage();
+            }
+
+            function loadNextPage() {
+                if (notif.loading || !notif.hasMore) return;
+                notif.loading = true;
+
+                showSkeletons(3);
+
+                $.get(`/api/Notifications?page=${notif.page}&pageSize=${notif.pageSize}`, function (res) {
+                    removeSkeletons();
+                    notif.loading = false;
+                    notif.hasMore = res.hasMore;
+                    notif.loaded = true;
+
+                    if (notif.page === 1 && res.unreadCount !== null) {
+                        setUnreadCount(res.unreadCount);
+                    }
+
+                    if (notif.page === 1 && res.items.length === 0) {
+                        document.getElementById('notifList').innerHTML =
+                            '<div class="text-center text-muted py-5 fs-7">No notifications</div>';
+                        return;
+                    }
+
+                    res.items.forEach(n => appendNotif(n));
+                    notif.page++;
                 });
             }
 
-            function renderNotifList(items) {
-                if (!items.length) {
-                    $('#notifList').html('<div class="text-center text-muted py-5">No notifications</div>');
-                    return;
-                }
-                let html = '';
-                items.forEach(n => { html += notifItemHtml(n); });
-                $('#notifList').html(html);
+            // ─── Render helpers ──────────────────────────────────────────────────────
+            function appendNotif(n) {
+                document.getElementById('notifList').insertAdjacentHTML('beforeend', notifItemHtml(n));
             }
 
-            function addNotifToList(n) {
-                if ($('#notifList .text-center').length) $('#notifList').html('');
-                $('#notifList').prepend(notifItemHtml(n));
+            function prependNotif(n) {
+                const list = document.getElementById('notifList');
+                const empty = list.querySelector('.text-center');
+                if (empty) empty.remove();
+                list.insertAdjacentHTML('afterbegin', notifItemHtml(n));
             }
 
             function notifItemHtml(n) {
                 const payload = tryParseJson(n.payload);
                 const text = buildNotifText(n.type, payload);
-                const dot = n.isRead ? '' : '<span class="bullet bullet-dot bg-primary me-2"></span>';
+                const dot = n.isRead ? '' : '<span class="bullet bullet-dot bg-primary me-2 flex-shrink-0"></span>';
                 const time = new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                return `<div class="d-flex align-items-center px-4 py-3 border-bottom ${n.isRead ? '' : 'bg-light-primary'}">
+                const unreadClass = n.isRead ? '' : 'unread bg-light-primary';
+                return `<div class="notif-item d-flex align-items-center px-4 py-3 border-bottom ${unreadClass}">
                     ${dot}
                     <div class="flex-grow-1">
                         <span class="fs-7">${text}</span>
@@ -769,41 +858,50 @@
                     case 2: return `<b>${p.declinedBy}</b> declined your invite to <b>${p.groupTitle}</b>`;
                     case 3: return `<b>${p.assignedBy}</b> assigned you a task: <b>${p.taskTitle}</b>`;
                     case 4: return `<b>${p.assignedBy}</b> assigned you to project <b>${p.projectTitle}</b>`;
-                    default: return p.toString();
+                    default: return JSON.stringify(p);
                 }
             }
 
-            function updateBadge(count) {
+            // ─── Skeleton ────────────────────────────────────────────────────────────
+            function showSkeletons(count) {
+                const list = document.getElementById('notifList');
+                for (let i = 0; i < count; i++) {
+                    list.insertAdjacentHTML('beforeend', `
+                        <div class="notif-skeleton d-flex align-items-center px-4 py-3 border-bottom">
+                            <div class="skeleton-circle me-3 flex-shrink-0" style="width:8px;height:8px;border-radius:50%;background:var(--bs-gray-300);"></div>
+                            <div class="flex-grow-1">
+                                <div class="skeleton-line mb-1" style="height:12px;width:75%;border-radius:4px;background:var(--bs-gray-300);"></div>
+                                <div class="skeleton-line" style="height:10px;width:35%;border-radius:4px;background:var(--bs-gray-200);"></div>
+                            </div>
+                        </div>`);
+                }
+            }
+
+            function removeSkeletons() {
+                document.querySelectorAll('#notifList .notif-skeleton').forEach(el => el.remove());
+            }
+
+            // ─── Badge ───────────────────────────────────────────────────────────────
+            function setUnreadCount(count) {
+                notif.unreadCount = count;
+                const badge = document.getElementById('notifBadge');
                 if (count > 0) {
-                    $('#notifBadge').text(count).show();
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = '';
                 } else {
-                    $('#notifBadge').hide();
+                    badge.style.display = 'none';
                 }
             }
 
+            // ─── Toast ───────────────────────────────────────────────────────────────
             function showNotifToast(n) {
                 const payload = tryParseJson(n.payload);
-                toastr.info(buildNotifText(n.type, payload), 'Notification');
+                notyf.open({ type: 'notification', message: buildNotifText(n.type, payload) });
             }
 
             function tryParseJson(str) {
                 try { return JSON.parse(str); } catch { return {}; }
             }
-
-            $('#markAllReadBtn').click(function () {
-                $.ajax({
-                    url: '/api/Notifications/read-all', type: 'PATCH',
-                    success: function () {
-                        $('#notifBadge').hide();
-                        $('#notifList .bg-light-primary').removeClass('bg-light-primary');
-                        $('#notifList .bullet-dot').remove();
-                    }
-                });
-            });
-
-            $(document).on('click', '#notifDropdown', function () {
-                loadNotifications();
-            });
         </script>
 
         @await RenderSectionAsync("Scripts", required: false)

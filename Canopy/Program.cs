@@ -1,4 +1,5 @@
 using Canopy.Data;
+using System.Security.Claims;
 using Canopy.Repositories;
 using Canopy.Repositories.TaskManager.Repositories;
 using Canopy.Services;
@@ -104,7 +105,8 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        NameClaimType = ClaimTypes.Name
     };
 
     options.Events = new JwtBearerEvents

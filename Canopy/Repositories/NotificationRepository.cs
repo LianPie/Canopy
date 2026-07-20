@@ -11,11 +11,19 @@ namespace Canopy.Repositories
         private readonly ApplicationDbContext _ctx;
         public NotificationRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
-        public List<Notification> GetAllByUser(int userId)
+        public List<Notification> GetPageByUser(int userId, int page, int pageSize)
         {
             return _ctx.Notifications
                 .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
+        }
+
+        public int GetUnreadCount(int userId)
+        {
+            return _ctx.Notifications.Count(x => x.UserId == userId && !x.IsRead);
         }
 
         public Notification? GetByIdForUser(int id, int userId)

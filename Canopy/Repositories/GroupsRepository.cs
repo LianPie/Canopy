@@ -60,6 +60,7 @@ namespace Canopy.Repositories
         public UserGroup? GetMembershipById(int userGroupId, int userId)
         {
             return _ctx.UserGroup
+                .Include(ug => ug.Group)
                 .FirstOrDefault(ug => ug.Id == userGroupId && ug.UserId == userId);
         }
 
