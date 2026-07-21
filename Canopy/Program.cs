@@ -20,11 +20,17 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-//db setup- reads connection string from appsetting.json - uses ApplicationDbContext  to interact with the db
+//db setup - uses Postgres on Railway, SQL Server locally
+var pgConn = builder.Configuration.GetConnectionString("PostgresConnection");
+var sqlConn = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+{
+    if (!string.IsNullOrEmpty(pgConn))
+        options.UseNpgsql(pgConn, x => x.MigrationsAssembly("Canopy").MigrationsHistoryTable("__EFMigrationsHistory_pg"));
+    else
+        options.UseSqlServer(sqlConn);
+});
 
 
 // Register repository
