@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -51,7 +51,7 @@ namespace Canopy.Data.Configurations
             builder.Property(t => t.DateCreated)
                 .HasColumnName("Task_DateCreated")
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(t => t.DeadLine)
                 .HasColumnName("Task_DeadLine")
@@ -88,3 +88,4 @@ namespace Canopy.Data.Configurations
         }
     }
 }
+

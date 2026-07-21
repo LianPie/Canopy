@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -42,7 +42,7 @@ namespace Canopy.Data.Configurations
             builder.Property(a => a.DateUploaded)
                    .HasColumnName("Uploaded_Date")
                    .IsRequired()
-                   .HasDefaultValueSql("GETUTCDATE()");  
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP");  
 
             builder.HasOne(a => a.Message)
                    .WithMany(m => m.MessageAttachments)

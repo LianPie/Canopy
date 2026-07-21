@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -32,16 +32,16 @@ namespace Canopy.Data.Configurations
             builder.Property(pm => pm.AddedDate)
                    .HasColumnName("Added_Date")
                    .IsRequired()
-                   .HasDefaultValueSql("GETUTCDATE()");
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            // Many‑to‑one: ProjectMember -> Project
+            // Many-to-one: ProjectMember -> Project
             builder.HasOne(pm => pm.Project)
                    .WithMany(p => p.Members)          // navigation collection on Project
                    .HasForeignKey(pm => pm.ProjectId)
                    .HasConstraintName("FK_ProjectMember_Project")
                    .OnDelete(DeleteBehavior.Cascade); // delete memberships when a project is removed
 
-            // Many‑to‑one: ProjectMember -> User
+            // Many-to-one: ProjectMember -> User
             builder.HasOne(pm => pm.User)
                    .WithMany(u => u.ProjectMemberships) // navigation collection on User
                    .HasForeignKey(pm => pm.UserId)

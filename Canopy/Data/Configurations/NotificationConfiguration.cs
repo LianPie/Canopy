@@ -42,3 +42,4 @@ namespace Canopy.Data.Configurations
         }
     }
 }
+

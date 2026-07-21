@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,7 +22,7 @@ namespace Canopy.Data.Configurations
 
             builder.Property(c => c.DateStarted)
                 .HasColumnName("Chat_DateStarted")
-                .HasDefaultValueSql("GETUTCDATE()")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .IsRequired();
 
             builder.Property(c => c.IsActive)
@@ -42,3 +42,4 @@ namespace Canopy.Data.Configurations
         }
     }
 }
+

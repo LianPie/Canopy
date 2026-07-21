@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -52,7 +52,7 @@ namespace Canopy.Data.Configurations
             builder.Property(u => u.DateCreated)
                 .HasColumnName("User_DateCreated")
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(u => u.LastLogin)
                 .HasColumnName("User_LastLogin")
@@ -87,3 +87,4 @@ namespace Canopy.Data.Configurations
         }
     }
 }
+

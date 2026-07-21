@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,7 +24,7 @@ namespace Canopy.Data.Configurations
             builder.Property(m => m.SeenDate)
                    .HasColumnName("Seen_Date")
                    .IsRequired()
-                   .HasDefaultValueSql("GETUTCDATE()");  
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP");  
 
             // Relationships (optional but recommended)
             builder.HasOne(m => m.Message)

@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,7 +34,7 @@ namespace Canopy.Data.Configurations
             builder.Property(m => m.DateCreated)
                    .HasColumnName("Message_DateCreated")
                    .IsRequired()
-                   .HasDefaultValueSql("GETUTCDATE()");
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne(m => m.User)
                    .WithMany()

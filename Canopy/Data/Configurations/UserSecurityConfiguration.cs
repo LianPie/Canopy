@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -37,7 +37,7 @@ namespace Canopy.Data.Configurations
             builder.Property(us => us.PasswordChangedDate)
                 .HasColumnName("Password_Changed_Date")
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(us => us.TwoFactorEnabled)
                 .HasColumnName("Two_Factor_Enabled")
@@ -61,11 +61,11 @@ namespace Canopy.Data.Configurations
             builder.Property(us => us.CreatedDate)
                 .HasColumnName("Created_Date")
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(us => us.ModifiedDate)
                 .HasColumnName("Modified_Date")
-                .HasDefaultValueSql("GETUTCDATE()");    
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");    
 
             builder.HasOne(us => us.User)             
                 .WithOne(x => x.UserSecurity)
@@ -80,3 +80,4 @@ namespace Canopy.Data.Configurations
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Canopy.Models;
+using Canopy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -44,7 +44,7 @@ namespace Canopy.Data.Configurations
             builder.Property(p => p.DateCreated)
                    .HasColumnName("Project_DateCreated")
                    .IsRequired()
-                   .HasDefaultValueSql("GETUTCDATE()"); // SQL Server UTC timestamp
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP"); // SQL Server UTC timestamp
 
             builder.Property(p => p.Deadline)
                    .HasColumnName("Project_Deadline")
@@ -56,9 +56,9 @@ namespace Canopy.Data.Configurations
                    .WithMany(u => u.ProjectsCreated)
                    .HasForeignKey(p => p.CreatorId)
                    .HasConstraintName("FK_Project_User")
-                   .OnDelete(DeleteBehavior.Restrict);   // don’t cascade delete projects when a user is removed
+                   .OnDelete(DeleteBehavior.Restrict);   // don�t cascade delete projects when a user is removed
 
-            // 2️⃣ Group – optional many‑to‑one
+            // 2?? Group � optional many-to-one
             builder.HasOne(p => p.Group)
                    .WithMany(g => g.Projects)
                    .HasForeignKey(p => p.GroupId)
