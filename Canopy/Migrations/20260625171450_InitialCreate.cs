@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -23,7 +23,7 @@ namespace Canopy.Migrations
                     User_Nickname = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     User_Img = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     User_Token = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    User_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    User_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     User_LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
                     User_Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
@@ -86,13 +86,13 @@ namespace Canopy.Migrations
                     Failed_Login_Attempts = table.Column<int>(type: "int", nullable: false),
                     Lockout_Until = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Last_Failed_Attempt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Password_Changed_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    Password_Changed_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Two_Factor_Enabled = table.Column<bool>(type: "bit", nullable: false),
                     Two_Factor_Secret = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Recovery_Codes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Security_Questions_Answered = table.Column<bool>(type: "bit", nullable: false),
-                    Created_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    Modified_Date = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETUTCDATE()")
+                    Created_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    Modified_Date = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -112,7 +112,7 @@ namespace Canopy.Migrations
                     Chat_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Chat_Group = table.Column<int>(type: "int", nullable: false),
-                    Chat_DateStarted = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    Chat_DateStarted = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Chat_IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -137,7 +137,7 @@ namespace Canopy.Migrations
                     Project_Status = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     Project_Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Project_Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Project_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    Project_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Project_Deadline = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -205,7 +205,7 @@ namespace Canopy.Migrations
                     Message_User = table.Column<int>(type: "int", nullable: false),
                     Message_Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Message_Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Message_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    Message_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -236,7 +236,7 @@ namespace Canopy.Migrations
                     Task_Group = table.Column<int>(type: "int", nullable: true),
                     Task_Project = table.Column<int>(type: "int", nullable: true),
                     Task_AssignedTo = table.Column<int>(type: "int", nullable: false),
-                    Task_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    Task_DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Task_DeadLine = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -277,7 +277,7 @@ namespace Canopy.Migrations
                     Project_Id = table.Column<int>(type: "int", nullable: false),
                     User_Id = table.Column<int>(type: "int", nullable: false),
                     Is_Active = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    Added_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    Added_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -307,7 +307,7 @@ namespace Canopy.Migrations
                     File_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     File_Size_Bytes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Mime_Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Uploaded_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    Uploaded_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -326,7 +326,7 @@ namespace Canopy.Migrations
                 {
                     Message_Id = table.Column<int>(type: "int", nullable: false),
                     User_Id = table.Column<int>(type: "int", nullable: false),
-                    Seen_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    Seen_Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -511,3 +511,4 @@ namespace Canopy.Migrations
         }
     }
 }
+
