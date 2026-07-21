@@ -4,9 +4,20 @@
     var isRTL = requestCulture?.RequestCulture.Culture.Name == "fa";
 }
 <!DOCTYPE html>
-<html lang="@requestCulture?.RequestCulture.Culture.Name">
+<html lang="@requestCulture?.RequestCulture.Culture.Name" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
+    <script>
+        var t = localStorage.getItem('data-bs-theme') || 'dark';
+        document.documentElement.setAttribute('data-bs-theme', t);
+        localStorage.setItem('data-bs-theme', t);
+        localStorage.setItem('data-bs-theme-mode', t);
+    </script>
+    <style>
+        html[data-kt-theme-mode-switching] *, html[data-kt-theme-mode-switching] *::before, html[data-kt-theme-mode-switching] *::after {
+            transition: none !important;
+        }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Canopy</title>
     <script type="importmap"></script>
