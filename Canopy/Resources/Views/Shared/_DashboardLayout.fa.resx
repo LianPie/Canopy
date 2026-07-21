@@ -141,4 +141,31 @@
   <data name="7_groupsMenu" xml:space="preserve">
     <value>گروه ها</value>
   </data>
+  <data name="NotifGroupInvite" xml:space="preserve">
+    <value>{0} شما را به گروه {1} دعوت کرد</value>
+  </data>
+  <data name="NotifInviteAccepted" xml:space="preserve">
+    <value>{0} دعوت شما به {1} را پذیرفت</value>
+  </data>
+  <data name="NotifInviteDeclined" xml:space="preserve">
+    <value>{0} دعوت شما به {1} را رد کرد</value>
+  </data>
+  <data name="NotifTaskAssigned" xml:space="preserve">
+    <value>{0} یک وظیفه به شما اختصاص داد: {1}</value>
+  </data>
+  <data name="NotifProjectAssigned" xml:space="preserve">
+    <value>{0} شما را به پروژه {1} اضافه کرد</value>
+  </data>
+  <data name="NotifFallback" xml:space="preserve">
+    <value>یک اعلان جدید دارید</value>
+  </data>
+  <data name="NotifMarkAllRead" xml:space="preserve">
+    <value>همه را خوانده شده علامت بزن</value>
+  </data>
+  <data name="NotifTitle" xml:space="preserve">
+    <value>اعلان‌ها</value>
+  </data>
+  <data name="NotifEmpty" xml:space="preserve">
+    <value>اعلانی وجود ندارد</value>
+  </data>
 </root>

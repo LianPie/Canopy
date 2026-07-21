@@ -316,8 +316,8 @@
                                 <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true" id="notifDropdown">
                                     <div class="d-flex flex-column bgi-no-repeat rounded-top" style="padding:16px;">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h3 class="text-white fw-semibold fs-5 mb-0">Notifications</h3>
-                                            <button class="btn btn-sm btn-light-primary py-1 px-2 fs-8" id="markAllReadBtn">Mark all read</button>
+                                            <h3 class="text-white fw-semibold fs-5 mb-0">@V["NotifTitle"]</h3>
+                                            <button class="btn btn-sm btn-light-primary py-1 px-2 fs-8" id="markAllReadBtn">@V["NotifMarkAllRead"]</button>
                                         </div>
                                     </div>
                                     <div class="tab-content">
@@ -723,6 +723,17 @@
         <script src="~/js/notyf.min.js"></script>
         <script src="~/js/signalr.min.js"></script>
         <script>
+            const LN = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
+                groupInvite     = V["NotifGroupInvite"].Value,
+                inviteAccepted  = V["NotifInviteAccepted"].Value,
+                inviteDeclined  = V["NotifInviteDeclined"].Value,
+                taskAssigned    = V["NotifTaskAssigned"].Value,
+                projectAssigned = V["NotifProjectAssigned"].Value,
+                fallback        = V["NotifFallback"].Value,
+                empty           = V["NotifEmpty"].Value
+            }));
+        </script>
+        <script>
             // ─── Notyf ───────────────────────────────────────────────────────────────
             const notyf = new Notyf({
                 duration: 5000,
@@ -815,7 +826,7 @@
 
                     if (notif.page === 1 && res.items.length === 0) {
                         document.getElementById('notifList').innerHTML =
-                            '<div class="text-center text-muted py-5 fs-7">No notifications</div>';
+                            `<div class="text-center text-muted py-5 fs-7">${LN.empty}</div>`;
                         return;
                     }
 
@@ -853,13 +864,17 @@
 
             function buildNotifText(type, p) {
                 switch (type) {
-                    case 0: return `<b>${p.invitedBy}</b> invited you to join <b>${p.groupTitle}</b>`;
-                    case 1: return `<b>${p.acceptedBy}</b> accepted your invite to <b>${p.groupTitle}</b>`;
-                    case 2: return `<b>${p.declinedBy}</b> declined your invite to <b>${p.groupTitle}</b>`;
-                    case 3: return `<b>${p.assignedBy}</b> assigned you a task: <b>${p.taskTitle}</b>`;
-                    case 4: return `<b>${p.assignedBy}</b> assigned you to project <b>${p.projectTitle}</b>`;
-                    default: return JSON.stringify(p);
+                    case 0: return fmt(LN.groupInvite,     `<b>${p.invitedBy}</b>`,  `<b>${p.groupTitle}</b>`);
+                    case 1: return fmt(LN.inviteAccepted,  `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
+                    case 2: return fmt(LN.inviteDeclined,  `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
+                    case 3: return fmt(LN.taskAssigned,    `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
+                    case 4: return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
+                    default: return LN.fallback;
                 }
+            }
+
+            function fmt(template, ...args) {
+                return template.replace(/\{(\d+)\}/g, (_, i) => args[i] ?? '');
             }
 
             // ─── Skeleton ────────────────────────────────────────────────────────────
@@ -901,6 +916,39 @@
 
             function tryParseJson(str) {
                 try { return JSON.parse(str); } catch { return {}; }
+            }
+        </script>
+
+        <script>
+            // ─── Web Push registration ────────────────────────────────────────────────
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                navigator.serviceWorker.register('/sw.js').then(async function (reg) {
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') return;
+
+                    const existing = await reg.pushManager.getSubscription();
+                    if (existing) return; // already subscribed
+
+                    const { publicKey } = await fetch('/api/push/public-key').then(r => r.json());
+
+                    const subscription = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(publicKey)
+                    });
+
+                    await fetch('/api/push/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(subscription)
+                    });
+                });
+            }
+
+            function urlBase64ToUint8Array(base64String) {
+                const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+                const raw = atob(base64);
+                return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
             }
         </script>
 

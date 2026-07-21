@@ -124,6 +124,7 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 

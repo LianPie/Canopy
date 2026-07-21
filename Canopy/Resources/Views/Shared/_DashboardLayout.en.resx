@@ -141,4 +141,31 @@
   <data name="7_groupsMenu" xml:space="preserve">
     <value>Groups</value>
   </data>
+  <data name="NotifGroupInvite" xml:space="preserve">
+    <value>{0} invited you to join {1}</value>
+  </data>
+  <data name="NotifInviteAccepted" xml:space="preserve">
+    <value>{0} accepted your invite to {1}</value>
+  </data>
+  <data name="NotifInviteDeclined" xml:space="preserve">
+    <value>{0} declined your invite to {1}</value>
+  </data>
+  <data name="NotifTaskAssigned" xml:space="preserve">
+    <value>{0} assigned you a task: {1}</value>
+  </data>
+  <data name="NotifProjectAssigned" xml:space="preserve">
+    <value>{0} assigned you to project {1}</value>
+  </data>
+  <data name="NotifFallback" xml:space="preserve">
+    <value>You have a new notification</value>
+  </data>
+  <data name="NotifMarkAllRead" xml:space="preserve">
+    <value>Mark all read</value>
+  </data>
+  <data name="NotifTitle" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="NotifEmpty" xml:space="preserve">
+    <value>No notifications</value>
+  </data>
 </root>
