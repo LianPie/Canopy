@@ -24,6 +24,8 @@ builder.Services.AddControllersWithViews()
 var pgConn = builder.Configuration.GetConnectionString("PostgresConnection");
 var sqlConn = builder.Configuration.GetConnectionString("DefaultConnection");
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     if (!string.IsNullOrEmpty(pgConn))
