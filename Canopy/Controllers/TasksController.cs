@@ -36,6 +36,22 @@ namespace Canopy.Controllers
             return Ok(tasks);
         }
 
+        [HttpGet("by-date")]
+        public IActionResult GetByDate([FromQuery] string date)
+        {
+            if (!DateTime.TryParse(date, out var parsed))
+                return BadRequest("Invalid date");
+            var tasks = _taskRepo.GetByDate(GetUserId(), parsed);
+            return Ok(tasks);
+        }
+
+        [HttpGet("no-date")]
+        public IActionResult GetWithoutDate()
+        {
+            var tasks = _taskRepo.GetWithoutDate(GetUserId());
+            return Ok(tasks);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {

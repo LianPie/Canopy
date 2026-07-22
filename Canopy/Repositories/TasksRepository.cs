@@ -20,6 +20,24 @@ namespace Canopy.Repositories
                 .ToList();
         }
 
+        public List<PlannedTask> GetByDate(int userId, DateTime date)
+        {
+            return _ctx.PlannedTask
+                .Include(p => p.Project)
+                .Include(p => p.Group)
+                .Where(x => x.AssignedToUID == userId && x.DeadLine.HasValue && x.DeadLine.Value.Date == date.Date)
+                .ToList();
+        }
+
+        public List<PlannedTask> GetWithoutDate(int userId)
+        {
+            return _ctx.PlannedTask
+                .Include(p => p.Project)
+                .Include(p => p.Group)
+                .Where(x => x.AssignedToUID == userId && !x.DeadLine.HasValue)
+                .ToList();
+        }
+
         public PlannedTask? GetByIdForUser(int id, int userId)
         {
             return _ctx.PlannedTask

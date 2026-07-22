@@ -1,7 +1,7 @@
-﻿@namespace Canopy.Resources
+@namespace Canopy.Resources
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
-@using Microsoft.Extensions.Localization 
+@using Microsoft.Extensions.Localization
 
 @using Canopy.Models
 @model List<PlannedTask>
@@ -10,140 +10,173 @@
 
 @{
     Layout = "~/views/Shared/_DashboardLayout.cshtml";
-
-
 }
 
-<div class="toolbar d-flex justify-content-between mb-5">
-    <h3>@_localizer["TableTitle"]</h3>
-    <a href="/Dashboard/TaskForm" class="btn btn-primary">
-        <i class="ki-outline ki-plus fs-2"></i> @_localizer["NewTaskTitle"]
+<style>
+    .date-strip-wrapper {
+        position: relative;
+    }
+
+    .date-strip {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding: 4px 2px 8px;
+        scrollbar-width: none;
+    }
+
+    .date-strip::-webkit-scrollbar { display: none; }
+
+    .date-chip {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        background: var(--bs-gray-100);
+        transition: all 0.15s ease;
+        min-width: 56px;
+        user-select: none;
+    }
+
+    .date-chip:hover { background: var(--bs-gray-200); }
+
+    .date-chip.active {
+        background: var(--bs-primary);
+        color: #fff;
+    }
+
+    .date-chip .chip-day {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        opacity: 0.7;
+    }
+
+    .date-chip .chip-date {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .date-chip .chip-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--bs-primary);
+        margin-top: 4px;
+    }
+
+    .date-chip.active .chip-dot { background: rgba(255,255,255,0.7); }
+    .date-chip.active .chip-day { opacity: 0.8; }
+
+    .task-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--bs-gray-200);
+    }
+
+    .task-item:last-child { border-bottom: none; }
+
+    .task-check {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--bs-gray-400);
+        flex-shrink: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+
+    .task-check.done {
+        background: var(--bs-success);
+        border-color: var(--bs-success);
+    }
+
+    .task-check.done::after {
+        content: '';
+        width: 5px;
+        height: 9px;
+        border: 2px solid #fff;
+        border-top: none;
+        border-left: none;
+        transform: rotate(45deg) translateY(-1px);
+    }
+
+    .task-title.done { text-decoration: line-through; opacity: 0.5; }
+
+    .task-meta { font-size: 12px; color: var(--bs-gray-500); }
+
+    .task-actions { margin-left: auto; display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+    .task-item:hover .task-actions { opacity: 1; }
+
+    .section-header {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--bs-gray-500);
+        margin: 20px 0 8px;
+    }
+
+    .tasks-skeleton .sk-line {
+        height: 14px;
+        border-radius: 4px;
+        background: var(--bs-gray-200);
+        animation: sk-pulse 1.4s ease-in-out infinite;
+        margin-bottom: 10px;
+    }
+
+    @@keyframes sk-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+
+    .empty-day {
+        text-align: center;
+        padding: 40px 0;
+        color: var(--bs-gray-400);
+    }
+
+    .empty-day i { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+</style>
+
+<div class="toolbar d-flex justify-content-between align-items-center mb-5">
+    <h3 class="mb-0">@_localizer["TableTitle"]</h3>
+    <a href="/Dashboard/TaskForm" class="btn btn-primary btn-sm">
+        <i class="ki-outline ki-plus fs-4"></i> @_localizer["NewTaskTitle"]
     </a>
 </div>
 
-<table id="tasksTable" class="table table-row-dashed table-hover">
-    <thead>
-        <tr class="fw-bold text-muted">
-            <th>@_localizer["TitleColumn"]</th>
-            <th>@_localizer["StatusColumn"]</th>
-            <th>@_localizer["DeadlineColumn"]</th>
-            <th>@_localizer["ProjectColumn"]</th>
-            <th>@_localizer["GroupsColumn"]</th>
-            <th class="text-end">@_localizer["ActionsColumn"]</th>
-        </tr>
-    </thead>
-    <tbody id="taskTableBody">
-        @if (!Model.Any())
-        {
-            <tr>
-                <td colspan="4" class="text-center py-10">
-                    <div class="text-muted">
-                        <i class="ki-outline ki-element-11 fs-2tx mb-3"></i>
-                        <p>@_localizer["NoTasks"]</p>
-                        <a href="/Dashboard/TaskForm" class="btn btn-sm btn-primary">@_localizer["AddFirstTask"]</a>
-                    </div>
-                </td>
-            </tr>
-        }
-        @foreach (var task in Model)
-        {
-            <tr>
-                <td>
-                    <span class="fw-bold">@task.Title</span>
-                    @if (!string.IsNullOrEmpty(task.Description))
-                    {
-                        <br />
-                        <small class="text-muted">@task.Description</small>
-                    }
-                </td>
-                <td>
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="status-cell">
-                            @if (task.Status)
-                            {
-                                <span class="badge badge-light-success fs-7">
-                                    <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Done"]
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-light-warning fs-7">
-                                    <i class="ki-outline ki-information fs-6 me-1"></i> @_localizer["Pending"]
-                                </span>
-                            }
-                        </div>
-                        <input type="checkbox"
-                               class="form-check-input task-status-check"
-                               data-task-id="@task.Id"
-                               @(task.Status ? "checked" : "")
-                               onchange="toggleTaskStatus(this)" />
-                    </div>
-                </td>
-                <td>
-                    @if (task.DeadLine.HasValue)
-                    {
-                        var isOverdue = task.DeadLine.Value.Date < DateTime.Now.Date && !task.Status;
-                        <span class="@(isOverdue ? "text-danger fw-bold" : "")">
-                            <i class="ki-outline ki-calendar fs-6 me-1"></i>
-                            @task.DeadLine.Value.ToString("MMM dd, yyyy")
-                            @if (isOverdue)
-                            {
-                                <span class="badge badge-light-danger fs-8 ms-2">@_localizer["Overdue"]</span>
-                            }
-                            @if (task.DeadLine.Value.Date == DateTime.Today)
-                            {
-                                <span class="badge badge-light-warning fs-8 ms-2">@_localizer["Today"]</span>
-                            }
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
-                <td class="align-content-center">
-                    @if (task.Project != null)
-                    {
-                        <span class="fw-bold">@task.Project?.Title</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
-                <td class="align-content-center">
+<!-- Date strip -->
+<div class="date-strip-wrapper mb-4">
+    <div class="date-strip" id="dateStrip"></div>
+</div>
 
-                    @if (task.Group != null)
-                    {
-                        <span class="fw-bold">@task.Group?.Title</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
-                <td class="text-end">
-                    <a href="/Dashboard/TaskForm?id=@task.Id"
-                       class="btn btn-sm btn-icon btn-light-primary me-1"
-                       data-bs-toggle="tooltip" title="@_localizer["Edit"]">
-                        <i class="ki-outline ki-pencil fs-2"></i>
-                    </a>
-                    <a class="btn btn-sm btn-icon btn-light-danger"
-                       data-bs-toggle="tooltip" title="@_localizer["Delete"]"
-                       onclick="showDeleteModal(@task.Id, '@task.Title')">
-                        <i class="ki-outline ki-trash fs-2"></i>
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<!-- Task list -->
+<div id="taskList"></div>
 
+<!-- No-date section -->
+<div id="nodateSection">
+    <div class="section-header">@_localizer["NoDeadline"]</div>
+    <div id="nodateList"><div class="tasks-skeleton"><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:45%"></div></div></div>
+</div>
+
+<!-- Delete modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Delete Task</h5>
+                <h5 class="modal-title">@_localizer["DeleteTitle"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -151,67 +184,177 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
-                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">@_localizer["Delete"]</a>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">@_localizer["Delete"]</button>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        $("#tasksMenu").addClass("active");
+<script>
+    $("#tasksMenu").addClass("active");
 
-        function showDeleteModal(id, title) {
-            $('#deleteTaskTitle').text(title);
-            $('#confirmDeleteBtn').attr('onclick', 'deleteTask(' + id + ')' );
-            $('#deleteModal').modal('show');
+    // ─── State ───────────────────────────────────────────────────────────────
+    const DAY_MS = 86400000;
+    const today = new Date(); today.setHours(0,0,0,0);
+    let activeDate = today;
+    let loadedDates = new Set();
+    let taskCache = {};
+
+    // ─── Build date strip ────────────────────────────────────────────────────
+    const strip = document.getElementById('dateStrip');
+    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const DAYS_FA = ['یک','دو','سه','چهار','پنج','جمعه','شنبه'];
+
+    function buildStrip() {
+        strip.innerHTML = '';
+        for (let i = -30; i <= 30; i++) {
+            const d = new Date(today.getTime() + i * DAY_MS);
+            const chip = document.createElement('div');
+            chip.className = 'date-chip' + (i === 0 ? ' active' : '');
+            chip.dataset.date = toIso(d);
+            chip.innerHTML = `
+                <span class="chip-day">${DAYS[d.getDay()]}</span>
+                <span class="chip-date">${d.getDate()}</span>
+                <span class="chip-dot" style="visibility:hidden" id="dot-${toIso(d)}"></span>`;
+            chip.addEventListener('click', () => selectDate(d));
+            strip.appendChild(chip);
         }
+        // Scroll today into center
+        const todayChip = strip.querySelector('.active');
+        if (todayChip) todayChip.scrollIntoView({ inline: 'center', behavior: 'instant' });
+    }
 
-        function deleteTask(id) {
-                $.ajax({
-                    url: '/api/tasks/' + id,
-                    type: 'DELETE',
-                    success: function() {
-                        location.reload();
-                    },
-                    error: function() {
-                        toastr.error('Failed to delete task');
-                    }
-                });
+    // ─── Select date ─────────────────────────────────────────────────────────
+    function selectDate(date) {
+        activeDate = date;
+        strip.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+        const chip = strip.querySelector(`[data-date="${toIso(date)}"]`);
+        if (chip) { chip.classList.add('active'); chip.scrollIntoView({ inline: 'center', behavior: 'smooth' }); }
+        loadDateTasks(date);
+    }
+
+    // ─── Load tasks for date ──────────────────────────────────────────────────
+    function loadDateTasks(date) {
+        const iso = toIso(date);
+        if (taskCache[iso]) { renderDateTasks(taskCache[iso]); return; }
+
+        document.getElementById('taskList').innerHTML = `
+            <div class="tasks-skeleton">
+                <div class="sk-line" style="width:70%"></div>
+                <div class="sk-line" style="width:50%"></div>
+                <div class="sk-line" style="width:60%"></div>
+            </div>`;
+
+        $.get(`/api/tasks/by-date?date=${iso}`, function(tasks) {
+            taskCache[iso] = tasks;
+            renderDateTasks(tasks);
+            // Show dot if has tasks
+            const dot = document.getElementById(`dot-${iso}`);
+            if (dot && tasks.length > 0) dot.style.visibility = 'visible';
+        });
+    }
+
+    function renderDateTasks(tasks) {
+        const list = document.getElementById('taskList');
+        if (!tasks.length) {
+            list.innerHTML = `<div class="empty-day"><i class="ki-outline ki-calendar"></i>@_localizer["NoTasksToday"]</div>`;
+            return;
         }
+        list.innerHTML = tasks.map(taskHtml).join('');
+    }
 
-        function toggleTaskStatus(checkbox) {
-            var taskId = $(checkbox).data('task-id');
-            var isDone = $(checkbox).is(':checked');
+    // ─── Load no-date tasks ───────────────────────────────────────────────────
+    function loadNodateTasks() {
+        $.get('/api/tasks/no-date', function(tasks) {
+            const list = document.getElementById('nodateList');
+            if (!tasks.length) {
+                list.innerHTML = `<div class="text-muted fs-7 py-3">@_localizer["NoTasks"]</div>`;
+                return;
+            }
+            list.innerHTML = tasks.map(taskHtml).join('');
+        });
+    }
 
-            var $row = $(checkbox).closest('td');
-            var $statusCell = $row.find('.status-cell');
+    // ─── Task HTML ────────────────────────────────────────────────────────────
+    function taskHtml(t) {
+        const done = t.status;
+        const overdue = t.deadLine && new Date(t.deadLine) < today && !done;
+        const meta = [
+            t.project ? `<i class="ki-outline ki-element-11 fs-8 me-1"></i>${t.project.title}` : '',
+            t.group   ? `<i class="ki-outline ki-people fs-8 me-1"></i>${t.group.title}` : '',
+            overdue   ? `<span class="text-danger">@_localizer["Overdue"]</span>` : ''
+        ].filter(Boolean).join(' &nbsp;·&nbsp; ');
 
-            $statusCell.html('<span class="badge badge-light-info">...</span>');
+        return `<div class="task-item" id="task-${t.id}">
+            <div class="task-check ${done ? 'done' : ''}" onclick="toggleStatus(${t.id}, this)"></div>
+            <div class="flex-grow-1 overflow-hidden">
+                <div class="task-title fw-semibold text-truncate ${done ? 'done' : ''}">${escHtml(t.title)}</div>
+                ${meta ? `<div class="task-meta mt-1">${meta}</div>` : ''}
+            </div>
+            <div class="task-actions">
+                <a href="/Dashboard/TaskForm?id=${t.id}" class="btn btn-icon btn-sm btn-light-primary">
+                    <i class="ki-outline ki-pencil fs-5"></i>
+                </a>
+                <button class="btn btn-icon btn-sm btn-light-danger" onclick="showDeleteModal(${t.id}, '${escJs(t.title)}')">
+                    <i class="ki-outline ki-trash fs-5"></i>
+                </button>
+            </div>
+        </div>`;
+    }
 
-            $.ajax({
-                url: '/api/tasks/' + taskId + '/status',
-                type: 'PATCH',
-                contentType: 'application/json',
-                 success: function() {
-                    if (isDone) {
-                        $statusCell.html(`
-                            <span class="badge badge-light-success fs-7">
-                                <i class="ki-outline ki-check-circle fs-6 me-1"></i> @_localizer["Done"]
-                            </span>
-                        `);
-                    } else {
-                        $statusCell.html(`
-                            <span class="badge badge-light-warning fs-7">
-                                <i class="ki-outline ki-information fs-6 me-1"></i> @_localizer["Pending"]
-                            </span>
-                        `);
-                    }
-                },
-                error: function() {
-                    $(checkbox).prop('checked', !isDone);
+    // ─── Toggle status ────────────────────────────────────────────────────────
+    function toggleStatus(id, el) {
+        const isDone = !el.classList.contains('done');
+        el.classList.toggle('done', isDone);
+        const titleEl = el.closest('.task-item').querySelector('.task-title');
+        titleEl.classList.toggle('done', isDone);
+
+        $.ajax({
+            url: `/api/tasks/${id}/status`,
+            type: 'PATCH',
+            error: function() {
+                el.classList.toggle('done', !isDone);
+                titleEl.classList.toggle('done', !isDone);
+            }
+        });
+
+        // Invalidate cache for active date so it refreshes next time
+        delete taskCache[toIso(activeDate)];
+    }
+
+    // ─── Delete ───────────────────────────────────────────────────────────────
+    function showDeleteModal(id, title) {
+        document.getElementById('deleteTaskTitle').textContent = title;
+        document.getElementById('confirmDeleteBtn').onclick = () => deleteTask(id);
+        $('#deleteModal').modal('show');
+    }
+
+    function deleteTask(id) {
+        $.ajax({
+            url: `/api/tasks/${id}`,
+            type: 'DELETE',
+            success: function() {
+                $('#deleteModal').modal('hide');
+                document.getElementById(`task-${id}`)?.remove();
+                delete taskCache[toIso(activeDate)];
+                if (!document.querySelector('#taskList .task-item')) {
+                    document.getElementById('taskList').innerHTML =
+                        `<div class="empty-day"><i class="ki-outline ki-calendar"></i>@_localizer["NoTasksToday"]</div>`;
                 }
-            });
-        }
-    </script>
+            },
+            error: function() { toastr.error('@_localizer["ErrDeleteTask"]'); }
+        });
+    }
+
+    // ─── Utils ────────────────────────────────────────────────────────────────
+    function toIso(d) { return d.toISOString().split('T')[0]; }
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function escJs(s) { return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    buildStrip();
+    loadDateTasks(today);
+    loadNodateTasks();
+</script>
 }

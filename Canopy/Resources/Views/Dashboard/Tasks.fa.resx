@@ -204,4 +204,10 @@
   <data name="Yes" xml:space="preserve">
     <value>بله</value>
   </data>
+  <data name="NoDeadline" xml:space="preserve">
+    <value>بدون تاریخ</value>
+  </data>
+  <data name="NoTasksToday" xml:space="preserve">
+    <value>تسکی برای این روز وجود ندارد</value>
+  </data>
 </root>
