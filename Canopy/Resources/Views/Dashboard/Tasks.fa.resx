@@ -210,4 +210,7 @@
   <data name="NoTasksToday" xml:space="preserve">
     <value>تسکی برای این روز وجود ندارد</value>
   </data>
+  <data name="DayNames" xml:space="preserve">
+    <value>یک‌شنبه,دوشنبه,سه‌شنبه,چهارشنبه,پنجشنبه,جمعه,شنبه</value>
+  </data>
 </root>

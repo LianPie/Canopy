@@ -203,8 +203,16 @@
 
     // ─── Build date strip ────────────────────────────────────────────────────
     const strip = document.getElementById('dateStrip');
-    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const DAYS_FA = ['یک','دو','سه','چهار','پنج','جمعه','شنبه'];
+    const DAYS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["DayNames"].Value.Split(',')));
+    const LOCALE = '@System.Globalization.CultureInfo.CurrentCulture.Name';
+
+    const _dayFmt = LOCALE.startsWith('fa')
+        ? new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric' })
+        : null;
+
+    function chipDate(d) {
+        return _dayFmt ? _dayFmt.format(d) : d.getDate();
+    }
 
     function buildStrip() {
         strip.innerHTML = '';
@@ -215,7 +223,7 @@
             chip.dataset.date = toIso(d);
             chip.innerHTML = `
                 <span class="chip-day">${DAYS[d.getDay()]}</span>
-                <span class="chip-date">${d.getDate()}</span>
+                <span class="chip-date">${chipDate(d)}</span>
                 <span class="chip-dot" style="visibility:hidden" id="dot-${toIso(d)}"></span>`;
             chip.addEventListener('click', () => selectDate(d));
             strip.appendChild(chip);
@@ -348,7 +356,11 @@
     }
 
     // ─── Utils ────────────────────────────────────────────────────────────────
-    function toIso(d) { return d.toISOString().split('T')[0]; }
+    function toIso(d) {
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        return `${d.getFullYear()}-${m}-${day}`;
+    }
     function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
     function escJs(s) { return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 

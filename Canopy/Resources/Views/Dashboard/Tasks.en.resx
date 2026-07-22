@@ -210,4 +210,7 @@
   <data name="NoTasksToday" xml:space="preserve">
     <value>No tasks for this day</value>
   </data>
+  <data name="DayNames" xml:space="preserve">
+    <value>Sun,Mon,Tue,Wed,Thu,Fri,Sat</value>
+  </data>
 </root>

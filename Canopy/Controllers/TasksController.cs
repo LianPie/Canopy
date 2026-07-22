@@ -39,7 +39,7 @@ namespace Canopy.Controllers
         [HttpGet("by-date")]
         public IActionResult GetByDate([FromQuery] string date)
         {
-            if (!DateTime.TryParse(date, out var parsed))
+            if (!DateTime.TryParse(date, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var parsed))
                 return BadRequest("Invalid date");
             var tasks = _taskRepo.GetByDate(GetUserId(), parsed);
             return Ok(tasks);
