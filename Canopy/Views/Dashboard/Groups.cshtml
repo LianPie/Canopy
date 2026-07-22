@@ -116,6 +116,53 @@
         height: 100%;
         color: var(--bs-text-muted);
     }
+
+    #mobileBackBar {
+        background: var(--bs-card-bg, #fff);
+        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+        align-items: center;
+    }
+
+    /* ── Mobile ────────────────────────────────────────── */
+    @@media (max-width: 767px) {
+        .groups-layout {
+            grid-template-columns: 1fr;
+            height: auto;
+            min-height: calc(100vh - 180px);
+        }
+
+        .groups-layout .g-panel {
+            height: calc(100vh - 220px);
+        }
+
+        /* detail panel hidden until a group is picked on mobile */
+        .groups-layout .g-detail-panel {
+            display: none;
+            height: auto;
+        }
+
+        .groups-layout .g-detail-panel.mobile-active {
+            display: grid;
+        }
+
+        /* stack projects + tasks vertically on mobile */
+        .groups-layout .g-detail-panel.split {
+            grid-template-columns: 1fr;
+        }
+
+        .groups-layout .g-detail-col + .g-detail-col {
+            border-left: none;
+            border-top: 1px solid var(--bs-border-color, #e4e6ef);
+        }
+
+        .groups-layout .g-detail-col {
+            min-height: 300px;
+        }
+
+        #col2 {
+            display: flex !important;
+        }
+    }
 </style>
 
 <div class="toolbar d-flex justify-content-between align-items-center mb-4">
@@ -182,6 +229,14 @@
 
     <!-- RIGHT: Detail Panel (always 2 columns) -->
     <div class="g-detail-panel" id="detailPanel">
+
+        <!-- Mobile back bar -->
+        <div id="mobileBackBar" class="g-panel-header" style="display:none; grid-column:1/-1;">
+            <button class="btn btn-sm btn-light" id="mobileBackBtn">
+                <i class="ki-outline ki-arrow-left fs-4 me-1"></i> @_localizer["MyGroups"]
+            </button>
+            <span class="fw-bold ms-3" id="mobileGroupTitle"></span>
+        </div>
 
         <!-- Col 1: Projects list -->
         <div class="g-detail-col" id="col1">
@@ -500,7 +555,6 @@
         $(`#group_${groupId}`).addClass('active');
         activeGroupMembers = groupMembers[groupId] || [];
 
-
         // show both columns
         $('#noGroupSelected').hide();
         $('#noGroupSelected2').hide();
@@ -512,9 +566,25 @@
         $('#tasksColMeta').text('');
         $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
 
+        // Mobile: hide group list, show detail panel
+        if (window.innerWidth < 768) {
+            $('.g-panel').first().hide();
+            $('#detailPanel').addClass('mobile-active');
+            $('#mobileBackBar').css('display', 'flex');
+            $('#mobileGroupTitle').text(title);
+        }
+
         loadGroupProjects(groupId);
         loadAllGroupTasks(groupId);
     }
+
+    // ── Mobile back button ────────────────────────────────────
+    $('#mobileBackBtn').click(function () {
+        $('.g-panel').first().show();
+        $('#detailPanel').removeClass('mobile-active');
+        $('#mobileBackBar').hide();
+        activeGroupId = null;
+    });
 
     function loadGroupProjects(groupId) {
         $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
@@ -1087,11 +1157,13 @@
                     if (activeGroupId == id) {
                         activeGroupId = null;
                         activeProjectId = null;
-                        $('#detailPanel').removeClass('split');
+                        $('#detailPanel').removeClass('split').removeClass('mobile-active');
                         $('#col2').hide();
                         $('#projectsCol').hide();
                         $('#tasksCol').hide();
                         $('#noGroupSelected').show();
+                        $('#mobileBackBar').hide();
+                        if (window.innerWidth < 768) $('.g-panel').first().show();
                     }
                     toastr.success(L.groupDeleted);
                 },
