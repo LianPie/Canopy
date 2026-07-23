@@ -271,7 +271,7 @@
             <div id="kt_app_header" class="app-header" style="background-color: var(--bs-app-header-base-bg-color);">
                 <div class="app-container container-fluid d-flex align-items-stretch justify-content-between"
                      id="kt_app_header_container">
-                    <div class="d-flex align-items-center d-lg-none ms-n3 me-1 me-md-2" title="مشاهده sidebar menu">
+                    <div class="d-flex align-items-center d-lg-none ms-n3 me-1 me-md-2" title="sidebar menu">
                         <div class="btn btn-icon btn-active-color-primary w-35px h-35px"
                              id="kt_app_sidebar_mobile_toggle">
                             <i class="ki-duotone ki-abstract-14 fs-2 fs-md-1">
@@ -387,17 +387,25 @@
                                 </div>
                             </div>
                             <div class="app-navbar-item ms-1 ms-md-3" id="kt_header_user_menu_toggle">
-                                <div class="cursor-pointer symbol symbol-30px symbol-md-40px"
+                                <div class=" cursor-pointer symbol symbol-30px symbol-md-40px"
                                      data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                                      data-kt-menu-placement="bottom-end">
-                                    <img src="/Media/User/User.jpg" />
+                                    <i class="ki-duotone ki-profile-circle fs-2x">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
                                 </div>
                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
                                      data-kt-menu="true">
                                     <div class="menu-item px-3">
                                         <div class="menu-content d-flex align-items-center px-3">
                                             <div class="symbol symbol-50px me-5">
-                                                <img src="/Media/User/User.jpg" />
+                                                <i class="ki-duotone ki-profile-circle fs-2x">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
                                             </div>
                                             <div class="d-flex flex-column">
                                                 <div class="fw-bold d-flex align-items-center fs-5">
@@ -474,8 +482,7 @@
                                 <div class="menu-item">
                                     <a class="menu-link" href="/dashboard/tasks" id="tasksMenu">
                                         <span class="menu-icon">
-                                            <i class="ki-duotone ki-profile-circle"></i>
-                                            <i class="ki-solid ki-check-circle task-badge"></i>
+                                            <i class="ki-outline ki-check-circle fs-2"></i>
                                         </span>
                                         <span class="menu-title">@V["5_TasksMenu"]</span>
                                     </a>
@@ -483,7 +490,6 @@
                                 <div class="menu-item">
                                     <a class="menu-link" href="/dashboard/projects" id="projectsMenu">
                                         <span class="menu-icon">
-                                            <i class="ki-duotone ki-profile-circle"></i>
                                             <i class="ki-outline ki-element-11 fs-2"></i>
                                         </span>
                                         <span class="menu-title">@V["6_projectsMenu"]</span>
@@ -505,10 +511,10 @@
                                 <div class="menu-item">
                                     <a class="menu-link" href="/dashboard/MyProfile" id="MyProfileList">
                                         <span class="menu-icon">
-                                            <i class="ki-duotone ki-profile-circle">
-                                                <i class="path1"></i>
-                                                <i class="path2"></i>
-                                                <i class="path3"></i>
+                                            <i class="ki-duotone ki-profile-circle fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
                                             </i>
                                         </span>
                                         <span class="menu-title">@V["3_Profile"]</span>
