@@ -213,4 +213,7 @@
   <data name="DayNames" xml:space="preserve">
     <value>Sun,Mon,Tue,Wed,Thu,Fri,Sat</value>
   </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>You don't have access</value>
+  </data>
 </root>

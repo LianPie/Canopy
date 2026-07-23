@@ -369,4 +369,7 @@
   <data name="ErrDeleteGroup" xml:space="preserve">
     <value>Failed to delete group</value>
   </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>You don't have access</value>
+  </data>
 </root>

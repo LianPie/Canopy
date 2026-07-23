@@ -168,7 +168,7 @@ namespace Canopy.Controllers
             var task = _taskRepo.GetAssignedByIdForUser(id, GetUserId());
             if (task == null) return NotFound();
 
-            task.Status = !task.Status; 
+            task.Status = !task.Status;
             _taskRepo.Update(task);
 
             return Ok(new { task.Id, task.Status });

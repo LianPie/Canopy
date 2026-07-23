@@ -213,4 +213,7 @@
   <data name="DayNames" xml:space="preserve">
     <value>یک‌شنبه,دوشنبه,سه‌شنبه,چهارشنبه,پنجشنبه,جمعه,شنبه</value>
   </data>
+  <data name="NoAccess" xml:space="preserve">
+    <value>شما دسترسی ندارید</value>
+  </data>
 </root>

@@ -193,6 +193,8 @@
 @section Scripts {
 <script>
     $("#tasksMenu").addClass("active");
+    const CURRENT_USER_ID = @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
+    const NO_ACCESS_HINT = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["NoAccess"].Value));
 
     // ─── State ───────────────────────────────────────────────────────────────
     const DAY_MS = 86400000;
@@ -286,6 +288,7 @@
 
     // ─── Task HTML ────────────────────────────────────────────────────────────
     function taskHtml(t) {
+        console.log(t)
         const done = t.status;
         const overdue = t.deadLine && new Date(t.deadLine) < today && !done;
         const meta = [
@@ -301,12 +304,16 @@
                 ${meta ? `<div class="task-meta mt-1">${meta}</div>` : ''}
             </div>
             <div class="task-actions">
+                ${t.creatorId === CURRENT_USER_ID ? `
                 <a href="/Dashboard/TaskForm?id=${t.id}" class="btn btn-icon btn-sm btn-light-primary">
                     <i class="ki-outline ki-pencil fs-5"></i>
                 </a>
                 <button class="btn btn-icon btn-sm btn-light-danger" onclick="showDeleteModal(${t.id}, '${escJs(t.title)}')">
                     <i class="ki-outline ki-trash fs-5"></i>
-                </button>
+                </button>` : `
+                <button class="btn btn-icon btn-sm btn-light-secondary" disabled title="${NO_ACCESS_HINT}">
+                    <i class="ki-outline ki-lock fs-5"></i>
+                </button>`}
             </div>
         </div>`;
     }

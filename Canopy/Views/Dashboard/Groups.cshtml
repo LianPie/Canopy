@@ -472,6 +472,8 @@
 @section Scripts {
 <script>
     $("#groupsMenu").addClass("active");
+    const CURRENT_USER_ID = @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
+    const NO_ACCESS_HINT = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["NoAccess"].Value));
 
     const L = {
         allTasks:          '@_localizer["AllTasks"]',
@@ -680,6 +682,7 @@
             </div>
             ${t.assignedTo ? `<small class="badge badge-light me-2">${t.assignedTo.userName}</small>` : ''}
             <div class="g-row-actions">
+                ${t.creatorId === CURRENT_USER_ID ? `
                 <button class="btn btn-xs btn-icon btn-light-primary edit-task-btn"
                     data-id="${t.id}" data-title="${t.title.replace(/"/g,'&quot;')}"
                     data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
@@ -687,7 +690,10 @@
                     data-assignee-id="${t.assignedToUID || ''}"
                     title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
                 <button class="btn btn-xs btn-icon btn-light-danger delete-task-btn"
-                    data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
+                    data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>` : `
+                <button class="btn btn-xs btn-icon btn-light-secondary" disabled title="${NO_ACCESS_HINT}">
+                    <i class="ki-outline ki-lock fs-5"></i>
+                </button>`}
             </div>
         </div>`;
     }

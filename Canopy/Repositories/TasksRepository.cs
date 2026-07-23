@@ -48,7 +48,7 @@ namespace Canopy.Repositories
         public PlannedTask? GetAssignedByIdForUser(int id, int userId)
         {
             return _ctx.PlannedTask
-                .FirstOrDefault(t => t.Id == id && t.AssignedToUID == userId || t.CreatorId == userId);
+                .FirstOrDefault(t => t.Id == id && (t.AssignedToUID == userId || t.CreatorId == userId));
         }
 
         public PlannedTask Create(PlannedTask task)
