@@ -19,103 +19,144 @@
         height: calc(100vh - 180px);
     }
 
-    .groups-layout .g-panel {
+        .groups-layout .g-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bs-card-bg, #fff);
+            border: 1px solid var(--bs-border-color, #e4e6ef);
+            border-radius: 12px;
+        }
+
+        .groups-layout .g-panel-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .groups-layout .g-panel-body {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .groups-layout .g-group-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+            transition: background 0.15s;
+        }
+
+            .groups-layout .g-group-item:hover {
+                background: var(--bs-tertiary-bg);
+            }
+
+            .groups-layout .g-group-item.active {
+                background: var(--bs-tertiary-bg);
+                border-left: 3px solid var(--bs-primary);
+            }
+
+        .groups-layout .g-group-item-actions {
+            margin-left: auto;
+            display: none;
+            gap: 4px;
+        }
+
+        .groups-layout .g-group-item:hover .g-group-item-actions {
+            display: flex;
+        }
+
+        .groups-layout .g-detail-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            border: 1px solid var(--bs-border-color, #e4e6ef);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+            .groups-layout .g-detail-panel.split {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        .groups-layout .g-detail-col {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .groups-layout .g-detail-col + .g-detail-col {
+                border-left: 1px solid var(--bs-border-color, #e4e6ef);
+            }
+
+        .groups-layout .g-task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+        }
+
+            .groups-layout .g-task-item .task-status-toggle {
+                cursor: pointer;
+            }
+
+            .groups-layout .g-task-item .g-row-actions,
+            .groups-layout .g-project-item .g-row-actions {
+                display: none;
+                gap: 4px;
+                flex-shrink: 0;
+            }
+
+            .groups-layout .g-task-item:hover .g-row-actions,
+            .groups-layout .g-project-item:hover .g-row-actions {
+                display: flex;
+            }
+
+    .groups-layout .g-task-item.tapped .g-row-actions,
+    .groups-layout .g-project-item.tapped .g-row-actions,
+    .groups-layout .g-group-item.tapped .g-group-item-actions {
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        background: var(--bs-card-bg, #fff);
-        border: 1px solid var(--bs-border-color, #e4e6ef);
-        border-radius: 12px;
     }
 
-    .groups-layout .g-panel-header {
-        padding: 16px;
-        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-shrink: 0;
+    @@media (max-width: 767px) {
+        .groups-layout .g-group-item-actions {
+            display: flex;
+        }
     }
 
-    .groups-layout .g-panel-body {
-        overflow-y: auto;
-        flex: 1;
-    }
+        .groups-layout .g-project-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
+            transition: background 0.15s;
+        }
 
-    .groups-layout .g-group-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        cursor: pointer;
-        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
-        transition: background 0.15s;
-    }
+            .groups-layout .g-project-item:hover {
+                background: var(--bs-tertiary-bg);
+            }
 
-    .groups-layout .g-group-item:hover { background: var(--bs-tertiary-bg); }
-    .groups-layout .g-group-item.active { background: var(--bs-tertiary-bg); border-left: 3px solid var(--bs-primary); }
+            .groups-layout .g-project-item.active {
+                background: var(--bs-tertiary-bg);
+                border-left: 3px solid var(--bs-primary);
+            }
 
-    .groups-layout .g-group-item-actions { margin-left: auto; display: none; gap: 4px; }
-    .groups-layout .g-group-item:hover .g-group-item-actions { display: flex; }
-
-    .groups-layout .g-detail-panel {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0;
-        border: 1px solid var(--bs-border-color, #e4e6ef);
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .groups-layout .g-detail-panel.split {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .groups-layout .g-detail-col {
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .groups-layout .g-detail-col + .g-detail-col {
-        border-left: 1px solid var(--bs-border-color, #e4e6ef);
-    }
-
-    .groups-layout .g-task-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px 16px;
-        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
-    }
-
-    .groups-layout .g-task-item .task-status-toggle { cursor: pointer; }
-    .groups-layout .g-task-item .g-row-actions,
-    .groups-layout .g-project-item .g-row-actions { display: none; gap: 4px; flex-shrink: 0; }
-    .groups-layout .g-task-item:hover .g-row-actions,
-    .groups-layout .g-project-item:hover .g-row-actions { display: flex; }
-
-    .groups-layout .g-project-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 16px;
-        cursor: pointer;
-        border-bottom: 1px solid var(--bs-border-color, #e4e6ef);
-        transition: background 0.15s;
-    }
-
-    .groups-layout .g-project-item:hover { background: var(--bs-tertiary-bg); }
-    .groups-layout .g-project-item.active { background: var(--bs-tertiary-bg); border-left: 3px solid var(--bs-primary); }
-
-    .groups-layout .g-empty {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        color: var(--bs-text-muted);
-    }
+        .groups-layout .g-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--bs-text-muted);
+        }
 
     #mobileBackBar {
         background: var(--bs-card-bg, #fff);
@@ -131,33 +172,31 @@
             min-height: calc(100vh - 180px);
         }
 
-        .groups-layout .g-panel {
-            height: calc(100vh - 220px);
-        }
+            .groups-layout .g-panel {
+                height: calc(100vh - 220px);
+            }
+            /* detail panel hidden until a group is picked on mobile */
+            .groups-layout .g-detail-panel {
+                display: none;
+                height: auto;
+            }
 
-        /* detail panel hidden until a group is picked on mobile */
-        .groups-layout .g-detail-panel {
-            display: none;
-            height: auto;
-        }
+                .groups-layout .g-detail-panel.mobile-active {
+                    display: grid;
+                }
+                /* stack projects + tasks vertically on mobile */
+                .groups-layout .g-detail-panel.split {
+                    grid-template-columns: 1fr;
+                }
 
-        .groups-layout .g-detail-panel.mobile-active {
-            display: grid;
-        }
+            .groups-layout .g-detail-col + .g-detail-col {
+                border-left: none;
+                border-top: 1px solid var(--bs-border-color, #e4e6ef);
+            }
 
-        /* stack projects + tasks vertically on mobile */
-        .groups-layout .g-detail-panel.split {
-            grid-template-columns: 1fr;
-        }
-
-        .groups-layout .g-detail-col + .g-detail-col {
-            border-left: none;
-            border-top: 1px solid var(--bs-border-color, #e4e6ef);
-        }
-
-        .groups-layout .g-detail-col {
-            min-height: 300px;
-        }
+            .groups-layout .g-detail-col {
+                min-height: 300px;
+            }
 
         #col2 {
             display: flex !important;
@@ -166,1016 +205,1027 @@
 </style>
 
 <div class="toolbar d-flex justify-content-between align-items-center mb-4">
-    <h3>@_localizer["PageTitle"]</h3>
+    <h3 class="mb-0">@_localizer["PageTitle"]</h3>
     <div class="d-flex gap-2">
         <button class="btn btn-light-warning btn-sm" id="pendingInvitesBtn">
-            <i class="ki-outline ki-notification fs-4"></i> @_localizer["Invites"]
+            <i class="ki-outline ki-notification fs-4"></i> <span class="d-none d-sm-inline">@_localizer["Invites"]</span>
         </button>
         <button class="btn btn-primary btn-sm" id="createGroupBtn">
-            <i class="ki-outline ki-plus fs-4"></i> @_localizer["NewGroup"]
+            <i class="ki-outline ki-plus fs-4"></i> <span class="d-none d-sm-inline">@_localizer["NewGroup"]</span>
         </button>
     </div>
 </div>
 
-<div class="groups-layout">
+    <div class="groups-layout">
 
-    <!-- LEFT: Group List -->
-    <div class="g-panel">
-        <div class="g-panel-header">
-            <span class="fw-bold text-gray-700">@_localizer["MyGroups"]</span>
-        </div>
-        <div class="g-panel-body">
-            @if (!Model.Any())
-            {
-                <div class="g-empty py-10">
-                    <i class="ki-outline ki-people fs-2tx mb-3"></i>
-                    <p class="text-muted">@_localizer["NoGroupsYet"]</p>
-                </div>
-            }
-            @foreach (var group in Model)
-            {
-                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-                var isCreator = group.CreatorId == userId;
-                <div class="g-group-item" id="group_@group.Id"
-                     data-group-id="@group.Id" data-group-title="@group.Title"
-                     data-is-creator="@isCreator.ToString().ToLower()"
-">
-                    <div class="symbol symbol-35px">
-                        <div class="symbol-label bg-light-primary">
-                            <i class="ki-outline ki-people fs-3 text-primary"></i>
+        <!-- LEFT: Group List -->
+        <div class="g-panel">
+            <div class="g-panel-header">
+                <span class="fw-bold text-gray-700">@_localizer["MyGroups"]</span>
+            </div>
+            <div class="g-panel-body">
+                @if (!Model.Any())
+                {
+                    <div class="g-empty py-10">
+                        <i class="ki-outline ki-people fs-2tx mb-3"></i>
+                        <p class="text-muted">@_localizer["NoGroupsYet"]</p>
+                    </div>
+                }
+                @foreach (var group in Model)
+                {
+                    var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+                    var isCreator = group.CreatorId == userId;
+                    <div class="g-group-item" id="group_@group.Id"
+                         data-group-id="@group.Id" data-group-title="@group.Title"
+                         data-is-creator="@isCreator.ToString().ToLower()"
+                         ">
+                        <div class="symbol symbol-35px">
+                            <div class="symbol-label bg-light-primary">
+                                <i class="ki-outline ki-people fs-3 text-primary"></i>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden">
-                        <div class="fw-semibold text-truncate">@group.Title</div>
-                        <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() @_localizer["Members"]</small>
-                    </div>
-                    @if (isCreator)
-                    {
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-truncate">@group.Title</div>
+                            <small class="text-muted">@group.UserGroups.Where(ug => ug.Status == InvitationStatus.Accepted).Count() @_localizer["Members"]</small>
+                        </div>
                         <div class="g-group-item-actions">
                             <button class="btn btn-xs btn-icon btn-light-primary invite-btn"
                                     data-group-id="@group.Id" data-group-title="@group.Title" title="@_localizer["InviteTo"]">
                                 <i class="ki-outline ki-user-edit fs-4"></i>
                             </button>
-                            <button class="btn btn-xs btn-icon btn-light-danger delete-btn"
-                                    data-group-id="@group.Id" data-group-title="@group.Title" title="@_localizer["Delete"]">
-                                <i class="ki-outline ki-trash fs-4"></i>
+                            @if (isCreator)
+                            {
+                                <button class="btn btn-xs btn-icon btn-light-danger delete-btn"
+                                        data-group-id="@group.Id" data-group-title="@group.Title" title="@_localizer["Delete"]">
+                                    <i class="ki-outline ki-trash fs-4"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- RIGHT: Detail Panel (always 2 columns) -->
+        <div class="g-detail-panel" id="detailPanel">
+
+            <!-- Mobile back bar -->
+            <div id="mobileBackBar" class="g-panel-header" style="display:none; grid-column:1/-1;">
+                <button class="btn btn-sm btn-light" id="mobileBackBtn">
+                    <i class="ki-outline ki-arrow-left fs-4 me-1"></i> @_localizer["MyGroups"]
+                </button>
+                <span class="fw-bold ms-3" id="mobileGroupTitle"></span>
+            </div>
+
+            <!-- Col 1: Projects list -->
+            <div class="g-detail-col" id="col1">
+                <div class="g-empty" id="noGroupSelected">
+                    <i class="ki-outline ki-people fs-2tx mb-3"></i>
+                    <p>@_localizer["SelectGroupPrompt"]</p>
+                </div>
+
+                <div id="projectsCol" style="display:none; flex-direction:column; height:100%;">
+                    <div class="g-panel-header">
+                        <span class="fw-bold">@_localizer["Projects"]</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-light-primary" id="overviewProjectCount"></span>
+                            <button class="btn btn-xs btn-icon btn-light-primary" id="addProjectBtn" title="@_localizer["NewProject"]">
+                                <i class="ki-outline ki-plus fs-4"></i>
                             </button>
                         </div>
+                    </div>
+                    <div class="g-panel-body" id="projectsList"></div>
+                </div>
+            </div>
+
+            <!-- Col 2: Tasks (all group tasks, or project tasks when project selected) -->
+            <div class="g-detail-col" id="col2" style="display:none;">
+                <div class="g-empty" id="noGroupSelected2">
+                    <i class="ki-outline ki-check-circle fs-2tx mb-3"></i>
+                    <p>@_localizer["SelectGroupTasksPrompt"]</p>
+                </div>
+
+                <div id="tasksCol" style="display:none; flex-direction:column; height:100%;">
+                    <div class="g-panel-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-xs btn-icon btn-light" id="backToAllTasks" style="display:none;" title="@_localizer["AllTasks"]">
+                                <i class="ki-outline ki-arrow-left fs-4"></i>
+                            </button>
+                            <div>
+                                <span class="fw-bold" id="tasksColTitle">@_localizer["AllTasks"]</span>
+                                <small class="text-muted ms-2" id="tasksColMeta"></small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-light-primary" id="overviewTaskCount"></span>
+                            <button class="btn btn-xs btn-icon btn-light-primary" id="addTaskBtn" title="@_localizer["NewTask"]">
+                                <i class="ki-outline ki-plus fs-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="g-panel-body" id="allTasksList"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div class="modal fade" id="createGroupModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@_localizer["CreateGroup"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label fw-semibold">@_localizer["GroupName"]</label>
+                    <input type="text" id="groupTitle" class="form-control" placeholder="@_localizer["GroupNamePlaceholder"]">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="button" class="btn btn-primary" id="confirmCreateGroup">@_localizer["Create"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div class="modal fade" id="inviteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@_localizer["InviteTo"] <span id="inviteGroupTitle"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label fw-semibold">@_localizer["UsernameOrEmail"]</label>
+                    <input type="text" id="inviteInput" class="form-control" placeholder="@_localizer["SearchPlaceholder"]">
+                    <div id="inviteStatus" class="mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="button" class="btn btn-primary" id="confirmInvite" disabled>@_localizer["SendInvite"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invites Modal -->
+    <div class="modal fade" id="pendingInvitesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@_localizer["InvitesTitle"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item"><a class="nav-link active" id="receivedTab" href="#">@_localizer["Received"]</a></li>
+                        <li class="nav-item"><a class="nav-link" id="sentTab" href="#">@_localizer["Sent"]</a></li>
+                    </ul>
+                    <div id="pendingInvitesList"><div class="text-center text-muted py-5">Loading...</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shared Delete Confirm Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-danger"><i class="ki-outline ki-trash fs-2 me-2"></i>@_localizer["Delete"] <span id="deleteConfirmType"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    @_localizer["AreYouSureDelete"] <strong id="deleteConfirmName"></strong>? @_localizer["DeleteCannotBeUndone"]
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">@_localizer["Delete"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Project Modal -->
+    <div class="modal fade" id="newProjectModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="npModalTitle">@_localizer["NewProject"]</h5>
+                    <input type="hidden" id="npId">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-5">
+                        <!-- LEFT: Tasks -->
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">@_localizer["Tasks"]</h5>
+                                    <button type="button" class="btn btn-sm btn-light-primary" id="npAddTaskBtn">
+                                        <i class="ki-outline ki-plus fs-2"></i> @_localizer["AddTask"]
+                                    </button>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div id="npTaskList" class="p-5" style="max-height:380px; overflow-y:auto;"></div>
+                                    <p id="npNoTasksMsg" class="text-muted text-center py-5">@_localizer["NoTasksYet"]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- RIGHT: Details -->
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header"><h5 class="mb-0">@_localizer["ProjectDetails"]</h5></div>
+                                <div class="card-body">
+                                    <div class="mb-5">
+                                        <label class="form-label fw-semibold required">@_localizer["Title"]</label>
+                                        <input type="text" id="npTitle" class="form-control" placeholder="@_localizer["ProjectName"]">
+                                    </div>
+                                    <div class="mb-5">
+                                        <label class="form-label fw-semibold">@_localizer["Description"]</label>
+                                        <textarea id="npDescription" class="form-control" rows="3" placeholder="@_localizer["OptionalDescription"]"></textarea>
+                                    </div>
+                                    <div class="mb-5">
+                                        <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
+                                        <input type="text" id="npDeadline" class="form-control persian-date-input" placeholder="@_localizer["Deadline"]">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="button" class="btn btn-primary" id="confirmNewProject">@_localizer["Save"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New/Edit Task Modal -->
+    <div class="modal fade" id="newTaskModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ntModalTitle">@_localizer["NewTask"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="ntId">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">@_localizer["Title"] <span class="text-danger">*</span></label>
+                        <input type="text" id="ntTitle" class="form-control" placeholder="@_localizer["TaskName"]">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">@_localizer["Description"]</label>
+                        <textarea id="ntDescription" class="form-control" rows="2" placeholder="@_localizer["OptionalDescription"]"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
+                        <input type="date" id="ntDeadline" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">@_localizer["AssignTo"]</label>
+                        <select id="ntAssignee" class="form-select">
+                            <option value="">@_localizer["Unassigned"]</option>
+                        </select>
+                    </div>
+                    <div id="ntProjectRow" class="mb-1 mt-2 alert alert-info py-2 px-3" style="display:none;">
+                        <small>@_localizer["LinkedToProject"] <span class="fw-semibold" id="ntProjectLabel"></span></small>
+                    </div>
+                    <div id="ntGroupRow" class="mb-1 mt-2 alert alert-light py-2 px-3" style="display:none;">
+                        <small>@_localizer["StandaloneTask"]</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="button" class="btn btn-primary" id="confirmNewTask">@_localizer["Save"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+                $("#groupsMenu").addClass("active");
+                const CURRENT_USER_ID = @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
+                const NO_ACCESS_HINT = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["NoAccess"].Value));
+
+                const L = {
+                    allTasks:          '@_localizer["AllTasks"]',
+                    noProjectsYet:     '@_localizer["NoProjectsYet"]',
+                    noTasksYet:        '@_localizer["NoTasksYet"]',
+                    noReceivedInvites: '@_localizer["NoReceivedInvites"]',
+                    noSentInvites:     '@_localizer["NoSentInvites"]',
+                    from:              '@_localizer["From"]',
+                    to:                '@_localizer["To"]',
+                    accept:            '@_localizer["Accept"]',
+                    decline:           '@_localizer["Decline"]',
+                    pending:           '@_localizer["Pending"]',
+                    userFound:         '@_localizer["UserFound"]',
+                    userNotFound:      '@_localizer["UserNotFound"]',
+                    unassigned:        '@_localizer["Unassigned"]',
+                    newProject:        '@_localizer["NewProject"]',
+                    editProject:       '@_localizer["EditProject"]',
+                    newTask:           '@_localizer["NewTask"]',
+                    editTask:          '@_localizer["EditTask"]',
+                    enterGroupName:    '@_localizer["EnterGroupName"]',
+                    enterProjectTitle: '@_localizer["EnterProjectTitle"]',
+                    enterTaskTitle:    '@_localizer["EnterTaskTitle"]',
+                    projectsLabel:     '@_localizer["ProjectsLabel"]',
+                    tasksLabel:        '@_localizer["TasksLabel"]',
+                    doneLabel:         '@_localizer["DoneLabel"]',
+                    inProgressLabel:   '@_localizer["InProgressLabel"]',
+                    doneCount:         '@_localizer["DoneCount"]',
+                    tasksCompleted:    '@_localizer["TasksCompleted"]',
+                    groupCreated:      '@_localizer["GroupCreated"]',
+                    groupDeleted:      '@_localizer["GroupDeleted"]',
+                    inviteSent:        '@_localizer["InviteSent"]',
+                    joinedGroup:       '@_localizer["JoinedGroup"]',
+                    inviteDeclined:    '@_localizer["InviteDeclined"]',
+                    projectCreated:    '@_localizer["ProjectCreated"]',
+                    projectUpdated:    '@_localizer["ProjectUpdated"]',
+                    projectDeleted:    '@_localizer["ProjectDeleted"]',
+                    taskCreated:       '@_localizer["TaskCreated"]',
+                    taskUpdated:       '@_localizer["TaskUpdated"]',
+                    taskDeleted:       '@_localizer["TaskDeleted"]',
+                    errCreateGroup:    '@_localizer["ErrCreateGroup"]',
+                    errSendInvite:     '@_localizer["ErrSendInvite"]',
+                    errSomethingWrong: '@_localizer["ErrSomethingWentWrong"]',
+                    errDeleteTask:     '@_localizer["ErrDeleteTask"]',
+                    errUpdateTask:     '@_localizer["ErrUpdateTask"]',
+                    errDeleteProject:  '@_localizer["ErrDeleteProject"]',
+                    errCreateProject:  '@_localizer["ErrCreateProject"]',
+                    errUpdateProject:  '@_localizer["ErrUpdateProject"]',
+                    errCreateTask:     '@_localizer["ErrCreateTask"]',
+                    errDeleteGroup:    '@_localizer["ErrDeleteGroup"]',
+                };
+
+                const groupMembers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                Model.ToDictionary(
+                                        g => g.Id,
+                                        g => g.UserGroups
+                                                .Where(ug => ug.Status == InvitationStatus.Accepted)
+                                                .Select(ug => new { id = ug.UserId, name = ug.User!.UserName })
+                                )
+                        ));
+
+                let activeGroupId = null;
+                let activeProjectId = null;
+                let activeGroupMembers = [];
+                let checkTimeout = null;
+                let userFound = false;
+
+                // ── Group item click (ignores action buttons) ────────────────
+                $(document).on('click', '.g-group-item', function (e) {
+                    if ($(e.target).closest('.g-group-item-actions').length) return;
+                    const id = $(this).data('group-id');
+                    const title = $(this).data('group-title');
+                    selectGroup(id, title);
+                });
+
+                // ── Group selection ──────────────────────────────────────────
+                function selectGroup(groupId, title) {
+                    activeGroupId = groupId;
+                    activeProjectId = null;
+
+                    $('.g-group-item').removeClass('active');
+                    $(`#group_${groupId}`).addClass('active');
+                    activeGroupMembers = groupMembers[groupId] || [];
+
+                    // show both columns
+                    $('#noGroupSelected').hide();
+                    $('#noGroupSelected2').hide();
+                    $('#detailPanel').addClass('split');
+                    $('#col2').css('display', 'flex');
+                    $('#projectsCol').css('display', 'flex');
+                    $('#tasksCol').css('display', 'flex');
+                    $('#tasksColTitle').text(L.allTasks);
+                    $('#tasksColMeta').text('');
+                    $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
+
+                    // Mobile: hide group list, show detail panel
+                    if (window.innerWidth < 768) {
+                        $('.g-panel').first().hide();
+                        $('#detailPanel').addClass('mobile-active');
+                        $('#mobileBackBar').css('display', 'flex');
+                        $('#mobileGroupTitle').text(title);
                     }
-                </div>
-            }
-        </div>
-    </div>
 
-    <!-- RIGHT: Detail Panel (always 2 columns) -->
-    <div class="g-detail-panel" id="detailPanel">
+                    loadGroupProjects(groupId);
+                    loadAllGroupTasks(groupId);
+                }
 
-        <!-- Mobile back bar -->
-        <div id="mobileBackBar" class="g-panel-header" style="display:none; grid-column:1/-1;">
-            <button class="btn btn-sm btn-light" id="mobileBackBtn">
-                <i class="ki-outline ki-arrow-left fs-4 me-1"></i> @_localizer["MyGroups"]
-            </button>
-            <span class="fw-bold ms-3" id="mobileGroupTitle"></span>
-        </div>
-
-        <!-- Col 1: Projects list -->
-        <div class="g-detail-col" id="col1">
-            <div class="g-empty" id="noGroupSelected">
-                <i class="ki-outline ki-people fs-2tx mb-3"></i>
-                <p>@_localizer["SelectGroupPrompt"]</p>
-            </div>
-
-            <div id="projectsCol" style="display:none; flex-direction:column; height:100%;">
-                <div class="g-panel-header">
-                    <span class="fw-bold">@_localizer["Projects"]</span>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge badge-light-primary" id="overviewProjectCount"></span>
-                        <button class="btn btn-xs btn-icon btn-light-primary" id="addProjectBtn" title="@_localizer["NewProject"]">
-                            <i class="ki-outline ki-plus fs-4"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="g-panel-body" id="projectsList"></div>
-            </div>
-        </div>
-
-        <!-- Col 2: Tasks (all group tasks, or project tasks when project selected) -->
-        <div class="g-detail-col" id="col2" style="display:none;">
-            <div class="g-empty" id="noGroupSelected2">
-                <i class="ki-outline ki-check-circle fs-2tx mb-3"></i>
-                <p>@_localizer["SelectGroupTasksPrompt"]</p>
-            </div>
-
-            <div id="tasksCol" style="display:none; flex-direction:column; height:100%;">
-                <div class="g-panel-header">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-xs btn-icon btn-light" id="backToAllTasks" style="display:none;" title="@_localizer["AllTasks"]">
-                            <i class="ki-outline ki-arrow-left fs-4"></i>
-                        </button>
-                        <div>
-                            <span class="fw-bold" id="tasksColTitle">@_localizer["AllTasks"]</span>
-                            <small class="text-muted ms-2" id="tasksColMeta"></small>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge badge-light-primary" id="overviewTaskCount"></span>
-                        <button class="btn btn-xs btn-icon btn-light-primary" id="addTaskBtn" title="@_localizer["NewTask"]">
-                            <i class="ki-outline ki-plus fs-4"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="g-panel-body" id="allTasksList"></div>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- Create Group Modal -->
-<div class="modal fade" id="createGroupModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@_localizer["CreateGroup"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <label class="form-label fw-semibold">@_localizer["GroupName"]</label>
-                <input type="text" id="groupTitle" class="form-control" placeholder="@_localizer["GroupNamePlaceholder"]">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
-                <button type="button" class="btn btn-primary" id="confirmCreateGroup">@_localizer["Create"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Invite User Modal -->
-<div class="modal fade" id="inviteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@_localizer["InviteTo"] <span id="inviteGroupTitle"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <label class="form-label fw-semibold">@_localizer["UsernameOrEmail"]</label>
-                <input type="text" id="inviteInput" class="form-control" placeholder="@_localizer["SearchPlaceholder"]">
-                <div id="inviteStatus" class="mt-2"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
-                <button type="button" class="btn btn-primary" id="confirmInvite" disabled>@_localizer["SendInvite"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Invites Modal -->
-<div class="modal fade" id="pendingInvitesModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@_localizer["InvitesTitle"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="nav nav-tabs mb-4">
-                    <li class="nav-item"><a class="nav-link active" id="receivedTab" href="#">@_localizer["Received"]</a></li>
-                    <li class="nav-item"><a class="nav-link" id="sentTab" href="#">@_localizer["Sent"]</a></li>
-                </ul>
-                <div id="pendingInvitesList"><div class="text-center text-muted py-5">Loading...</div></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Shared Delete Confirm Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title text-danger"><i class="ki-outline ki-trash fs-2 me-2"></i>@_localizer["Delete"] <span id="deleteConfirmType"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body pt-2">
-                @_localizer["AreYouSureDelete"] <strong id="deleteConfirmName"></strong>? @_localizer["DeleteCannotBeUndone"]
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">@_localizer["Delete"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- New Project Modal -->
-<div class="modal fade" id="newProjectModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="npModalTitle">@_localizer["NewProject"]</h5>
-                <input type="hidden" id="npId">
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row g-5">
-                    <!-- LEFT: Tasks -->
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">@_localizer["Tasks"]</h5>
-                                <button type="button" class="btn btn-sm btn-light-primary" id="npAddTaskBtn">
-                                    <i class="ki-outline ki-plus fs-2"></i> @_localizer["AddTask"]
-                                </button>
-                            </div>
-                            <div class="card-body p-0">
-                                <div id="npTaskList" class="p-5" style="max-height:380px; overflow-y:auto;"></div>
-                                <p id="npNoTasksMsg" class="text-muted text-center py-5">@_localizer["NoTasksYet"]</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- RIGHT: Details -->
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header"><h5 class="mb-0">@_localizer["ProjectDetails"]</h5></div>
-                            <div class="card-body">
-                                <div class="mb-5">
-                                    <label class="form-label fw-semibold required">@_localizer["Title"]</label>
-                                    <input type="text" id="npTitle" class="form-control" placeholder="@_localizer["ProjectName"]">
-                                </div>
-                                <div class="mb-5">
-                                    <label class="form-label fw-semibold">@_localizer["Description"]</label>
-                                    <textarea id="npDescription" class="form-control" rows="3" placeholder="@_localizer["OptionalDescription"]"></textarea>
-                                </div>
-                                <div class="mb-5">
-                                    <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
-                                    <input type="text" id="npDeadline" class="form-control persian-date-input" placeholder="@_localizer["Deadline"]">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
-                <button type="button" class="btn btn-primary" id="confirmNewProject">@_localizer["Save"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- New/Edit Task Modal -->
-<div class="modal fade" id="newTaskModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ntModalTitle">@_localizer["NewTask"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="ntId">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">@_localizer["Title"] <span class="text-danger">*</span></label>
-                    <input type="text" id="ntTitle" class="form-control" placeholder="@_localizer["TaskName"]">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">@_localizer["Description"]</label>
-                    <textarea id="ntDescription" class="form-control" rows="2" placeholder="@_localizer["OptionalDescription"]"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
-                    <input type="date" id="ntDeadline" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">@_localizer["AssignTo"]</label>
-                    <select id="ntAssignee" class="form-select">
-                        <option value="">@_localizer["Unassigned"]</option>
-                    </select>
-                </div>
-                <div id="ntProjectRow" class="mb-1 mt-2 alert alert-info py-2 px-3" style="display:none;">
-                    <small>@_localizer["LinkedToProject"] <span class="fw-semibold" id="ntProjectLabel"></span></small>
-                </div>
-                <div id="ntGroupRow" class="mb-1 mt-2 alert alert-light py-2 px-3" style="display:none;">
-                    <small>@_localizer["StandaloneTask"]</small>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
-                <button type="button" class="btn btn-primary" id="confirmNewTask">@_localizer["Save"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-<script>
-    $("#groupsMenu").addClass("active");
-    const CURRENT_USER_ID = @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
-    const NO_ACCESS_HINT = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["NoAccess"].Value));
-
-    const L = {
-        allTasks:          '@_localizer["AllTasks"]',
-        noProjectsYet:     '@_localizer["NoProjectsYet"]',
-        noTasksYet:        '@_localizer["NoTasksYet"]',
-        noReceivedInvites: '@_localizer["NoReceivedInvites"]',
-        noSentInvites:     '@_localizer["NoSentInvites"]',
-        from:              '@_localizer["From"]',
-        to:                '@_localizer["To"]',
-        accept:            '@_localizer["Accept"]',
-        decline:           '@_localizer["Decline"]',
-        pending:           '@_localizer["Pending"]',
-        userFound:         '@_localizer["UserFound"]',
-        userNotFound:      '@_localizer["UserNotFound"]',
-        unassigned:        '@_localizer["Unassigned"]',
-        newProject:        '@_localizer["NewProject"]',
-        editProject:       '@_localizer["EditProject"]',
-        newTask:           '@_localizer["NewTask"]',
-        editTask:          '@_localizer["EditTask"]',
-        enterGroupName:    '@_localizer["EnterGroupName"]',
-        enterProjectTitle: '@_localizer["EnterProjectTitle"]',
-        enterTaskTitle:    '@_localizer["EnterTaskTitle"]',
-        projectsLabel:     '@_localizer["ProjectsLabel"]',
-        tasksLabel:        '@_localizer["TasksLabel"]',
-        doneLabel:         '@_localizer["DoneLabel"]',
-        inProgressLabel:   '@_localizer["InProgressLabel"]',
-        doneCount:         '@_localizer["DoneCount"]',
-        tasksCompleted:    '@_localizer["TasksCompleted"]',
-        groupCreated:      '@_localizer["GroupCreated"]',
-        groupDeleted:      '@_localizer["GroupDeleted"]',
-        inviteSent:        '@_localizer["InviteSent"]',
-        joinedGroup:       '@_localizer["JoinedGroup"]',
-        inviteDeclined:    '@_localizer["InviteDeclined"]',
-        projectCreated:    '@_localizer["ProjectCreated"]',
-        projectUpdated:    '@_localizer["ProjectUpdated"]',
-        projectDeleted:    '@_localizer["ProjectDeleted"]',
-        taskCreated:       '@_localizer["TaskCreated"]',
-        taskUpdated:       '@_localizer["TaskUpdated"]',
-        taskDeleted:       '@_localizer["TaskDeleted"]',
-        errCreateGroup:    '@_localizer["ErrCreateGroup"]',
-        errSendInvite:     '@_localizer["ErrSendInvite"]',
-        errSomethingWrong: '@_localizer["ErrSomethingWentWrong"]',
-        errDeleteTask:     '@_localizer["ErrDeleteTask"]',
-        errUpdateTask:     '@_localizer["ErrUpdateTask"]',
-        errDeleteProject:  '@_localizer["ErrDeleteProject"]',
-        errCreateProject:  '@_localizer["ErrCreateProject"]',
-        errUpdateProject:  '@_localizer["ErrUpdateProject"]',
-        errCreateTask:     '@_localizer["ErrCreateTask"]',
-        errDeleteGroup:    '@_localizer["ErrDeleteGroup"]',
-    };
-
-    const groupMembers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-        Model.ToDictionary(
-            g => g.Id,
-            g => g.UserGroups
-                .Where(ug => ug.Status == InvitationStatus.Accepted)
-                .Select(ug => new { id = ug.UserId, name = ug.User!.UserName })
-        )
-    ));
-
-    let activeGroupId = null;
-    let activeProjectId = null;
-    let activeGroupMembers = [];
-    let checkTimeout = null;
-    let userFound = false;
-
-    // ── Group item click (ignores action buttons) ────────────────
-    $(document).on('click', '.g-group-item', function (e) {
-        if ($(e.target).closest('.g-group-item-actions').length) return;
-        const id = $(this).data('group-id');
-        const title = $(this).data('group-title');
-        selectGroup(id, title);
-    });
-
-    // ── Group selection ──────────────────────────────────────────
-    function selectGroup(groupId, title) {
-        activeGroupId = groupId;
-        activeProjectId = null;
-
-        $('.g-group-item').removeClass('active');
-        $(`#group_${groupId}`).addClass('active');
-        activeGroupMembers = groupMembers[groupId] || [];
-
-        // show both columns
-        $('#noGroupSelected').hide();
-        $('#noGroupSelected2').hide();
-        $('#detailPanel').addClass('split');
-        $('#col2').css('display', 'flex');
-        $('#projectsCol').css('display', 'flex');
-        $('#tasksCol').css('display', 'flex');
-        $('#tasksColTitle').text(L.allTasks);
-        $('#tasksColMeta').text('');
-        $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
-
-        // Mobile: hide group list, show detail panel
-        if (window.innerWidth < 768) {
-            $('.g-panel').first().hide();
-            $('#detailPanel').addClass('mobile-active');
-            $('#mobileBackBar').css('display', 'flex');
-            $('#mobileGroupTitle').text(title);
-        }
-
-        loadGroupProjects(groupId);
-        loadAllGroupTasks(groupId);
+                // ── Mobile tap-to-reveal actions ─────────────────────────
+    if (window.matchMedia('(hover: none)').matches) {
+        $(document).on('click', '.g-task-item, .g-project-item, .g-group-item', function (e) {
+            if ($(e.target).closest('button, a, input').length) return;
+            const $row = $(this);
+            const wasActive = $row.hasClass('tapped');
+            $('.g-task-item, .g-project-item, .g-group-item').removeClass('tapped');
+            if (!wasActive) $row.addClass('tapped');
+        });
     }
 
     // ── Mobile back button ────────────────────────────────────
-    $('#mobileBackBtn').click(function () {
-        $('.g-panel').first().show();
-        $('#detailPanel').removeClass('mobile-active');
-        $('#mobileBackBar').hide();
-        activeGroupId = null;
-    });
+                $('#mobileBackBtn').click(function () {
+                    $('.g-panel').first().show();
+                    $('#detailPanel').removeClass('mobile-active');
+                    $('#mobileBackBar').hide();
+                    activeGroupId = null;
+                });
 
-    function loadGroupProjects(groupId) {
-        $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
-        $.get(`/api/Groups/${groupId}/projects`, function (projects) {
-            $('#overviewProjectCount').text(projects.length + ' ' + L.projectsLabel);
-            if (!projects.length) {
-                $('#projectsList').html(`<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>${L.noProjectsYet}</p></div>`);
-                return;
-            }
-            let html = '';
-            projects.forEach(p => {
-                const total = p.tasks ? p.tasks.length : 0;
-                const done = p.tasks ? p.tasks.filter(t => t.status).length : 0;
-                const pct = total ? Math.round(done / total * 100) : 0;
-                html += `
-                <div class="g-project-item" data-project-id="${p.id}" data-project-title="${p.title.replace(/"/g,'&quot;')}" data-project-total="${total}" data-project-done="${done}">
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">${p.title}</div>
-                        <div class="d-flex align-items-center gap-2 mt-1">
-                            <div class="progress h-4px flex-grow-1" style="max-width:120px">
-                                <div class="progress-bar bg-primary" style="width:${pct}%"></div>
-                            </div>
-                            <small class="text-muted">${done}/${total}</small>
-                        </div>
-                    </div>
-                    <div class="g-row-actions">
-                        <button class="btn btn-xs btn-icon btn-light-primary edit-project-btn"
-                            data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
-                            data-desc="${(p.description||'').replace(/"/g,'&quot;')}"
-                            data-deadline="${p.deadline ? new Date(p.deadline).toISOString().split('T')[0] : ''}"
-                            title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
-                        <button class="btn btn-xs btn-icon btn-light-danger delete-project-btn"
-                            data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
-                            title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
-                    </div>
-                    <i class="ki-outline ki-arrow-right fs-4 text-muted ms-1"></i>
-                </div>`;
-            });
-            $('#projectsList').html(html);
-        });
-    }
-
-    function loadAllGroupTasks(groupId) {
-        activeProjectId = null;
-        $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
-        $('#tasksColTitle').text(L.allTasks);
-        $('#tasksColMeta').text('');
-        $('#backToAllTasks').hide();
-        $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
-        $('.g-project-item').removeClass('active');
-        $.get(`/api/Groups/${groupId}/tasks`, function (tasks) {
-                $('#overviewTaskCount').text(tasks.length + ' ' + L.tasksLabel);
-            renderTaskList(tasks, true);
-        });
-    }
-
-    function renderTaskList(tasks, groupByProject) {
-        if (!tasks.length) {
-            $('#allTasksList').html(`<div class="g-empty py-10"><i class="ki-outline ki-check-circle fs-2tx mb-3"></i><p>${L.noTasksYet}</p></div>`);
-            return;
-        }
-        let html = '';
-        if (groupByProject) {
-            const byProject = {};
-            tasks.forEach(t => {
-                const key = t.project ? t.project.title : 'Unassigned';
-                if (!byProject[key]) byProject[key] = [];
-                byProject[key].push(t);
-            });
-            for (const [proj, ptasks] of Object.entries(byProject)) {
-                html += `<div class="px-4 pt-3 pb-1"><small class="text-muted text-uppercase fw-bold">${proj}</small></div>`;
-                ptasks.forEach(t => { html += taskHtml(t); });
-            }
-        } else {
-            tasks.forEach(t => { html += taskHtml(t); });
-        }
-        $('#allTasksList').html(html);
-    }
-
-    function taskHtml(t) {
-        const done = t.status;
-        const overdue = t.deadLine && !done && new Date(t.deadLine) < new Date();
-        const deadlineVal = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
-        return `
-        <div class="g-task-item" data-task-id="${t.id}">
-            <div class="form-check mt-1">
-                <input class="form-check-input task-status-toggle" type="checkbox" ${done ? 'checked' : ''} data-task-id="${t.id}">
-            </div>
-            <div class="flex-grow-1">
-                <span class="${done ? 'text-decoration-line-through text-muted' : 'fw-semibold'}">${t.title}</span>
-                ${t.description ? `<br><small class="text-muted">${t.description}</small>` : ''}
-                ${t.deadLine ? `<br><small class="${overdue ? 'text-danger' : 'text-muted'}"><i class="ki-outline ki-calendar fs-7 me-1"></i>${new Date(t.deadLine).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</small>` : ''}
-            </div>
-            ${t.assignedTo ? `<small class="badge badge-light me-2">${t.assignedTo.userName}</small>` : ''}
-            <div class="g-row-actions">
-                ${t.creatorId === CURRENT_USER_ID ? `
-                <button class="btn btn-xs btn-icon btn-light-primary edit-task-btn"
-                    data-id="${t.id}" data-title="${t.title.replace(/"/g,'&quot;')}"
-                    data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
-                    data-deadline="${deadlineVal}" data-status="${done}"
-                    data-assignee-id="${t.assignedToUID || ''}"
-                    title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
-                <button class="btn btn-xs btn-icon btn-light-danger delete-task-btn"
-                    data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>` : `
-                <button class="btn btn-xs btn-icon btn-light-secondary" disabled title="${NO_ACCESS_HINT}">
-                    <i class="ki-outline ki-lock fs-5"></i>
-                </button>`}
-            </div>
-        </div>`;
-    }
-
-    // ── Project item click (ignores action buttons) ──────────────
-    $(document).on('click', '.g-project-item', function (e) {
-        if ($(e.target).closest('.g-row-actions').length) return;
-        const $row = $(this);
-        selectProject(
-            $row.data('project-id'),
-            $row.data('project-title'),
-            $row.data('project-total'),
-            $row.data('project-done')
-        );
-    });
-
-    // ── Project selection ─────────────────────────────────────────
-    function selectProject(projectId, title, total, done) {
-        activeProjectId = projectId;
-
-        $('.g-project-item').removeClass('active');
-        $(`.g-project-item[data-project-id="${projectId}"]`).addClass('active');
-
-        $('#tasksColTitle').text(title);
-        $('#tasksColMeta').text(`${done}/${total} ${L.tasksCompleted}`);
-        $('#backToAllTasks').show();
-        $('#overviewTaskCount').text(done === total && total > 0 ? L.doneLabel : L.inProgressLabel)
-            .removeClass().addClass(`badge badge-light-${done === total && total > 0 ? 'success' : 'warning'}`);
-        $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
-
-        $.get(`/api/Groups/${activeGroupId}/tasks`, function (tasks) {
-            const ptasks = tasks.filter(t => t.projectId === projectId || (t.project && t.project.id === projectId));
-                $('#overviewTaskCount').text(ptasks.length + ' ' + L.tasksLabel);
-            renderTaskList(ptasks, false);
-        });
-    }
-
-    // ── Create group ─────────────────────────────────────────────
-    $('#createGroupBtn').click(() => $('#createGroupModal').modal('show'));
-
-    $('#confirmCreateGroup').click(function () {
-        const title = $('#groupTitle').val().trim();
-        if (!title) { toastr.warning(L.enterGroupName); return; }
-        $.ajax({
-            url: '/api/Groups', type: 'POST', contentType: 'application/json',
-            data: JSON.stringify({ title }),
-            success: function () {
-                $('#createGroupModal').modal('hide');
-                toastr.success(L.groupCreated);
-                setTimeout(() => location.reload(), 800);
-            },
-            error: () => toastr.error(L.errCreateGroup)
-        });
-    });
-
-    // ── Invite ───────────────────────────────────────────────────
-    $(document).on('click', '.invite-btn', function (e) {
-        e.stopPropagation();
-        activeGroupId = $(this).data('group-id');
-        $('#inviteGroupTitle').text($(this).data('group-title'));
-        $('#inviteInput').val('');
-        $('#inviteStatus').html('');
-        $('#confirmInvite').prop('disabled', true);
-        userFound = false;
-        $('#inviteModal').modal('show');
-    });
-
-    $('#inviteInput').on('input', function () {
-        clearTimeout(checkTimeout);
-        const val = $(this).val().trim();
-        $('#inviteStatus').html('');
-        $('#confirmInvite').prop('disabled', true);
-        userFound = false;
-        if (val.length < 2) return;
-
-        checkTimeout = setTimeout(function () {
-            const isEmail = val.includes('@@');
-            const endpoint = isEmail
-                ? `/api/Account/checkEmail?email=${encodeURIComponent(val)}`
-                : `/api/Account/checkUser?username=${encodeURIComponent(val)}`;
-            $.get(endpoint, function (res) {
-                const exists = isEmail ? res.emailTaken : res.userNameTaken;
-                if (exists) {
-                    $('#inviteStatus').html(`<span class="text-success"><i class="ki-outline ki-check fs-5"></i> ${L.userFound}</span>`);
-                    $('#confirmInvite').prop('disabled', false);
-                    userFound = true;
-                } else {
-                    $('#inviteStatus').html(`<span class="text-danger"><i class="ki-outline ki-cross fs-5"></i> ${L.userNotFound}</span>`);
+                function loadGroupProjects(groupId) {
+                    $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
+                    $.get(`/api/Groups/${groupId}/projects`, function (projects) {
+                        $('#overviewProjectCount').text(projects.length + ' ' + L.projectsLabel);
+                        if (!projects.length) {
+                            $('#projectsList').html(`<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>${L.noProjectsYet}</p></div>`);
+                            return;
+                        }
+                        let html = '';
+                        projects.forEach(p => {
+                            const total = p.tasks ? p.tasks.length : 0;
+                            const done = p.tasks ? p.tasks.filter(t => t.status).length : 0;
+                            const pct = total ? Math.round(done / total * 100) : 0;
+                            html += `
+                            <div class="g-project-item" data-project-id="${p.id}" data-project-title="${p.title.replace(/"/g,'&quot;')}" data-project-total="${total}" data-project-done="${done}">
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">${p.title}</div>
+                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                        <div class="progress h-4px flex-grow-1" style="max-width:120px">
+                                            <div class="progress-bar bg-primary" style="width:${pct}%"></div>
+                                        </div>
+                                        <small class="text-muted">${done}/${total}</small>
+                                    </div>
+                                </div>
+                                <div class="g-row-actions">
+                                    <button class="btn btn-xs btn-icon btn-light-primary edit-project-btn"
+                                        data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
+                                        data-desc="${(p.description||'').replace(/"/g,'&quot;')}"
+                                        data-deadline="${p.deadline ? new Date(p.deadline).toISOString().split('T')[0] : ''}"
+                                        title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
+                                    <button class="btn btn-xs btn-icon btn-light-danger delete-project-btn"
+                                        data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
+                                        title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
+                                </div>
+                                <i class="ki-outline ki-arrow-right fs-4 text-muted ms-1"></i>
+                            </div>`;
+                        });
+                        $('#projectsList').html(html);
+                    });
                 }
-            });
-        }, 400);
-    });
 
-    $('#confirmInvite').click(function () {
-        if (!userFound) return;
-        $.ajax({
-            url: `/api/Groups/${activeGroupId}/invite`, type: 'POST', contentType: 'application/json',
-            data: JSON.stringify({ usernameOrEmail: $('#inviteInput').val().trim() }),
-            success: function () { $('#inviteModal').modal('hide'); toastr.success(L.inviteSent); },
-            error: xhr => toastr.error(xhr.responseJSON || L.errSendInvite)
-        });
-    });
+                function loadAllGroupTasks(groupId) {
+                    activeProjectId = null;
+                    $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
+                    $('#tasksColTitle').text(L.allTasks);
+                    $('#tasksColMeta').text('');
+                    $('#backToAllTasks').hide();
+                    $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
+                    $('.g-project-item').removeClass('active');
+                    $.get(`/api/Groups/${groupId}/tasks`, function (tasks) {
+                            $('#overviewTaskCount').text(tasks.length + ' ' + L.tasksLabel);
+                        renderTaskList(tasks, true);
+                    });
+                }
 
-    // ── Invites modal ────────────────────────────────────────────
-    let activeInviteTab = 'received';
-
-    $('#pendingInvitesBtn').click(function () {
-        activeInviteTab = 'received';
-        $('#receivedTab').addClass('active'); $('#sentTab').removeClass('active');
-        $('#pendingInvitesModal').modal('show');
-        loadReceivedInvites();
-    });
-
-    $('#receivedTab').click(function (e) {
-        e.preventDefault();
-        if (activeInviteTab === 'received') return;
-        activeInviteTab = 'received';
-        $(this).addClass('active'); $('#sentTab').removeClass('active');
-        loadReceivedInvites();
-    });
-
-    $('#sentTab').click(function (e) {
-        e.preventDefault();
-        if (activeInviteTab === 'sent') return;
-        activeInviteTab = 'sent';
-        $(this).addClass('active'); $('#receivedTab').removeClass('active');
-        loadSentInvites();
-    });
-
-    function loadReceivedInvites() {
-        $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
-        $.get('/api/Groups/invites/pending', function (invites) {
-            if (!invites.length) { $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noReceivedInvites}</div>`); return; }
-            let html = '';
-            invites.forEach(inv => {
-                html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom" id="invite_${inv.id}">
-                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">${L.from} ${inv.invitedBy.userName}</small></div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id},'accept')">${L.accept}</button>
-                        <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id},'decline')">${L.decline}</button>
-                    </div>
-                </div>`;
-            });
-            $('#pendingInvitesList').html(html);
-        });
-    }
-
-    function loadSentInvites() {
-        $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
-        $.get('/api/Groups/invites/sent', function (invites) {
-            if (!invites.length) { $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noSentInvites}</div>`); return; }
-            let html = '';
-            invites.forEach(inv => {
-                html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom">
-                    <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">${L.to} ${inv.user.userName}</small></div>
-                    <span class="badge badge-light-warning">${L.pending}</span>
-                </div>`;
-            });
-            $('#pendingInvitesList').html(html);
-        });
-    }
-
-    function respondInvite(id, action) {
-        $.ajax({
-            url: `/api/Groups/invites/${id}/${action}`, type: 'POST',
-            success: function () {
-                $(`#invite_${id}`).remove();
-                if (!$('#pendingInvitesList .border-bottom').length)
-                    $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noReceivedInvites}</div>`);
-                toastr.success(action === 'accept' ? L.joinedGroup : L.inviteDeclined);
-                if (action === 'accept') setTimeout(() => location.reload(), 800);
-            },
-            error: () => toastr.error(L.errSomethingWrong)
-        });
-    }
-
-    // ── Shared delete modal ───────────────────────────────────────
-    let pendingDeleteFn = null;
-
-    function openDeleteModal(type, name, onConfirm) {
-        $('#deleteConfirmType').text(type);
-        $('#deleteConfirmName').text(name);
-        pendingDeleteFn = onConfirm;
-        $('#deleteConfirmModal').modal('show');
-    }
-
-    $('#confirmDelete').click(function () {
-        if (pendingDeleteFn) pendingDeleteFn();
-        $('#deleteConfirmModal').modal('hide');
-        pendingDeleteFn = null;
-    });
-
-    // ── Edit / Delete task ────────────────────────────────────────
-    $(document).on('click', '.edit-task-btn', function (e) {
-        e.stopPropagation();
-        const $b = $(this);
-        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'), $b.data('assignee-id'));
-    });
-
-    $(document).on('click', '.delete-task-btn', function (e) {
-        e.stopPropagation();
-        const id = $(this).data('id');
-        const title = $(this).closest('.g-task-item').find('.flex-grow-1 span').first().text();
-        openDeleteModal('Task', title, function () {
-            $.ajax({
-                url: `/api/Tasks/${id}`, type: 'DELETE',
-                success: function () {
-                    toastr.success(L.taskDeleted);
-                    if (activeProjectId) {
-                        const $row = $(`.g-project-item[data-project-id="${activeProjectId}"]`);
-                        selectProject(activeProjectId, $row.data('project-title'), 0, 0);
-                    } else {
-                        loadAllGroupTasks(activeGroupId);
+                function renderTaskList(tasks, groupByProject) {
+                    if (!tasks.length) {
+                        $('#allTasksList').html(`<div class="g-empty py-10"><i class="ki-outline ki-check-circle fs-2tx mb-3"></i><p>${L.noTasksYet}</p></div>`);
+                        return;
                     }
-                },
-                error: () => toastr.error(L.errDeleteTask)
-            });
-        });
-    });
+                    let html = '';
+                    if (groupByProject) {
+                        const byProject = {};
+                        tasks.forEach(t => {
+                            const key = t.project ? t.project.title : 'Unassigned';
+                            if (!byProject[key]) byProject[key] = [];
+                            byProject[key].push(t);
+                        });
+                        for (const [proj, ptasks] of Object.entries(byProject)) {
+                            html += `<div class="px-4 pt-3 pb-1"><small class="text-muted text-uppercase fw-bold">${proj}</small></div>`;
+                            ptasks.forEach(t => { html += taskHtml(t); });
+                        }
+                    } else {
+                        tasks.forEach(t => { html += taskHtml(t); });
+                    }
+                    $('#allTasksList').html(html);
+                }
 
-    // ── Edit / Delete project ─────────────────────────────────────
-    $(document).on('click', '.edit-project-btn', function (e) {
-        e.stopPropagation();
-        const $b = $(this);
-        openProjectModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'));
-    });
+                function taskHtml(t) {
+                    const done = t.status;
+                    const overdue = t.deadLine && !done && new Date(t.deadLine) < new Date();
+                    const deadlineVal = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
+                    return `
+                    <div class="g-task-item" data-task-id="${t.id}">
+                        <div class="form-check mt-1">
+                            <input class="form-check-input task-status-toggle" type="checkbox" ${done ? 'checked' : ''} data-task-id="${t.id}">
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="${done ? 'text-decoration-line-through text-muted' : 'fw-semibold'}">${t.title}</span>
+                            ${t.description ? `<br><small class="text-muted">${t.description}</small>` : ''}
+                            ${t.deadLine ? `<br><small class="${overdue ? 'text-danger' : 'text-muted'}" style="white-space:nowrap"><i class="ki-outline ki-calendar fs-7 me-1"></i>${new Date(t.deadLine).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</small>` : ''}
+                        </div>
+                        ${t.assignedTo ? `<small class="badge badge-light me-2">${t.assignedTo.userName}</small>` : ''}
+                        <div class="g-row-actions">
+                            ${t.creatorId === CURRENT_USER_ID ? `
+                            <button class="btn btn-xs btn-icon btn-light-primary edit-task-btn"
+                                data-id="${t.id}" data-title="${t.title.replace(/"/g,'&quot;')}"
+                                data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
+                                data-deadline="${deadlineVal}" data-status="${done}"
+                                data-assignee-id="${t.assignedToUID || ''}"
+                                title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
+                            <button class="btn btn-xs btn-icon btn-light-danger delete-task-btn"
+                                data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>` : `
+                            <button class="btn btn-xs btn-icon btn-light-secondary" disabled title="${NO_ACCESS_HINT}">
+                                <i class="ki-outline ki-lock fs-5"></i>
+                            </button>`}
+                        </div>
+                    </div>`;
+                }
 
-    $(document).on('click', '.delete-project-btn', function (e) {
-        e.stopPropagation();
-        const id = $(this).data('id');
-        const title = $(this).data('title');
-        openDeleteModal('Project', title, function () {
-            $.ajax({
-                url: `/api/Projects/${id}`, type: 'DELETE',
-                success: function () {
-                    toastr.success(L.projectDeleted);
-                    if (activeProjectId == id) loadAllGroupTasks(activeGroupId);
-                    loadGroupProjects(activeGroupId);
-                },
-                error: () => toastr.error(L.errDeleteProject)
-            });
-        });
-    });
+                // ── Project item click (ignores action buttons) ──────────────
+                $(document).on('click', '.g-project-item', function (e) {
+                    if ($(e.target).closest('.g-row-actions').length) return;
+                    const $row = $(this);
+                    selectProject(
+                        $row.data('project-id'),
+                        $row.data('project-title'),
+                        $row.data('project-total'),
+                        $row.data('project-done')
+                    );
+                });
 
-    $(document).on('change', '.task-status-toggle', function () {
-        const id = $(this).data('task-id');
-        const $cb = $(this);
-        $.ajax({
-            url: `/api/Tasks/${id}/status`, type: 'PATCH',
-            success: function () { updateTaskUI($cb); },
-            error: function () {
-                $cb.prop('checked', !$cb.prop('checked'));
-                toastr.error(L.errUpdateTask);
-            }
-        });
-    });
+                // ── Project selection ─────────────────────────────────────────
+                function selectProject(projectId, title, total, done) {
+                    activeProjectId = projectId;
 
-    function updateTaskUI($cb) {
-        const done = $cb.prop('checked');
-        const $span = $cb.closest('.g-task-item').find('.flex-grow-1 > span').first();
-        $span.toggleClass('text-decoration-line-through text-muted', done)
-             .toggleClass('fw-semibold', !done);
+                    $('.g-project-item').removeClass('active');
+                    $(`.g-project-item[data-project-id="${projectId}"]`).addClass('active');
 
-        // recalculate progress from current DOM state
-        const total = $('#allTasksList .task-status-toggle').length;
-        const checked = $('#allTasksList .task-status-toggle:checked').length;
-        $('#overviewTaskCount').text(checked + '/' + total + ' ' + L.doneCount);
+                    $('#tasksColTitle').text(title);
+                    $('#tasksColMeta').text(`${done}/${total} ${L.tasksCompleted}`);
+                    $('#backToAllTasks').show();
+                    $('#overviewTaskCount').text(done === total && total > 0 ? L.doneLabel : L.inProgressLabel)
+                        .removeClass().addClass(`badge badge-light-${done === total && total > 0 ? 'success' : 'warning'}`);
+                    $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
 
-        // update project item progress bar if a project is active
-        if (activeProjectId) {
-            const pct = total ? Math.round(checked / total * 100) : 0;
-            $(`.g-project-item[onclick*="${activeProjectId}"] .progress-bar`).css('width', pct + '%');
-            $(`.g-project-item[onclick*="${activeProjectId}"] small.text-muted`).last().text(`${checked}/${total}`);
-            $('#tasksColMeta').text(`${checked}/${total} ${L.tasksCompleted}`);
-            const allDone = total > 0 && checked === total;
-            $('#overviewTaskCount').removeClass()
-                .addClass(`badge badge-light-${allDone ? 'success' : 'warning'}`);
-        }
-    }
+                    $.get(`/api/Groups/${activeGroupId}/tasks`, function (tasks) {
+                        const ptasks = tasks.filter(t => t.projectId === projectId || (t.project && t.project.id === projectId));
+                            $('#overviewTaskCount').text(ptasks.length + ' ' + L.tasksLabel);
+                        renderTaskList(ptasks, false);
+                    });
+                }
 
-    $('#backToAllTasks').click(function () {
-        loadAllGroupTasks(activeGroupId);
-    });
+                // ── Create group ─────────────────────────────────────────────
+                $('#createGroupBtn').click(() => $('#createGroupModal').modal('show'));
 
-    // ── New Project ──────────────────────────────────────────────
-    function openProjectModal(id, title, desc, deadline) {
-        $('#npId').val(id || '');
-        $('#npModalTitle').text(id ? L.editProject : L.newProject);
-        $('#npTitle').val(title || '');
-        $('#npDescription').val(desc || '');
-        $('#npDeadline').val(deadline || '');
-        $('#npTaskList').empty();
-        $('#npNoTasksMsg').show();
-        if (id) {
-            // load existing tasks
-            $.get(`/api/Projects/${id}`, function (p) {
-                (p.tasks || []).forEach(t => {
-                    const deadline = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
-                    const $row = $(npTaskRow(t.id, t.title, t.description, deadline, t.assignedToUID));
+                $('#confirmCreateGroup').click(function () {
+                    const title = $('#groupTitle').val().trim();
+                    if (!title) { toastr.warning(L.enterGroupName); return; }
+                    $.ajax({
+                        url: '/api/Groups', type: 'POST', contentType: 'application/json',
+                        data: JSON.stringify({ title }),
+                        success: function () {
+                            $('#createGroupModal').modal('hide');
+                            toastr.success(L.groupCreated);
+                            setTimeout(() => location.reload(), 800);
+                        },
+                        error: () => toastr.error(L.errCreateGroup)
+                    });
+                });
+
+                // ── Invite ───────────────────────────────────────────────────
+                $(document).on('click', '.invite-btn', function (e) {
+                    e.stopPropagation();
+                    activeGroupId = $(this).data('group-id');
+                    $('#inviteGroupTitle').text($(this).data('group-title'));
+                    $('#inviteInput').val('');
+                    $('#inviteStatus').html('');
+                    $('#confirmInvite').prop('disabled', true);
+                    userFound = false;
+                    $('#inviteModal').modal('show');
+                });
+
+                $('#inviteInput').on('input', function () {
+                    clearTimeout(checkTimeout);
+                    const val = $(this).val().trim();
+                    $('#inviteStatus').html('');
+                    $('#confirmInvite').prop('disabled', true);
+                    userFound = false;
+                    if (val.length < 2) return;
+
+                    checkTimeout = setTimeout(function () {
+                        const isEmail = val.includes('@@');
+                        const endpoint = isEmail
+                            ? `/api/Account/checkEmail?email=${encodeURIComponent(val)}`
+                            : `/api/Account/checkUser?username=${encodeURIComponent(val)}`;
+                        $.get(endpoint, function (res) {
+                            const exists = isEmail ? res.emailTaken : res.userNameTaken;
+                            if (exists) {
+                                $('#inviteStatus').html(`<span class="text-success"><i class="ki-outline ki-check fs-5"></i> ${L.userFound}</span>`);
+                                $('#confirmInvite').prop('disabled', false);
+                                userFound = true;
+                            } else {
+                                $('#inviteStatus').html(`<span class="text-danger"><i class="ki-outline ki-cross fs-5"></i> ${L.userNotFound}</span>`);
+                            }
+                        });
+                    }, 400);
+                });
+
+                $('#confirmInvite').click(function () {
+                    if (!userFound) return;
+                    $.ajax({
+                        url: `/api/Groups/${activeGroupId}/invite`, type: 'POST', contentType: 'application/json',
+                        data: JSON.stringify({ usernameOrEmail: $('#inviteInput').val().trim() }),
+                        success: function () { $('#inviteModal').modal('hide'); toastr.success(L.inviteSent); },
+                        error: xhr => toastr.error(xhr.responseJSON || L.errSendInvite)
+                    });
+                });
+
+                // ── Invites modal ────────────────────────────────────────────
+                let activeInviteTab = 'received';
+
+                $('#pendingInvitesBtn').click(function () {
+                    activeInviteTab = 'received';
+                    $('#receivedTab').addClass('active'); $('#sentTab').removeClass('active');
+                    $('#pendingInvitesModal').modal('show');
+                    loadReceivedInvites();
+                });
+
+                $('#receivedTab').click(function (e) {
+                    e.preventDefault();
+                    if (activeInviteTab === 'received') return;
+                    activeInviteTab = 'received';
+                    $(this).addClass('active'); $('#sentTab').removeClass('active');
+                    loadReceivedInvites();
+                });
+
+                $('#sentTab').click(function (e) {
+                    e.preventDefault();
+                    if (activeInviteTab === 'sent') return;
+                    activeInviteTab = 'sent';
+                    $(this).addClass('active'); $('#receivedTab').removeClass('active');
+                    loadSentInvites();
+                });
+
+                function loadReceivedInvites() {
+                    $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
+                    $.get('/api/Groups/invites/pending', function (invites) {
+                        if (!invites.length) { $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noReceivedInvites}</div>`); return; }
+                        let html = '';
+                        invites.forEach(inv => {
+                            html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom" id="invite_${inv.id}">
+                                <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">${L.from} ${inv.invitedBy.userName}</small></div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-light-success" onclick="respondInvite(${inv.id},'accept')">${L.accept}</button>
+                                    <button class="btn btn-sm btn-light-danger" onclick="respondInvite(${inv.id},'decline')">${L.decline}</button>
+                                </div>
+                            </div>`;
+                        });
+                        $('#pendingInvitesList').html(html);
+                    });
+                }
+
+                function loadSentInvites() {
+                    $('#pendingInvitesList').html('<div class="text-center text-muted py-5">Loading...</div>');
+                    $.get('/api/Groups/invites/sent', function (invites) {
+                        if (!invites.length) { $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noSentInvites}</div>`); return; }
+                        let html = '';
+                        invites.forEach(inv => {
+                            html += `<div class="d-flex align-items-center justify-content-between py-3 border-bottom">
+                                <div><span class="fw-bold">${inv.group.title}</span><br><small class="text-muted">${L.to} ${inv.user.userName}</small></div>
+                                <span class="badge badge-light-warning">${L.pending}</span>
+                            </div>`;
+                        });
+                        $('#pendingInvitesList').html(html);
+                    });
+                }
+
+                function respondInvite(id, action) {
+                    $.ajax({
+                        url: `/api/Groups/invites/${id}/${action}`, type: 'POST',
+                        success: function () {
+                            $(`#invite_${id}`).remove();
+                            if (!$('#pendingInvitesList .border-bottom').length)
+                                $('#pendingInvitesList').html(`<div class="text-center text-muted py-5">${L.noReceivedInvites}</div>`);
+                            toastr.success(action === 'accept' ? L.joinedGroup : L.inviteDeclined);
+                            if (action === 'accept') setTimeout(() => location.reload(), 800);
+                        },
+                        error: () => toastr.error(L.errSomethingWrong)
+                    });
+                }
+
+                // ── Shared delete modal ───────────────────────────────────────
+                let pendingDeleteFn = null;
+
+                function openDeleteModal(type, name, onConfirm) {
+                    $('#deleteConfirmType').text(type);
+                    $('#deleteConfirmName').text(name);
+                    pendingDeleteFn = onConfirm;
+                    $('#deleteConfirmModal').modal('show');
+                }
+
+                $('#confirmDelete').click(function () {
+                    if (pendingDeleteFn) pendingDeleteFn();
+                    $('#deleteConfirmModal').modal('hide');
+                    pendingDeleteFn = null;
+                });
+
+                // ── Edit / Delete task ────────────────────────────────────────
+                $(document).on('click', '.edit-task-btn', function (e) {
+                    e.stopPropagation();
+                    const $b = $(this);
+                    openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'), $b.data('assignee-id'));
+                });
+
+                $(document).on('click', '.delete-task-btn', function (e) {
+                    e.stopPropagation();
+                    const id = $(this).data('id');
+                    const title = $(this).closest('.g-task-item').find('.flex-grow-1 span').first().text();
+                    openDeleteModal('Task', title, function () {
+                        $.ajax({
+                            url: `/api/Tasks/${id}`, type: 'DELETE',
+                            success: function () {
+                                toastr.success(L.taskDeleted);
+                                if (activeProjectId) {
+                                    const $row = $(`.g-project-item[data-project-id="${activeProjectId}"]`);
+                                    selectProject(activeProjectId, $row.data('project-title'), 0, 0);
+                                } else {
+                                    loadAllGroupTasks(activeGroupId);
+                                }
+                            },
+                            error: () => toastr.error(L.errDeleteTask)
+                        });
+                    });
+                });
+
+                // ── Edit / Delete project ─────────────────────────────────────
+                $(document).on('click', '.edit-project-btn', function (e) {
+                    e.stopPropagation();
+                    const $b = $(this);
+                    openProjectModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'));
+                });
+
+                $(document).on('click', '.delete-project-btn', function (e) {
+                    e.stopPropagation();
+                    const id = $(this).data('id');
+                    const title = $(this).data('title');
+                    openDeleteModal('Project', title, function () {
+                        $.ajax({
+                            url: `/api/Projects/${id}`, type: 'DELETE',
+                            success: function () {
+                                toastr.success(L.projectDeleted);
+                                if (activeProjectId == id) loadAllGroupTasks(activeGroupId);
+                                loadGroupProjects(activeGroupId);
+                            },
+                            error: () => toastr.error(L.errDeleteProject)
+                        });
+                    });
+                });
+
+                $(document).on('change', '.task-status-toggle', function () {
+                    const id = $(this).data('task-id');
+                    const $cb = $(this);
+                    $.ajax({
+                        url: `/api/Tasks/${id}/status`, type: 'PATCH',
+                        success: function () { updateTaskUI($cb); },
+                        error: function () {
+                            $cb.prop('checked', !$cb.prop('checked'));
+                            toastr.error(L.errUpdateTask);
+                        }
+                    });
+                });
+
+                function updateTaskUI($cb) {
+                    const done = $cb.prop('checked');
+                    const $span = $cb.closest('.g-task-item').find('.flex-grow-1 > span').first();
+                    $span.toggleClass('text-decoration-line-through text-muted', done)
+                         .toggleClass('fw-semibold', !done);
+
+                    // recalculate progress from current DOM state
+                    const total = $('#allTasksList .task-status-toggle').length;
+                    const checked = $('#allTasksList .task-status-toggle:checked').length;
+                    $('#overviewTaskCount').text(checked + '/' + total + ' ' + L.doneCount);
+
+                    // update project item progress bar if a project is active
+                    if (activeProjectId) {
+                        const pct = total ? Math.round(checked / total * 100) : 0;
+                        $(`.g-project-item[onclick*="${activeProjectId}"] .progress-bar`).css('width', pct + '%');
+                        $(`.g-project-item[onclick*="${activeProjectId}"] small.text-muted`).last().text(`${checked}/${total}`);
+                        $('#tasksColMeta').text(`${checked}/${total} ${L.tasksCompleted}`);
+                        const allDone = total > 0 && checked === total;
+                        $('#overviewTaskCount').removeClass()
+                            .addClass(`badge badge-light-${allDone ? 'success' : 'warning'}`);
+                    }
+                }
+
+                $('#backToAllTasks').click(function () {
+                    loadAllGroupTasks(activeGroupId);
+                });
+
+                // ── New Project ──────────────────────────────────────────────
+                function openProjectModal(id, title, desc, deadline) {
+                    $('#npId').val(id || '');
+                    $('#npModalTitle').text(id ? L.editProject : L.newProject);
+                    $('#npTitle').val(title || '');
+                    $('#npDescription').val(desc || '');
+                    $('#npDeadline').val(deadline || '');
+                    $('#npTaskList').empty();
+                    $('#npNoTasksMsg').show();
+                    if (id) {
+                        // load existing tasks
+                        $.get(`/api/Projects/${id}`, function (p) {
+                            (p.tasks || []).forEach(t => {
+                                const deadline = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
+                                const $row = $(npTaskRow(t.id, t.title, t.description, deadline, t.assignedToUID));
+                                initPersianDatepickers($row);
+                                $('#npTaskList').append($row);
+                                $('#npNoTasksMsg').hide();
+                            });
+                        });
+                    }
+                    initPersianDatepickers($('#newProjectModal'));
+                    $('#newProjectModal').modal('show');
+                }
+
+                $('#addProjectBtn').click(function () { openProjectModal(); });
+
+                function npMemberOptions(selectedId) {
+                    let opts = `<option value="">${L.unassigned}</option>`;
+                    activeGroupMembers.forEach(m => {
+                        opts += `<option value="${m.id}" ${m.id == selectedId ? 'selected' : ''}>${m.name}</option>`;
+                    });
+                    return opts;
+                }
+
+                function npTaskRow(id, title, desc, deadline, assigneeId) {
+                    return `
+                        <div class="np-task-item border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <input type="hidden" class="np-task-id" value="${id || 0}">
+                                <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title" value="${title || ''}">
+                                <button type="button" class="btn btn-sm btn-icon btn-light-danger np-remove-task ms-2 flex-shrink-0">
+                                    <i class="ki-outline ki-trash fs-4"></i>
+                                </button>
+                            </div>
+                            <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description" value="${desc || ''}">
+                            <div class="d-flex gap-2">
+                                <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input flex-grow-1" placeholder="Deadline" value="${deadline || ''}">
+                                <select class="form-select form-select-sm np-task-assignee" style="max-width:140px;">${npMemberOptions(assigneeId)}</select>
+                            </div>
+                        </div>`;
+                }
+
+                $('#npAddTaskBtn').click(function () {
+                    const $row = $(npTaskRow());
                     initPersianDatepickers($row);
                     $('#npTaskList').append($row);
                     $('#npNoTasksMsg').hide();
                 });
-            });
-        }
-        initPersianDatepickers($('#newProjectModal'));
-        $('#newProjectModal').modal('show');
-    }
 
-    $('#addProjectBtn').click(function () { openProjectModal(); });
+                $(document).on('click', '.np-remove-task', function () {
+                    $(this).closest('.np-task-item').remove();
+                    if (!$('#npTaskList .np-task-item').length) $('#npNoTasksMsg').show();
+                });
 
-    function npMemberOptions(selectedId) {
-        let opts = `<option value="">${L.unassigned}</option>`;
-        activeGroupMembers.forEach(m => {
-            opts += `<option value="${m.id}" ${m.id == selectedId ? 'selected' : ''}>${m.name}</option>`;
-        });
-        return opts;
-    }
-
-    function npTaskRow(id, title, desc, deadline, assigneeId) {
-        return `
-            <div class="np-task-item border rounded p-3 mb-3">
-                <div class="d-flex justify-content-between mb-2">
-                    <input type="hidden" class="np-task-id" value="${id || 0}">
-                    <input type="text" class="form-control form-control-sm np-task-title" placeholder="Task title" value="${title || ''}">
-                    <button type="button" class="btn btn-sm btn-icon btn-light-danger np-remove-task ms-2 flex-shrink-0">
-                        <i class="ki-outline ki-trash fs-4"></i>
-                    </button>
-                </div>
-                <input type="text" class="form-control form-control-sm np-task-desc mb-2" placeholder="Description" value="${desc || ''}">
-                <div class="d-flex gap-2">
-                    <input type="text" class="form-control form-control-sm np-task-deadline persian-date-input flex-grow-1" placeholder="Deadline" value="${deadline || ''}">
-                    <select class="form-select form-select-sm np-task-assignee" style="max-width:140px;">${npMemberOptions(assigneeId)}</select>
-                </div>
-            </div>`;
-    }
-
-    $('#npAddTaskBtn').click(function () {
-        const $row = $(npTaskRow());
-        initPersianDatepickers($row);
-        $('#npTaskList').append($row);
-        $('#npNoTasksMsg').hide();
-    });
-
-    $(document).on('click', '.np-remove-task', function () {
-        $(this).closest('.np-task-item').remove();
-        if (!$('#npTaskList .np-task-item').length) $('#npNoTasksMsg').show();
-    });
-
-    function npCollectTasks() {
-        const tasks = [];
-        $('#npTaskList .np-task-item').each(function () {
-            const assigneeVal = $(this).find('.np-task-assignee').val();
-            tasks.push({
-                Id: parseInt($(this).find('.np-task-id').val()) || 0,
-                Title: $(this).find('.np-task-title').val(),
-                Description: $(this).find('.np-task-desc').val(),
-                DeadLine: normalizeToGregorian($(this).find('.np-task-deadline').val()),
-                AssigneeId: assigneeVal ? parseInt(assigneeVal) : null
-            });
-        });
-        return tasks;
-    }
-
-    $('#confirmNewProject').click(function () {
-        const title = $('#npTitle').val().trim();
-        if (!title) { toastr.warning(L.enterProjectTitle); return; }
-        const id = $('#npId').val();
-        const isEdit = !!id;
-        $.ajax({
-            url: isEdit ? `/api/Projects/${id}` : '/api/Projects',
-            type: isEdit ? 'PUT' : 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                Title: title,
-                Description: $('#npDescription').val().trim() || null,
-                Deadline: normalizeToGregorian($('#npDeadline').val()),
-                Group: activeGroupId,
-                Status: true,
-                Tasks: npCollectTasks()
-            }),
-            success: function () {
-                $('#newProjectModal').modal('hide');
-                toastr.success(isEdit ? L.projectUpdated : L.projectCreated);
-                loadGroupProjects(activeGroupId);
-                if (isEdit && activeProjectId == id) loadAllGroupTasks(activeGroupId);
-            },
-            error: () => toastr.error(isEdit ? L.errUpdateProject : L.errCreateProject)
-        });
-    });
-
-    // ── New/Edit Task ─────────────────────────────────────────────
-    function openTaskModal(id, title, desc, deadline, assigneeId) {
-        $('#ntId').val(id || '');
-        $('#ntModalTitle').text(id ? L.editTask : L.newTask);
-        $('#ntTitle').val(title || '');
-        $('#ntDescription').val(desc || '');
-        $('#ntDeadline').val(deadline || '');
-
-        const $select = $('#ntAssignee');
-        $select.html(`<option value="">${L.unassigned}</option>`);
-        activeGroupMembers.forEach(m => {
-            $select.append(`<option value="${m.id}" ${m.id == assigneeId ? 'selected' : ''}>${m.name}</option>`);
-        });
-        if (!id) {
-            if (activeProjectId) {
-                $('#ntProjectLabel').text($('.g-project-item.active .fw-semibold').first().text());
-                $('#ntProjectRow').show();
-                $('#ntGroupRow').hide();
-            } else {
-                $('#ntProjectRow').hide();
-                $('#ntGroupRow').show();
-            }
-        } else {
-            $('#ntProjectRow').hide();
-            $('#ntGroupRow').hide();
-        }
-        $('#newTaskModal').modal('show');
-    }
-
-    $('#addTaskBtn').click(function () { openTaskModal(); });
-
-    $('#confirmNewTask').click(function () {
-        const title = $('#ntTitle').val().trim();
-        if (!title) { toastr.warning(L.enterTaskTitle); return; }
-        const id = $('#ntId').val();
-        const isEdit = !!id;
-        const assigneeId = $('#ntAssignee').val();
-        const payload = {
-            title,
-            description: $('#ntDescription').val().trim() || null,
-            deadLine: $('#ntDeadline').val() || null,
-            status: false,
-            assigneeId: assigneeId ? parseInt(assigneeId) : null,
-            projectId: !isEdit ? (activeProjectId || null) : undefined,
-            groupId: !isEdit ? (!activeProjectId ? activeGroupId : null) : undefined
-        };
-        $.ajax({
-            url: isEdit ? `/api/Tasks/${id}` : '/api/Tasks',
-            type: isEdit ? 'PUT' : 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(payload),
-            success: function () {
-                $('#newTaskModal').modal('hide');
-                toastr.success(isEdit ? L.taskUpdated : L.taskCreated);
-                if (activeProjectId) {
-                    selectProject(activeProjectId,
-                        $('.g-project-item.active .fw-semibold').first().text(), 0, 0);
-                } else {
-                    loadAllGroupTasks(activeGroupId);
+                function npCollectTasks() {
+                    const tasks = [];
+                    $('#npTaskList .np-task-item').each(function () {
+                        const assigneeVal = $(this).find('.np-task-assignee').val();
+                        tasks.push({
+                            Id: parseInt($(this).find('.np-task-id').val()) || 0,
+                            Title: $(this).find('.np-task-title').val(),
+                            Description: $(this).find('.np-task-desc').val(),
+                            DeadLine: normalizeToGregorian($(this).find('.np-task-deadline').val()),
+                            AssigneeId: assigneeVal ? parseInt(assigneeVal) : null
+                        });
+                    });
+                    return tasks;
                 }
-            },
-            error: () => toastr.error(isEdit ? L.errUpdateTask : L.errCreateTask)
-        });
-    });
 
-    // ── Delete group ──────────────────────────────────────────────
-    $(document).on('click', '.delete-btn', function (e) {
-        e.stopPropagation();
-        const id = $(this).data('group-id');
-        const title = $(this).data('group-title');
-        openDeleteModal('Group', title, function () {
-            $.ajax({
-                url: `/api/Groups/${id}`, type: 'DELETE',
-                success: function () {
-                    $(`#group_${id}`).remove();
-                    if (activeGroupId == id) {
-                        activeGroupId = null;
-                        activeProjectId = null;
-                        $('#detailPanel').removeClass('split').removeClass('mobile-active');
-                        $('#col2').hide();
-                        $('#projectsCol').hide();
-                        $('#tasksCol').hide();
-                        $('#noGroupSelected').show();
-                        $('#mobileBackBar').hide();
-                        if (window.innerWidth < 768) $('.g-panel').first().show();
+                $('#confirmNewProject').click(function () {
+                    const title = $('#npTitle').val().trim();
+                    if (!title) { toastr.warning(L.enterProjectTitle); return; }
+                    const id = $('#npId').val();
+                    const isEdit = !!id;
+                    $.ajax({
+                        url: isEdit ? `/api/Projects/${id}` : '/api/Projects',
+                        type: isEdit ? 'PUT' : 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            Title: title,
+                            Description: $('#npDescription').val().trim() || null,
+                            Deadline: normalizeToGregorian($('#npDeadline').val()),
+                            Group: activeGroupId,
+                            Status: true,
+                            Tasks: npCollectTasks()
+                        }),
+                        success: function () {
+                            $('#newProjectModal').modal('hide');
+                            toastr.success(isEdit ? L.projectUpdated : L.projectCreated);
+                            loadGroupProjects(activeGroupId);
+                            if (isEdit && activeProjectId == id) loadAllGroupTasks(activeGroupId);
+                        },
+                        error: () => toastr.error(isEdit ? L.errUpdateProject : L.errCreateProject)
+                    });
+                });
+
+                // ── New/Edit Task ─────────────────────────────────────────────
+                function openTaskModal(id, title, desc, deadline, assigneeId) {
+                    $('#ntId').val(id || '');
+                    $('#ntModalTitle').text(id ? L.editTask : L.newTask);
+                    $('#ntTitle').val(title || '');
+                    $('#ntDescription').val(desc || '');
+                    $('#ntDeadline').val(deadline || '');
+
+                    const $select = $('#ntAssignee');
+                    $select.html(`<option value="">${L.unassigned}</option>`);
+                    activeGroupMembers.forEach(m => {
+                        $select.append(`<option value="${m.id}" ${m.id == assigneeId ? 'selected' : ''}>${m.name}</option>`);
+                    });
+                    if (!id) {
+                        if (activeProjectId) {
+                            $('#ntProjectLabel').text($('.g-project-item.active .fw-semibold').first().text());
+                            $('#ntProjectRow').show();
+                            $('#ntGroupRow').hide();
+                        } else {
+                            $('#ntProjectRow').hide();
+                            $('#ntGroupRow').show();
+                        }
+                    } else {
+                        $('#ntProjectRow').hide();
+                        $('#ntGroupRow').hide();
                     }
-                    toastr.success(L.groupDeleted);
-                },
-                error: () => toastr.error(L.errDeleteGroup)
-            });
-        });
-    });
-</script>
-}
+                    $('#newTaskModal').modal('show');
+                }
+
+                $('#addTaskBtn').click(function () { openTaskModal(); });
+
+                $('#confirmNewTask').click(function () {
+                    const title = $('#ntTitle').val().trim();
+                    if (!title) { toastr.warning(L.enterTaskTitle); return; }
+                    const id = $('#ntId').val();
+                    const isEdit = !!id;
+                    const assigneeId = $('#ntAssignee').val();
+                    const payload = {
+                        title,
+                        description: $('#ntDescription').val().trim() || null,
+                        deadLine: $('#ntDeadline').val() || null,
+                        status: false,
+                        assigneeId: assigneeId ? parseInt(assigneeId) : null,
+                        projectId: !isEdit ? (activeProjectId || null) : undefined,
+                        groupId: !isEdit ? (!activeProjectId ? activeGroupId : null) : undefined
+                    };
+                    $.ajax({
+                        url: isEdit ? `/api/Tasks/${id}` : '/api/Tasks',
+                        type: isEdit ? 'PUT' : 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(payload),
+                        success: function () {
+                            $('#newTaskModal').modal('hide');
+                            toastr.success(isEdit ? L.taskUpdated : L.taskCreated);
+                            if (activeProjectId) {
+                                selectProject(activeProjectId,
+                                    $('.g-project-item.active .fw-semibold').first().text(), 0, 0);
+                            } else {
+                                loadAllGroupTasks(activeGroupId);
+                            }
+                        },
+                        error: () => toastr.error(isEdit ? L.errUpdateTask : L.errCreateTask)
+                    });
+                });
+
+                // ── Delete group ──────────────────────────────────────────────
+                $(document).on('click', '.delete-btn', function (e) {
+                    e.stopPropagation();
+                    const id = $(this).data('group-id');
+                    const title = $(this).data('group-title');
+                    openDeleteModal('Group', title, function () {
+                        $.ajax({
+                            url: `/api/Groups/${id}`, type: 'DELETE',
+                            success: function () {
+                                $(`#group_${id}`).remove();
+                                if (activeGroupId == id) {
+                                    activeGroupId = null;
+                                    activeProjectId = null;
+                                    $('#detailPanel').removeClass('split').removeClass('mobile-active');
+                                    $('#col2').hide();
+                                    $('#projectsCol').hide();
+                                    $('#tasksCol').hide();
+                                    $('#noGroupSelected').show();
+                                    $('#mobileBackBar').hide();
+                                    if (window.innerWidth < 768) $('.g-panel').first().show();
+                                }
+                                toastr.success(L.groupDeleted);
+                            },
+                            error: () => toastr.error(L.errDeleteGroup)
+                        });
+                    });
+                });
+        </script>
+    }

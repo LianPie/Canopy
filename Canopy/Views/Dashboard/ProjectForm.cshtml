@@ -14,15 +14,17 @@
 }
 
 <!-- Header with Submit -->
-<div class="toolbar d-flex justify-content-between mb-5">
-    <h3>@ViewData["Title"]</h3>
-    <div class="d-flex gap-2">
-        <a href="/Dashboard/Projects" class="btn btn-secondary">
-            @_localizer["Cancel"]
-        </a>
-        <button form="projectForm" class="btn btn-primary" onclick="">
-            <i class="ki-outline ki-check-circle fs-2"></i> @_localizer["Save"]
-        </button>
+<div class="toolbar mb-5">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <h3 class="mb-0">@ViewData["Title"]</h3>
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <a href="/Dashboard/Projects" class="btn btn-secondary flex-grow-1 flex-sm-grow-0">
+                @_localizer["Cancel"]
+            </a>
+            <button form="projectForm" class="btn btn-primary flex-grow-1 flex-sm-grow-0">
+                <i class="ki-outline ki-check-circle fs-2"></i> @_localizer["Save"]
+            </button>
+        </div>
     </div>
 </div>
 
