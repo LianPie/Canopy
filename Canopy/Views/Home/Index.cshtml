@@ -38,8 +38,42 @@
                 </span>
             </a>
 
-            <div class="d-lg-none ms-auto me-3">
-
+            <div class="d-lg-none ms-auto me-3 d-flex align-items-center gap-2">
+                <div class="dropdown" id="mobileLangDropdown">
+                    <button class="btn btnnav custom-btn custom-border-btn" type="button" onclick="toggleMobileLang(event)">
+                        <i class="fa-solid fa-globe"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" id="mobileLangMenu">
+                        <li>
+                            <a href="~/?culture=en" class="dropdown-item @(currentCulture == "en" ? "active" : "")">
+                                <i class="fa-solid fa-check @(currentCulture == "en" ? "visible" : "invisible")"></i>
+                                English
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/?culture=fa" class="dropdown-item @(currentCulture == "fa" ? "active" : "")">
+                                <i class="fa-solid fa-check @(currentCulture == "fa" ? "visible" : "invisible")"></i>
+                                فارسی
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <script>
+                    function toggleMobileLang(e) {
+                        e.stopPropagation();
+                        var menu = document.getElementById('mobileLangMenu');
+                        var open = menu.style.opacity === '1';
+                        menu.style.opacity = open ? '0' : '1';
+                        menu.style.pointerEvents = open ? 'none' : 'auto';
+                        menu.style.marginTop = open ? '20px' : '0';
+                    }
+                    document.addEventListener('click', function() {
+                        var menu = document.getElementById('mobileLangMenu');
+                        menu.style.opacity = '0';
+                        menu.style.pointerEvents = 'none';
+                        menu.style.marginTop = '20px';
+                    });
+                </script>
                 <a class="btn btnnav custom-btn custom-border-btn" href="~/Home/Login">@SR["LoginBtn"]</a>
             </div>
             <div class="collapse navbar-collapse" id="navbarNav">
