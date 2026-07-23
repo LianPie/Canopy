@@ -216,4 +216,10 @@
   <data name="NoAccess" xml:space="preserve">
     <value>شما دسترسی ندارید</value>
   </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>پیش رو</value>
+  </data>
+  <data name="LoadMore" xml:space="preserve">
+    <value>بیشتر</value>
+  </data>
 </root>

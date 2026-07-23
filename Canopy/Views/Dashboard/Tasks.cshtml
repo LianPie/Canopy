@@ -3,8 +3,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Localization
 
-@using Canopy.Models
-@model List<PlannedTask>
 
 @inject IViewLocalizer _localizer
 
@@ -148,6 +146,83 @@
     }
 
     .empty-day i { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+
+    .collapsible-section {
+        border: 1px solid var(--bs-border-color, #e4e6ef);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .collapsible-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        cursor: pointer;
+        user-select: none;
+        background: var(--bs-card-bg, #fff);
+        transition: background 0.15s;
+    }
+
+    .collapsible-header:hover { background: var(--bs-tertiary-bg); }
+
+    .collapsible-title {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--bs-gray-600);
+    }
+
+    .collapsible-chevron {
+        transition: transform 0.2s;
+        color: var(--bs-gray-400);
+    }
+
+    .collapsible-chevron.open { transform: rotate(180deg); }
+
+    .collapsible-body {
+        border-top: 1px solid var(--bs-border-color, #e4e6ef);
+        background: var(--bs-card-bg, #fff);
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.3s ease, opacity 0.25s ease;
+    }
+
+    .collapsible-body.open {
+        max-height: 2000px;
+        opacity: 1;
+        transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+
+    .load-more-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: none;
+        color: var(--bs-primary);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border-top: 1px solid var(--bs-border-color, #e4e6ef);
+        transition: background 0.15s;
+    }
+
+    .load-more-btn:hover { background: var(--bs-tertiary-bg); }
+
+    @@keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-item {
+        animation: fadeSlideIn 0.2s ease both;
+    }
 </style>
 
 <div class="toolbar d-flex justify-content-between align-items-center mb-5">
@@ -165,10 +240,51 @@
 <!-- Task list -->
 <div id="taskList"></div>
 
+<!-- Overdue section -->
+<div class="collapsible-section" id="overdueSection">
+    <div class="collapsible-header" onclick="toggleSection('overdue')">
+        <span class="collapsible-title text-danger">
+            <i class="ki-outline ki-time -2 fs-5 me-2 text-danger"></i>@_localizer["Overdue"]
+            <span class="badge badge-light-danger ms-2" id="overdueCount" style="display:none"></span>
+        </span>
+        <i class="ki-outline ki-down fs-5 collapsible-chevron" id="overdueChevron"></i>
+    </div>
+    <div class="collapsible-body" id="overdueBody">
+        <div id="overdueList"></div>
+        <button class="load-more-btn" id="overdueMore" style="display:none" onclick="loadMore('overdue')">
+            @_localizer["LoadMore"]
+        </button>
+    </div>
+</div>
+
+<!-- Upcoming section -->
+<div class="collapsible-section" id="upcomingSection">
+    <div class="collapsible-header" onclick="toggleSection('upcoming')">
+        <span class="collapsible-title text-primary">
+            <i class="ki-outline ki-calendar-tick fs-5 me-2 text-primary"></i>@_localizer["Upcoming"]
+            <span class="badge badge-light-primary ms-2" id="upcomingCount" style="display:none"></span>
+        </span>
+        <i class="ki-outline ki-down fs-5 collapsible-chevron" id="upcomingChevron"></i>
+    </div>
+    <div class="collapsible-body" id="upcomingBody">
+        <div id="upcomingList"></div>
+        <button class="load-more-btn" id="upcomingMore" style="display:none" onclick="loadMore('upcoming')">
+            @_localizer["LoadMore"]
+        </button>
+    </div>
+</div>
+
 <!-- No-date section -->
-<div id="nodateSection">
-    <div class="section-header">@_localizer["NoDeadline"]</div>
-    <div id="nodateList"><div class="tasks-skeleton"><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:45%"></div></div></div>
+<div class="collapsible-section" id="nodateSection">
+    <div class="collapsible-header" onclick="toggleSection('nodate')">
+        <span class="collapsible-title">
+            <i class="ki-outline ki-minus-circle fs-5 me-2 text-muted"></i>@_localizer["NoDeadline"]
+        </span>
+        <i class="ki-outline ki-down fs-5 collapsible-chevron" id="nodateChevron"></i>
+    </div>
+    <div class="collapsible-body" id="nodateBody">
+        <div id="nodateList"></div>
+    </div>
 </div>
 
 <!-- Delete modal -->
@@ -276,13 +392,13 @@
 
     // ─── Load no-date tasks ───────────────────────────────────────────────────
     function loadNodateTasks() {
+        const list = document.getElementById('nodateList');
+        list.innerHTML = skeletonHtml();
         $.get('/api/tasks/no-date', function(tasks) {
-            const list = document.getElementById('nodateList');
-            if (!tasks.length) {
-                list.innerHTML = `<div class="text-muted fs-7 py-3">@_localizer["NoTasks"]</div>`;
-                return;
-            }
-            list.innerHTML = tasks.map(taskHtml).join('');
+            sections.nodate.loaded = true;
+            list.innerHTML = tasks.length
+                ? tasks.map(taskHtml).join('')
+                : `<div class="text-muted fs-7 px-4 py-3">@_localizer["NoTasks"]</div>`;
         });
     }
 
@@ -371,9 +487,90 @@
     function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
     function escJs(s) { return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
+    // ─── Collapsible sections ─────────────────────────────────────────────────
+    const sections = {
+        overdue:  { page: 1, loaded: false, hasMore: false, cache: [] },
+        upcoming: { page: 1, loaded: false, hasMore: false, cache: [] },
+        nodate:   { loaded: false, cache: [] }
+    };
+
+    function toggleSection(key) {
+        const suffix  = key === 'nodate' ? 'nodate' : key;
+        const body    = document.getElementById(suffix + 'Body');
+        const chevron = document.getElementById(suffix + 'Chevron');
+        const isOpen  = body.classList.contains('open');
+
+        body.classList.toggle('open', !isOpen);
+        chevron.classList.toggle('open', !isOpen);
+
+        if (!isOpen && !sections[key].loaded) {
+            if (key === 'nodate') loadNodateTasks();
+            else loadSection(key);
+        }
+    }
+
+    function skeletonHtml() {
+        return `<div class="tasks-skeleton px-4 py-3">
+            <div class="sk-line" style="width:65%"></div>
+            <div class="sk-line" style="width:40%"></div>
+        </div>`;
+    }
+
+    function renderSection(key) {
+        const s       = sections[key];
+        const list    = document.getElementById(key + 'List');
+        const moreBtn = document.getElementById(key + 'More');
+        const countEl = document.getElementById(key + 'Count');
+
+        list.innerHTML = s.cache.length
+            ? s.cache.map(taskHtml).join('')
+            : `<div class="text-muted fs-7 px-4 py-3">@_localizer["NoTasks"]</div>`;
+
+        if (countEl) {
+            countEl.textContent = s.hasMore ? s.cache.length + '+' : s.cache.length || '';
+            countEl.style.display = s.cache.length ? '' : 'none';
+        }
+        moreBtn.style.display = s.hasMore ? 'block' : 'none';
+    }
+
+    function loadSection(key) {
+        const s    = sections[key];
+        const list = document.getElementById(key + 'List');
+        list.innerHTML = skeletonHtml();
+
+        $.get(`/api/tasks/${key}?page=1&pageSize=10`, function(res) {
+            s.loaded  = true;
+            s.hasMore = res.hasMore;
+            s.page    = 2;
+            s.cache   = res.items;
+            renderSection(key);
+        });
+    }
+
+    function loadMore(key) {
+        const s       = sections[key];
+        const moreBtn = document.getElementById(key + 'More');
+        moreBtn.disabled = true;
+        moreBtn.textContent = '...';
+
+        $.get(`/api/tasks/${key}?page=${s.page}&pageSize=10`, function(res) {
+            s.page++;
+            s.hasMore = res.hasMore;
+            s.cache.push(...res.items);
+            document.getElementById(key + 'List').insertAdjacentHTML('beforeend', res.items.map(taskHtml).join(''));
+            moreBtn.disabled = false;
+            moreBtn.textContent = '@_localizer["LoadMore"]';
+            moreBtn.style.display = res.hasMore ? 'block' : 'none';
+
+            const countEl = document.getElementById(key + 'Count');
+            if (countEl) {
+                countEl.textContent = s.hasMore ? s.cache.length + '+' : s.cache.length;
+            }
+        });
+    }
+
     // ─── Init ─────────────────────────────────────────────────────────────────
     buildStrip();
     loadDateTasks(today);
-    loadNodateTasks();
 </script>
 }

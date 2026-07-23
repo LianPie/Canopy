@@ -38,6 +38,13 @@ namespace Canopy.Controllers
             return Ok(tasks);
         }
 
+        [HttpGet("paged")]
+        public IActionResult GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 12)
+        {
+            var (items, hasMore) = _projectRepo.GetPage(GetUserId(), page, pageSize);
+            return Ok(new { items, hasMore });
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {

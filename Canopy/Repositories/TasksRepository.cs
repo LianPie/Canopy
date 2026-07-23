@@ -39,6 +39,27 @@ namespace Canopy.Repositories
                 .ToList();
         }
 
+
+        public (List<PlannedTask> Items, bool HasMore) GetPage(bool isOverdue, int userId, int page, int pageSize)
+        {
+            var today = DateTime.Today;
+            var base_ = _ctx.PlannedTask
+                .Include(x => x.Project)
+                .Include(x => x.Group)
+                .Where(x => (x.AssignedToUID == userId || x.CreatorId == userId) && x.Status == false && x.DeadLine.HasValue);
+
+            var query = isOverdue
+                ? base_.Where(x => x.DeadLine!.Value.Date < today).OrderBy(x => x.DeadLine)
+                : base_.Where(x => x.DeadLine!.Value.Date > today).OrderBy(x => x.DeadLine);
+
+            var items = query.Skip((page - 1) * pageSize).Take(pageSize + 1).ToList();
+            var hasMore = items.Count > pageSize;
+            if (hasMore) items.RemoveAt(pageSize);
+            return (items, hasMore);
+        }
+
+
+
         public PlannedTask? GetByIdForUser(int id, int userId)
         {
             return _ctx.PlannedTask

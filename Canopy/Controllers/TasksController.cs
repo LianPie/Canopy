@@ -174,5 +174,20 @@ namespace Canopy.Controllers
             return Ok(new { task.Id, task.Status });
         }
 
+        [HttpGet("overdue")]
+        public IActionResult overdue([FromQuery] int page = 1, [FromQuery] int pageSize = 12)
+        {
+            var (items, hasMore) = _taskRepo.GetPage(true, GetUserId(), page, pageSize);
+            return Ok(new { items, hasMore });
+        }
+
+        [HttpGet("upcoming")]
+        public IActionResult upcoming([FromQuery] int page = 1, [FromQuery] int pageSize = 12)
+        {
+            var (items, hasMore) = _taskRepo.GetPage(false,GetUserId(), page, pageSize);
+            return Ok(new { items, hasMore });
+        }
+
+
     }
 }

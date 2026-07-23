@@ -10,6 +10,7 @@ namespace Canopy.Repositories
         List<PlannedTask> GetWithoutDate(int userId);
         PlannedTask? GetByIdForUser(int id, int userId);
         PlannedTask? GetAssignedByIdForUser(int id, int userId);
+        (List<PlannedTask> Items, bool HasMore) GetPage(bool isOverdue, int userId, int page, int pageSize);
         List<PlannedTask> GetByProjectId(int projectId, int userId);
         PlannedTask Create(PlannedTask task);
         PlannedTask Update(PlannedTask task);

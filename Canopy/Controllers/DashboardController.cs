@@ -30,10 +30,8 @@ namespace Canopy.Controllers
         }
         public IActionResult Tasks()
         {
-            var model = _tasksRepo.GetAllByUser(GetUserId());
 
-
-            return View(model);
+            return View();
         }
 
         [HttpGet]
@@ -59,10 +57,7 @@ namespace Canopy.Controllers
 
         public IActionResult Projects()
         {
-            var model = _projectRepo.GetAllByUser(GetUserId());
-
-
-            return View(model);
+            return View();
         }
 
         public IActionResult Groups()

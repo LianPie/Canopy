@@ -216,4 +216,10 @@
   <data name="NoAccess" xml:space="preserve">
     <value>You don't have access</value>
   </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Upcoming</value>
+  </data>
+  <data name="LoadMore" xml:space="preserve">
+    <value>Load more</value>
+  </data>
 </root>
