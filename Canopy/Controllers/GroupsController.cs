@@ -235,6 +235,13 @@ namespace Canopy.Controllers
             return Ok(invites);
         }
 
+        [HttpGet("invites/pendingCount")]
+        public IActionResult GetPendingInvitesCount()
+        {
+            var invites = _repo.GetPendingInvites(GetUserId()).Count();
+            return Ok(invites);
+        }
+
         [HttpGet("invites/sent")]
         public IActionResult GetSentInvites()
         {

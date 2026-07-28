@@ -710,6 +710,9 @@
         <script>
 
             $(document).ready(function() {
+                resetAndLoad();
+
+
                 $.ajax({
                     url: '/api/account/me',
                     type: 'GET',
@@ -771,6 +774,11 @@
                 prependNotif(n);
                 setUnreadCount(notif.unreadCount + 1);
                 showNotifToast(n);
+
+                if ((n.type === 0 || n.type === 1 || n.type === 2) &&
+                typeof window.updatePendingInvitesBadge === 'function') {
+                        window.updatePendingInvitesBadge();
+                }
             });
 
             notifConnection.start();
