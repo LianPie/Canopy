@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 # Secrets
 Canopy/appsettings.json
+/migration.sql
