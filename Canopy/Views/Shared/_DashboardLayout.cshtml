@@ -864,16 +864,18 @@
             function notifItemHtml(n) {
                 const payload = tryParseJson(n.payload);
                 const text = buildNotifText(n.type, payload);
+                const link = buildNotifLink(n.type, payload);
                 const dot = n.isRead ? '' : '<span class="bullet bullet-dot bg-primary me-2 flex-shrink-0"></span>';
                 const time = new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const unreadClass = n.isRead ? '' : 'unread bg-light-primary';
-                return `<div class="notif-item d-flex align-items-center px-4 py-3 border-bottom ${unreadClass}">
+               return `<div class="notif-item d-flex align-items-center px-4 py-3 border-bottom ${unreadClass}"
+                 data-id="${n.id}" data-link="${link}" style="cursor:pointer">
                     ${dot}
                     <div class="flex-grow-1">
                         <span class="fs-7">${text}</span>
                         <br><small class="text-muted">${time}</small>
                     </div>
-                </div>`;
+                </div>`;    
             }
 
             function buildNotifText(type, p) {
@@ -884,6 +886,16 @@
                     case 3: return fmt(LN.taskAssigned,    `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
                     case 4: return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
                     default: return LN.fallback;
+                }
+            }
+            function buildNotifLink(type, p) {
+                switch (type) {
+                    case 0: return `/dashboard/Groups/`;       // group invite
+                    case 1: return `/dashboard/Groups/`;           // invite accepted
+                    case 2: return `/dashboard/Groups/`;           // invite declined
+                    case 3: return `/dashboard/Tasks/`;             // task assigned
+                    case 4: return `/dashboard/Groups`;       // project assigned
+                    default: return '#';    
                 }
             }
 
@@ -927,6 +939,32 @@
                 const payload = tryParseJson(n.payload);
                 notyf.open({ type: 'notification', message: buildNotifText(n.type, payload) });
             }
+
+            function tryParseJson(str) {
+                try { return JSON.parse(str); } catch { return {}; }
+            }
+
+            // ─── Notification Click Handler ───────────────────────────────────────────────────────────────
+            document.addEventListener('click', async function (e) {
+                const item = e.target.closest('.notif-item');
+                if (!item) return;
+
+                const id = item.dataset.id;
+                const link = item.dataset.link;
+
+                try {
+                    await fetch(`/api/notifications/${id}/read`, {
+                        method: 'PATCH'
+                    });
+                } catch (err) {
+                    console.error('Failed to mark notification as read', err);
+                    // still navigate even if marking read fails, so the user isn't blocked
+                }
+
+                if (link && link !== '#') {
+                    window.location.href = link;
+                }
+            });
 
             function tryParseJson(str) {
                 try { return JSON.parse(str); } catch { return {}; }
