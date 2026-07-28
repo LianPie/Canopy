@@ -85,6 +85,8 @@ namespace Canopy.Data.Configurations
 
 
             builder.HasIndex(t => t.CreatorId);
+            builder.HasIndex(t => t.GroupId);
+            builder.HasIndex(t => t.ProjectId);
         }
     }
 }
