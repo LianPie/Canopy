@@ -324,12 +324,17 @@
     const DAYS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["DayNames"].Value.Split(',')));
     const LOCALE = '@System.Globalization.CultureInfo.CurrentCulture.Name';
 
-    const _dayFmt = LOCALE.startsWith('fa')
-        ? new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric' })
-        : null;
+    const intlLocale = LOCALE.startsWith('fa') ? 'fa-IR-u-ca-persian' : LOCALE;
+
+    const dateFmt = new Intl.DateTimeFormat(intlLocale, { day: 'numeric' });
+    const monthFmt = new Intl.DateTimeFormat(intlLocale, { month: 'short' });
 
     function chipDate(d) {
-        return _dayFmt ? _dayFmt.format(d) : d.getDate();
+        return dateFmt.format(d); // Returns e.g. "Jul 26" or "۴ مرداد"
+    }
+
+    function chipMonth(d) {
+        return monthFmt.format(d); // Returns e.g. "Jul" or "مرداد"
     }
 
     function buildStrip() {
@@ -342,6 +347,7 @@
             chip.innerHTML = `
                 <span class="chip-day">${DAYS[d.getDay()]}</span>
                 <span class="chip-date">${chipDate(d)}</span>
+                <span class="chip-month ">${chipMonth(d)}</span>
                 <span class="chip-dot" style="visibility:hidden" id="dot-${toIso(d)}"></span>`;
             chip.addEventListener('click', () => selectDate(d));
             strip.appendChild(chip);
