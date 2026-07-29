@@ -15,11 +15,11 @@ namespace Canopy.Models
         public User Creator { get; set; } = null!;
 
 
-        //if it doesn't belong to a group => 0
+        //if it doesn't belong to a group Null
         public int? GroupId { get; set; }
         public Group? Group { get; set; }
 
-        //if it doesn't belong to a project => 0
+        //if it doesn't belong to a project nullok
         public int? ProjectId { get; set; }
         public Project? Project { get; set; }
 
@@ -31,5 +31,16 @@ namespace Canopy.Models
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public DateTime? DeadLine { get; set; }
 
+        public RecurrenceType Recurrence { get; set; } = RecurrenceType.None;
+        public List<TaskOccurrence> Occurrences { get; set; } = new();
+
+    }
+
+    public enum RecurrenceType
+    {
+        None = 0,
+        Daily = 1,
+        Weekly = 2,
+        Monthly = 3
     }
 }

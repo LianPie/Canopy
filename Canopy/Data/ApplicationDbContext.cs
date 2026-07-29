@@ -17,6 +17,7 @@ namespace Canopy.Data
         public DbSet<Group> Group { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<PlannedTask> PlannedTask { get; set; }
+        public DbSet<TaskOccurrence> TaskOccurrence { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<PushSubscription> PushSubscriptions { get; set; }
@@ -38,6 +39,7 @@ namespace Canopy.Data
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectMemberConfiguration());
             modelBuilder.ApplyConfiguration(new PlannedTaskConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskOccurrenceConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new PushSubscriptionConfiguration());
             modelBuilder.ApplyConfiguration(new ChatConfiguration());
