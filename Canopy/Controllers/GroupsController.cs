@@ -212,12 +212,18 @@ namespace Canopy.Controllers
             }
         }
 
-        [HttpGet("{id}/projects")]
-        public IActionResult GetGroupProjects(int id)
+
+        [HttpGet("{id}/overview")]
+        public IActionResult GetGroupOverview(int id)
         {
             var group = _repo.GetById(id, GetUserId());
             if (group == null) return NotFound();
-            return Ok(_repo.GetGroupProjects(id));
+
+            return Ok(new
+            {
+                projects = _repo.GetGroupProjects(id),
+                tasks = _repo.GetGroupTasks(id)
+            });
         }
 
         [HttpGet("{id}/tasks")]

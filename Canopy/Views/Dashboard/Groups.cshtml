@@ -485,7 +485,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
-                    <input type="date" id="ntDeadline" class="form-control">
+                    <input type="date" id="ntDeadline" class="form-control persian-date-input">
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["AssignTo"]</label>
@@ -615,9 +615,25 @@
                             $('#mobileGroupTitle').text(title);
                         }
 
-                        loadGroupProjects(groupId);
-                        loadAllGroupTasks(groupId);
+                        loadGroupoverview(groupId);
+
+                        
                     }
+
+                    function loadAllGroupTasks(groupId) {
+                        activeProjectId = null;
+                        $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
+                        $('#tasksColTitle').text(L.allTasks);
+                        $('#tasksColMeta').text('');
+                        $('#backToAllTasks').hide();
+                        $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
+                        $('.g-project-item').removeClass('active');
+                        $.get(`/api/Groups/${groupId}/tasks`, function (tasks) {
+                                $('#overviewTaskCount').text(tasks.length + ' ' + L.tasksLabel);
+                            renderTaskList(tasks, true);
+                        });
+                    }
+
 
                     // ── Mobile tap-to-reveal actions ─────────────────────────
         if (window.matchMedia('(hover: none)').matches) {
@@ -638,59 +654,54 @@
                         activeGroupId = null;
                     });
 
-                    function loadGroupProjects(groupId) {
-                        $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
-                        $.get(`/api/Groups/${groupId}/projects`, function (projects) {
-                            $('#overviewProjectCount').text(projects.length + ' ' + L.projectsLabel);
-                            if (!projects.length) {
-                                $('#projectsList').html(`<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>${L.noProjectsYet}</p></div>`);
-                                return;
-                            }
-                            let html = '';
-                            projects.forEach(p => {
-                                const total = p.tasks ? p.tasks.length : 0;
-                                const done = p.tasks ? p.tasks.filter(t => t.status).length : 0;
-                                const pct = total ? Math.round(done / total * 100) : 0;
-                                html += `
-                                <div class="g-project-item" data-project-id="${p.id}" data-project-title="${p.title.replace(/"/g,'&quot;')}" data-project-total="${total}" data-project-done="${done}">
-                                    <div class="flex-grow-1">
-                                        <div class="fw-semibold">${p.title}</div>
-                                        <div class="d-flex align-items-center gap-2 mt-1">
-                                            <div class="progress h-4px flex-grow-1" style="max-width:120px">
-                                                <div class="progress-bar bg-primary" style="width:${pct}%"></div>
-                                            </div>
-                                            <small class="text-muted">${done}/${total}</small>
-                                        </div>
-                                    </div>
-                                    <div class="g-row-actions">
-                                        <button class="btn btn-xs btn-icon btn-light-primary edit-project-btn"
-                                            data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
-                                            data-desc="${(p.description||'').replace(/"/g,'&quot;')}"
-                                            data-deadline="${p.deadline ? new Date(p.deadline).toISOString().split('T')[0] : ''}"
-                                            title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
-                                        <button class="btn btn-xs btn-icon btn-light-danger delete-project-btn"
-                                            data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
-                                            title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
-                                    </div>
-                                    <i class="ki-outline ki-arrow-right fs-4 text-muted ms-1"></i>
-                                </div>`;
-                            });
-                            $('#projectsList').html(html);
+                    
+                    function loadGroupoverview(groupId) {
+                        $.get(`/api/Groups/${groupId}/overview`, function (data) {
+                            renderProjects(data.projects);
+                            renderTaskList(data.tasks, true);
+                            $('#overviewProjectCount').text(data.projects.length + ' ' + L.projectsLabel);
+                            $('#overviewTaskCount').text(data.tasks.length + ' ' + L.tasksLabel);
                         });
                     }
 
-                    function loadAllGroupTasks(groupId) {
-                        activeProjectId = null;
-                        $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
-                        $('#tasksColTitle').text(L.allTasks);
-                        $('#tasksColMeta').text('');
-                        $('#backToAllTasks').hide();
-                        $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
-                        $('.g-project-item').removeClass('active');
-                        $.get(`/api/Groups/${groupId}/tasks`, function (tasks) {
-                                $('#overviewTaskCount').text(tasks.length + ' ' + L.tasksLabel);
-                            renderTaskList(tasks, true);
+                    function renderProjects(projects) {
+                        $('#overviewProjectCount').text(projects.length + ' ' + L.projectsLabel);
+
+                        if (!projects.length) {
+                            $('#projectsList').html(`<div class="g-empty py-10"><i class="ki-outline ki-element-11 fs-2tx mb-3"></i><p>${L.noProjectsYet}</p></div>`);
+                            return;
+                        }
+
+                        let html = '';
+                        projects.forEach(p => {
+                            const total = p.tasks ? p.tasks.length : 0;
+                            const done = p.tasks ? p.tasks.filter(t => t.status).length : 0;
+                            const pct = total ? Math.round(done / total * 100) : 0;
+                            html += `
+                            <div class="g-project-item" data-project-id="${p.id}" data-project-title="${p.title.replace(/"/g,'&quot;')}" data-project-total="${total}" data-project-done="${done}">
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">${p.title}</div>
+                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                        <div class="progress h-4px flex-grow-1" style="max-width:120px">
+                                            <div class="progress-bar bg-primary" style="width:${pct}%"></div>
+                                        </div>
+                                        <small class="text-muted">${done}/${total}</small>
+                                    </div>
+                                </div>
+                                <div class="g-row-actions">
+                                    <button class="btn btn-xs btn-icon btn-light-primary edit-project-btn"
+                                        data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
+                                        data-desc="${(p.description||'').replace(/"/g,'&quot;')}"
+                                        data-deadline="${p.deadline ? new Date(p.deadline).toISOString().split('T')[0] : ''}"
+                                        title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
+                                    <button class="btn btn-xs btn-icon btn-light-danger delete-project-btn"
+                                        data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}"
+                                        title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>
+                                </div>
+                                <i class="ki-outline ki-arrow-right fs-4 text-muted ms-1"></i>
+                            </div>`;
                         });
+                        $('#projectsList').html(html);
                     }
 
                     function renderTaskList(tasks, groupByProject) {

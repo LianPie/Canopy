@@ -88,6 +88,7 @@ namespace Canopy.Repositories
                 .Where(p => p.GroupId == groupId)
                 .Include(p => p.Creator)
                 .Include(p => p.Tasks)
+                .AsNoTracking()
                 .ToList();
         }
 
@@ -97,6 +98,7 @@ namespace Canopy.Repositories
                 .Where(t => (t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId)
                 .Include(t => t.Project)
                 .Include(t => t.AssignedTo)
+                .AsNoTracking()
                 .ToList();
         }
 
