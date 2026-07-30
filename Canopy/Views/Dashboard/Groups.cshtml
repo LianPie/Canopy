@@ -485,7 +485,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
-                    <input type="date" id="ntDeadline" class="form-control persian-date-input">
+                    <input id="ntDeadline" class="form-control persian-date-input">
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["AssignTo"]</label>
@@ -620,6 +620,14 @@
                         
                     }
 
+                    
+                     function loadGroupProjects(groupId) {
+                        $('#projectsList').html('<div class="text-center text-muted py-5">Loading...</div>');
+                        $.get(`/api/Groups/${groupId}/projects`, function (projects) {
+                            renderProjects(projects);
+                        });
+                     }
+
                     function loadAllGroupTasks(groupId) {
                         activeProjectId = null;
                         $('#allTasksList').html('<div class="text-center text-muted py-5">Loading...</div>');
@@ -730,7 +738,8 @@
                     function taskHtml(t) {
                         const done = t.status;
                         const overdue = t.deadLine && !done && new Date(t.deadLine) < new Date();
-                        const deadlineVal = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
+                        const deadlineVal = t.deadLine ? toLocalISODate(t.deadLine) : ''; // ← فیکس باگ timezone هم اینجا
+
                         return `
                         <div class="g-task-item" data-task-id="${t.id}">
                             <div class="form-check mt-1">
@@ -739,8 +748,7 @@
                             <div class="flex-grow-1">
                                 <span class="${done ? 'text-decoration-line-through text-muted' : 'fw-semibold'}">${t.title}</span>
                                 ${t.description ? `<br><small class="text-muted">${t.description}</small>` : ''}
-                                ${t.deadLine ? `<br><small class="${overdue ? 'text-danger' : 'text-muted'}" style="white-space:nowrap"><i class="ki-outline ki-calendar fs-7 me-1"></i>${new Date(t.deadLine).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</small>` : ''}
-                            </div>
+                              ${t.deadLine ? `<br><small class="${overdue ? 'text-danger' : 'text-muted'} d-inline-flex align-items-center gap-1" style="white-space:nowrap"><i class="ki-outline ki-calendar fs-7"></i><span>${formatDeadlineForList(t.deadLine)}</span></small>` : ''}</div>
                             ${t.assignedTo ? `<small class="badge badge-light me-2">${t.assignedTo.userName}</small>` : ''}
                             <div class="g-row-actions">
                                 ${t.creatorId === CURRENT_USER_ID ? `
@@ -792,6 +800,8 @@
                         });
                     }
 
+                    
+                    
                     // ── Create group ─────────────────────────────────────────────
                     $('#createGroupBtn').click(() => $('#createGroupModal').modal('show'));
 
@@ -954,7 +964,7 @@
                     $(document).on('click', '.edit-task-btn', function (e) {
                         e.stopPropagation();
                         const $b = $(this);
-                        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'), $b.data('assignee-id'));
+                        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), toPersianSlash($b.data('deadline')), $b.data('assignee-id'));
                     });
 
                     $(document).on('click', '.delete-task-btn', function (e) {
@@ -982,7 +992,7 @@
                     $(document).on('click', '.edit-project-btn', function (e) {
                         e.stopPropagation();
                         const $b = $(this);
-                        openProjectModal($b.data('id'), $b.data('title'), $b.data('desc'), $b.data('deadline'));
+                        openProjectModal($b.data('id'), $b.data('title'), $b.data('desc'), toPersianSlash($b.data('deadline')));
                     });
 
                     $(document).on('click', '.delete-project-btn', function (e) {
@@ -1044,11 +1054,18 @@
 
                     // ── New Project ──────────────────────────────────────────────
                     function openProjectModal(id, title, desc, deadline) {
+
                         $('#npId').val(id || '');
                         $('#npModalTitle').text(id ? L.editProject : L.newProject);
                         $('#npTitle').val(title || '');
                         $('#npDescription').val(desc || '');
-                        $('#npDeadline').val(deadline || '');
+
+                        console.log(deadline)
+                        $('#npDeadline').next('input[type="hidden"]').remove();
+                        var $freshDeadline = $('#npDeadline').clone(false).val(deadline || '');
+                        $('#npDeadline').replaceWith($freshDeadline);
+
+
                         $('#npTaskList').empty();
                         $('#npNoTasksMsg').show();
                         if (id) {
@@ -1056,7 +1073,7 @@
                             $.get(`/api/Projects/${id}`, function (p) {
                                 (p.tasks || []).forEach(t => {
                                     const deadline = t.deadLine ? new Date(t.deadLine).toISOString().split('T')[0] : '';
-                                    const $row = $(npTaskRow(t.id, t.title, t.description, deadline, t.assignedToUID));
+                                    const $row = $(npTaskRow(t.id, t.title, t.description, toPersianSlash(deadline), t.assignedToUID));
                                     initPersianDatepickers($row);
                                     $('#npTaskList').append($row);
                                     $('#npNoTasksMsg').hide();
@@ -1064,6 +1081,7 @@
                             });
                         }
                         initPersianDatepickers($('#newProjectModal'));
+
                         $('#newProjectModal').modal('show');
                     }
 
@@ -1123,6 +1141,7 @@
                     }
 
                     $('#confirmNewProject').click(function () {
+                        $('#confirmNewProject').prop('disabled', true);
                         const title = $('#npTitle').val().trim();
                         if (!title) { toastr.warning(L.enterProjectTitle); return; }
                         const id = $('#npId').val();
@@ -1144,8 +1163,12 @@
                                 toastr.success(isEdit ? L.projectUpdated : L.projectCreated);
                                 loadGroupProjects(activeGroupId);
                                 if (isEdit && activeProjectId == id) loadAllGroupTasks(activeGroupId);
+                                
+                                $('#confirmNewProject').prop('disabled', false);
                             },
-                            error: () => toastr.error(isEdit ? L.errUpdateProject : L.errCreateProject)
+                            error: () => {toastr.error(isEdit ? L.errUpdateProject : L.errCreateProject)
+                            
+                                $('#confirmNewProject').prop('disabled', false);}
                         });
                     });
 
@@ -1155,6 +1178,8 @@
                         $('#ntModalTitle').text(id ? L.editTask : L.newTask);
                         $('#ntTitle').val(title || '');
                         $('#ntDescription').val(desc || '');
+
+                        console.log(deadline)
                         $('#ntDeadline').val(deadline || '');
 
                         const $select = $('#ntAssignee');
@@ -1181,6 +1206,7 @@
                     $('#addTaskBtn').click(function () { openTaskModal(); });
 
                     $('#confirmNewTask').click(function () {
+                        $('#confirmNewTask').prop('disabled', true);
                         const title = $('#ntTitle').val().trim();
                         if (!title) { toastr.warning(L.enterTaskTitle); return; }
                         const id = $('#ntId').val();
@@ -1189,7 +1215,7 @@
                         const payload = {
                             title,
                             description: $('#ntDescription').val().trim() || null,
-                            deadLine: $('#ntDeadline').val() || null,
+                            deadLine: normalizeToGregorian($('#ntDeadline').val()) || null,
                             status: false,
                             assigneeId: assigneeId ? parseInt(assigneeId) : null,
                             projectId: !isEdit ? (activeProjectId || null) : undefined,
@@ -1209,8 +1235,13 @@
                                 } else {
                                     loadAllGroupTasks(activeGroupId);
                                 }
+
+                                $('#confirmNewTask').prop('disabled', false);
                             },
-                            error: () => toastr.error(isEdit ? L.errUpdateTask : L.errCreateTask)
+                            error: () =>{ toastr.error(isEdit ? L.errUpdateTask : L.errCreateTask) 
+
+                                $('#confirmNewTask').prop('disabled', false);
+                            }
                         });
                     });
 

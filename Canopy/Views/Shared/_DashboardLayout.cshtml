@@ -571,6 +571,19 @@
         <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
         
         <script>// Reusable function that can target specific elements or containers
+            (function () {
+                var originalToISOString = Date.prototype.toISOString;
+                Date.prototype.toISOString = function () {
+                    var year = this.getFullYear();
+                    var month = String(this.getMonth() + 1).padStart(2, '0');
+                    var day = String(this.getDate()).padStart(2, '0');
+                    var hours = String(this.getHours()).padStart(2, '0');
+                    var minutes = String(this.getMinutes()).padStart(2, '0');
+                    var seconds = String(this.getSeconds()).padStart(2, '0');
+                    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`;
+                };
+            })();
+
             function initPersianDatepickers($selector) {
                 // If no specific selector is provided, target all uninitialized fields
                 var $elements = $selector ? $selector.find('.persian-date-input') : $('.persian-date-input');
@@ -704,6 +717,37 @@
         var strDay = day.toString().padStart(2, '0');
     
         return `${year}-${strMonth}-${strDay}`;
+    }
+    function toPersianSlash(isoDateStr) {
+        if (!isoDateStr) return '';
+
+        var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+
+        if (isPersian) {
+            var pd = new persianDate(new Date(isoDateStr));
+            return pd.format('YYYY/MM/DD');
+        }
+
+        return isoDateStr;
+    }
+    function formatDeadlineForList(dateStr) {
+        if (!dateStr) return '';
+        var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+
+        if (isPersian) {
+            var pd = new persianDate(new Date(dateStr));
+            // مثلاً: "۲۲ تیر"
+            return pd.format('D MMMM');
+        }
+
+        return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+    function toLocalISODate(dateInput) {
+        const d = new Date(dateInput);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
     </script>
 

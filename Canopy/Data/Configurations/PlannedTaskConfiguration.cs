@@ -75,13 +75,13 @@ namespace Canopy.Data.Configurations
                 .WithMany(g => g.Tasks)
                 .HasForeignKey(t => t.GroupId)
                 .HasConstraintName("FK_PlannedTask_Group")
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(t => t.Project)
                 .WithMany(g => g.Tasks)
                 .HasForeignKey(t => t.ProjectId)
                 .HasConstraintName("FK_PlannedTask_Project")
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             builder.HasIndex(t => t.CreatorId);
