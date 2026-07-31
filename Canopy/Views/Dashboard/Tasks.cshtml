@@ -240,6 +240,20 @@
 <!-- Task list -->
 <div id="taskList"></div>
 
+<!-- Recurring section -->
+<div class="collapsible-section" id="recurringSection">
+    <div class="collapsible-header" onclick="toggleSection('recurring')">
+        <span class="collapsible-title text-info">
+            <i class="ki-outline ki-arrows-circle fs-5 me-2 text-info"></i>@_localizer["Recurring"]
+            <span class="badge badge-light-info ms-2" id="recurringCount" style="display:none"></span>
+        </span>
+        <i class="ki-outline ki-down fs-5 collapsible-chevron" id="recurringChevron"></i>
+    </div>
+    <div class="collapsible-body" id="recurringBody">
+        <div id="recurringList"></div>
+    </div>
+</div>
+
 <!-- Overdue section -->
 <div class="collapsible-section" id="overdueSection">
     <div class="collapsible-header" onclick="toggleSection('overdue')">
@@ -311,7 +325,11 @@
     $("#tasksMenu").addClass("active");
     const CURRENT_USER_ID = @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
     const NO_ACCESS_HINT = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(_localizer["NoAccess"].Value));
-
+    const RECURRENCE_LABELS = {
+        Daily: '@_localizer["Daily"]',
+        Weekly: '@_localizer["Weekly"]',
+        Monthly: '@_localizer["Monthly"]'
+    };
     // ─── State ───────────────────────────────────────────────────────────────
     const DAY_MS = 86400000;
     const today = new Date(); today.setHours(0,0,0,0);
@@ -363,7 +381,8 @@
         strip.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
         const chip = strip.querySelector(`[data-date="${toIso(date)}"]`);
         if (chip) { chip.classList.add('active'); chip.scrollIntoView({ inline: 'center', behavior: 'smooth' }); }
-        loadDateTasks(date);
+            loadDateTasks(date);
+            renderRecurringSection(date);
     }
 
     // ─── Load tasks for date ──────────────────────────────────────────────────
@@ -407,10 +426,121 @@
                 : `<div class="text-muted fs-7 px-4 py-3">@_localizer["NoTasks"]</div>`;
         });
     }
+            // ─── Recurring tasks ─────────────────────────────────────────────────────
+        let recurringTasksCache = null;
+
+        async function loadRecurringTasks() {
+            if (recurringTasksCache) return recurringTasksCache;
+            const res = await fetch('/api/tasks/Getreaccuring');
+            recurringTasksCache = await res.json();
+            return recurringTasksCache;
+        }
+
+        // معادل JS برای DayOfWeek.ToString() تو سی‌شارپ (Sunday=0 ... Saturday=6)
+        function getWeekdayName(date) {
+            const names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            return names[date.getDay()];
+        }
+        function getDisplayMonthDay(date) {
+            var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+            if (isPersian) {
+                var pd = new persianDate(date);
+                return pd.date(); 
+            }
+            return date.getDate(); 
+        }
+        function taskMatchesDate(t, date) {
+            if (t.recurrence === 'Daily') return true;
+            if (t.recurrence === 'Weekly') return t.recurrenceWeekday === getWeekdayName(date);
+            if (t.recurrence === 'Monthly') return t.recurrenceMonthDay === getDisplayMonthDay(date);
+            return false;
+        }
+
+        async function renderRecurringSection(date) {
+            const tasks = await loadRecurringTasks();
+            const matching = tasks.filter(t => taskMatchesDate(t, date));
+
+            const $list = $('#recurringList');
+            const $count = $('#recurringCount');
+
+            if (!matching.length) {
+                $list.html(`<div class="g-empty py-6"><p class="text-muted small mb-0">${L.noRecurringTasks}</p></div>`);
+                $count.hide();
+                return;
+            }
+
+            $count.text(matching.length).show();
+            $list.html(matching.map(t => recurringTaskHtml(t, date)).join(''));
+        }
+
+        function recurrenceLabel(t) {
+            return RECURRENCE_LABELS[t.recurrence] || '';
+        }
+
+        function isRecurringDone(t, date) {
+            const iso = toIso(date);
+            const occ = (t.occurrences || []).find(o => toIso(new Date(o.occurrenceDate)) === iso);
+            return occ ? occ.isCompleted : false;
+        }
+
+
+        function recurringTaskHtml(t, date) {
+            const done = isRecurringDone(t, date);
+            const meta = [
+                t.project ? `<i class="ki-outline ki-element-11 fs-8 me-1"></i>${t.project.title}` : '',
+                t.group   ? `<i class="ki-outline ki-people fs-8 me-1"></i>${t.group.title}` : '',
+                `<i class="ki-outline ki-arrows-circle fs-8 me-1"></i>${recurrenceLabel(t)}`
+            ].filter(Boolean).join(' &nbsp;·&nbsp; ');
+
+            return `<div class="task-item" id="task-${t.id}">
+                <div class="task-check ${done ? 'done' : ''}" onclick="toggleRecurringStatus(${t.id}, '${toIso(date)}', this)"></div>
+                <div class="flex-grow-1 overflow-hidden">
+                    <div class="task-title fw-semibold text-truncate ${done ? 'done' : ''}">${escHtml(t.title)}</div>
+                    ${meta ? `<div class="task-meta mt-1">${meta}</div>` : ''}
+                </div>
+                <div class="task-actions">
+                    ${t.creatorId === CURRENT_USER_ID ? `
+                    <a href="/Dashboard/TaskForm?id=${t.id}" class="btn btn-icon btn-sm btn-light-primary">
+                        <i class="ki-outline ki-pencil fs-5"></i>
+                    </a>
+                    <button class="btn btn-icon btn-sm btn-light-danger" onclick="showDeleteModal(${t.id}, '${escJs(t.title)}')">
+                        <i class="ki-outline ki-trash fs-5"></i>
+                    </button>` : `
+                    <button class="btn btn-icon btn-sm btn-light-secondary" disabled title="${NO_ACCESS_HINT}">
+                        <i class="ki-outline ki-lock fs-5"></i>
+                    </button>`}
+                </div>
+            </div>`;
+        }
+
+        function toggleRecurringStatus(taskId, dateStr, el) {
+            el.classList.toggle('done');
+            el.closest('.task-item').querySelector('.task-title').classList.toggle('done');
+
+            $.post('/api/tasks/OccuranceCheck', { id: taskId, OccurrenceDate: dateStr })
+                .done(function () {
+                const task = recurringTasksCache.find(t => t.id === taskId);
+                if (task) {
+                    let occ = (task.occurrences || []).find(o => toIso(new Date(o.occurrenceDate)) === dateStr);
+                    if (occ) {
+                        occ.isCompleted = !occ.isCompleted;
+                    } else {
+                        task.occurrences = task.occurrences || [];
+                        task.occurrences.push({ occurrenceDate: dateStr, isCompleted: true });
+                    }
+                }
+            })
+                .fail(function () {
+                    // اگه درخواست fail شد، UI رو برگردون به حالت قبل
+                    el.classList.toggle('done');
+                    el.closest('.task-item').querySelector('.task-title').classList.toggle('done');
+                    toastr.error(L.errorMs);
+                });
+        }
+
 
     // ─── Task HTML ────────────────────────────────────────────────────────────
     function taskHtml(t) {
-        console.log(t)
         const done = t.status;
         const overdue = t.deadLine && new Date(t.deadLine) < today && !done;
         const meta = [
@@ -497,7 +627,8 @@
     const sections = {
         overdue:  { page: 1, loaded: false, hasMore: false, cache: [] },
         upcoming: { page: 1, loaded: false, hasMore: false, cache: [] },
-        nodate:   { loaded: false, cache: [] }
+        nodate:   { loaded: false, cache: [] },
+        recurring: { loaded: false }
     };
 
     function toggleSection(key) {
@@ -511,6 +642,10 @@
 
         if (!isOpen && !sections[key].loaded) {
             if (key === 'nodate') loadNodateTasks();
+                else if (key === 'recurring') {
+                renderRecurringSection(activeDate);
+                sections.recurring.loaded = true;
+            }
             else loadSection(key);
         }
     }
@@ -578,5 +713,6 @@
     // ─── Init ─────────────────────────────────────────────────────────────────
     buildStrip();
     loadDateTasks(today);
-</script>
+    renderRecurringSection(today);
+    </script>
 }

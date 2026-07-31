@@ -32,6 +32,10 @@ namespace Canopy.Models
         public DateTime? DeadLine { get; set; }
 
         public RecurrenceType Recurrence { get; set; } = RecurrenceType.None;
+        public string? RecurrenceWeekday { get; set; }
+        public int? RecurrenceMonthDay { get; set; }
+        public bool IsRecurrenceEnded { get; set; } = false;
+
         public List<TaskOccurrence> Occurrences { get; set; } = new();
 
     }

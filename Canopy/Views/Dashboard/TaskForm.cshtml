@@ -43,7 +43,6 @@
                 <label class="form-label">@_localizer["Description"]</label>
                 <textarea id="taskDesc" class="form-control" rows="4"></textarea>
             </div>
-
             <div class="mb-5">
                 <label class="form-label">@_localizer["Deadline"]</label>
                 <input type="text" class="form-control persian-date-input"
@@ -51,6 +50,46 @@
                        name="Deadline"
                        data-gregorian-value="@Model.DeadLine?.ToString("yyyy-MM-dd")"
                        value="@Model.DeadLine" />
+            </div>
+
+            <div class="mb-5">
+                <label class="form-label">@_localizer["Recurrence"]</label>
+                <select id="taskRecurrenceType" class="form-select">
+                    <option value="None" selected="@(Model.Recurrence == RecurrenceType.None)">@_localizer["None"]</option>
+                    <option value="Daily" selected="@(Model.Recurrence == RecurrenceType.Daily)">@_localizer["Daily"]</option>
+                    <option value="Weekly" selected="@(Model.Recurrence == RecurrenceType.Weekly)">@_localizer["Weekly"]</option>
+                    <option value="Monthly" selected="@(Model.Recurrence == RecurrenceType.Monthly)">@_localizer["Monthly"]</option>
+                </select>
+            </div>
+
+            <div class="mb-5 @(Model.Recurrence == RecurrenceType.Weekly ? "" : "d-none")" id="taskRecurrenceWeeklyRow">
+                <label class="form-label">@_localizer["DayOfWeek"]</label>
+                <select id="taskRecurrenceWeekday" class="form-select">
+                    <option value="Saturday" selected="@(Model.RecurrenceWeekday == "Saturday")">@_localizer["Saturday"]</option>
+                    <option value="Sunday" selected="@(Model.RecurrenceWeekday == "Sunday")">@_localizer["Sunday"]</option>
+                    <option value="Monday" selected="@(Model.RecurrenceWeekday == "Monday")">@_localizer["Monday"]</option>
+                    <option value="Tuesday" selected="@(Model.RecurrenceWeekday == "Tuesday")">@_localizer["Tuesday"]</option>
+                    <option value="Wednesday" selected="@(Model.RecurrenceWeekday == "Wednesday")">@_localizer["Wednesday"]</option>
+                    <option value="Thursday" selected="@(Model.RecurrenceWeekday == "Thursday")">@_localizer["Thursday"]</option>
+                    <option value="Friday" selected="@(Model.RecurrenceWeekday == "Friday")">@_localizer["Friday"]</option>
+                </select>
+            </div>
+
+            <div class="mb-5 @(Model.Recurrence == RecurrenceType.Monthly ? "" : "d-none")" id="taskRecurrenceMonthlyRow">
+                <label class="form-label">@_localizer["DayOfMonth"]</label>
+                <select id="taskRecurrenceMonthDay" class="form-select">
+                    @for (int i = 1; i <= 30; i++)
+                    {
+                        <option value="@i" selected="@(Model.RecurrenceMonthDay == i)">@i</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-5 @((Model.Recurrence != RecurrenceType.None && Model.DeadLine.HasValue) ? "" : "d-none")" id="taskRecurrenceEndedRow">
+                <label class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="taskRecurrenceEnded" checked="@Model.IsRecurrenceEnded" />
+                    <span class="form-check-label">@_localizer["RecurrenceEnded"]</span>
+                </label>
             </div>
 
             @if (Model.IsEdit)
@@ -72,7 +111,23 @@
     <script>
         $("#tasksMenu").addClass("active");
 
-                $(document).ready(function() {
+        function updateRecurrenceVisibility() {
+            var type = $('#taskRecurrenceType').val();
+            $('#taskRecurrenceWeeklyRow').toggleClass('d-none', type !== 'Weekly');
+            $('#taskRecurrenceMonthlyRow').toggleClass('d-none', type !== 'Monthly');
+
+            var hasDeadline = !!$('#taskDeadline').val();
+            var isRecurring = type !== 'none';
+            $('#taskRecurrenceEndedRow').toggleClass('d-none', !(isRecurring && hasDeadline));
+        }
+
+        $('#taskRecurrenceType').on('change', updateRecurrenceVisibility);
+        $('#taskDeadline').on('change', updateRecurrenceVisibility);
+        $(document).ready(updateRecurrenceVisibility);
+
+
+
+        $(document).ready(function() {
             var taskId = $('#taskId').val();
 
             //if editing
@@ -94,12 +149,17 @@
             $('#taskForm').submit(function(e) {
                 e.preventDefault();
                 var deadlineRaw = $('#taskDeadline').val();
+                var recurrenceType = $('#taskRecurrenceType').val();
 
                 var data = {
                     title: $('#taskTitle').val(),
                     description: $('#taskDesc').val(),
                     deadLine: normalizeToGregorian(deadlineRaw),
-                    status: taskId ? $('#taskStatus').is(':checked') : false
+                    status: taskId ? $('#taskStatus').is(':checked') : false,
+                    recurrence: recurrenceType,
+                    recurrenceWeekday: recurrenceType === 'Weekly' ? $('#taskRecurrenceWeekday').val() : null,
+                    recurrenceMonthDay: recurrenceType === 'Monthly' ? parseInt($('#taskRecurrenceMonthDay').val(), 10) : null,
+                    isRecurrenceEnded: $('#taskRecurrenceEnded').is(':checked')
                 };
                 console.log(data);
 
@@ -115,8 +175,11 @@
                             toastr.success("@_localizer["SavedMs"]!");
                             window.location.href = '/Dashboard/Tasks';
                     },
-                    error: function() {
+                    error: function(xhr) {
                             toastr.error('@_localizer["errorMs"]');
+                            console.log('STATUS:', xhr.status);
+        console.log('RESPONSE:', xhr.responseText);
+        toastr.error('@_localizer["errorMs"]');
                     }
                 });
             });

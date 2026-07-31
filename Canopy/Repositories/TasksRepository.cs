@@ -35,7 +35,17 @@ namespace Canopy.Repositories
             return _ctx.PlannedTask
                 .Include(p => p.Project)
                 .Include(p => p.Group)
-                .Where(x => x.AssignedToUID == userId && !x.DeadLine.HasValue)
+                .Where(x => x.AssignedToUID == userId && !x.DeadLine.HasValue && x.Recurrence == RecurrenceType.None)
+                .ToList();
+        }
+
+        public List<PlannedTask> Getreaccuring(int userId)
+        {
+            return _ctx.PlannedTask
+                .Include(p => p.Project)
+                .Include(p => p.Group)
+                .Include(p => p.Occurrences)
+                .Where(x => x.AssignedToUID == userId && x.Recurrence != RecurrenceType.None)
                 .ToList();
         }
 
@@ -112,6 +122,31 @@ namespace Canopy.Repositories
             return _ctx.PlannedTask
                 .Where(t => t.ProjectId == projectId && t.Project.CreatorId == userId)
                 .ToList();
+        }
+
+
+        public void OccuranceCheck(int id, DateTime OccurrenceDate)
+        {
+            var reOccurance = _ctx.TaskOccurrence.FirstOrDefault(x => x.TaskId == id && x.OccurrenceDate == OccurrenceDate);
+            if (reOccurance == null)
+            {
+                TaskOccurrence task = new TaskOccurrence()
+                {
+                    TaskId = id,
+                    CompletedAt = DateTime.Now,
+                    IsCompleted = true,
+                    OccurrenceDate = OccurrenceDate,
+                };
+                _ctx.TaskOccurrence.Add(task);
+            }
+            else
+            {
+                reOccurance.IsCompleted = !reOccurance.IsCompleted;
+                _ctx.TaskOccurrence.Update(reOccurance);
+            }
+
+            _ctx.SaveChanges();
+
         }
     }
 }

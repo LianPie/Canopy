@@ -49,6 +49,10 @@ namespace Canopy.Controllers
                     model.Description = task.Description;
                     model.DeadLine = task.DeadLine;
                     model.Status = task.Status;
+                    model.Recurrence = task.Recurrence;
+                    model.RecurrenceWeekday = task.RecurrenceWeekday;
+                    model.RecurrenceMonthDay = task.RecurrenceMonthDay;
+                    model.IsRecurrenceEnded = task.IsRecurrenceEnded;
                 }
             }
 

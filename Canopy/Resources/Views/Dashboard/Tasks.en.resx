@@ -222,4 +222,16 @@
   <data name="LoadMore" xml:space="preserve">
     <value>Load more</value>
   </data>
+  <data name="Recurring" xml:space="preserve">
+    <value>Recurring</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
 </root>

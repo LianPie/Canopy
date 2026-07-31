@@ -222,4 +222,16 @@
   <data name="LoadMore" xml:space="preserve">
     <value>بیشتر</value>
   </data>
+  <data name="Recurring" xml:space="preserve">
+    <value>تکرارشونده</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>روزانه</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>هفتگی</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>ماهانه</value>
+  </data>
 </root>

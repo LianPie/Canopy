@@ -150,4 +150,46 @@
   <data name="errorMs" xml:space="preserve">
     <value>همم یه مشکلی پیش اومده...</value>
   </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>ماهانه</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>روزانه</value>
+  </data>
+  <data name="Recurrence" xml:space="preserve">
+    <value>تکرار</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>هفتگی</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>تکراری نیست</value>
+  </data>
+  <data name="Saturday" xml:space="preserve">
+    <value>شنبه</value>
+  </data>
+  <data name="Sunday" xml:space="preserve">
+    <value>یکشنبه</value>
+  </data>
+  <data name="Monday" xml:space="preserve">
+    <value>دوشنبه</value>
+  </data>
+  <data name="Tuesday" xml:space="preserve">
+    <value>سه شنبه</value>
+  </data>
+  <data name="Wednesday" xml:space="preserve">
+    <value>چهارشنبه</value>
+  </data>
+  <data name="Thursday" xml:space="preserve">
+    <value>پنجشنبه</value>
+  </data>
+  <data name="Friday" xml:space="preserve">
+    <value>جمعه</value>
+  </data>
+  <data name="DayOfWeek" xml:space="preserve">
+    <value>روز هفته</value>
+  </data>
+  <data name="DayOfMonth" xml:space="preserve">
+    <value>روز ماه</value>
+  </data>
 </root>

@@ -8,6 +8,7 @@ namespace Canopy.Repositories
         List<PlannedTask> GetAllByUser(int userId);
         List<PlannedTask> GetByDate(int userId, DateTime date);
         List<PlannedTask> GetWithoutDate(int userId);
+        List<PlannedTask> Getreaccuring(int userId);
         PlannedTask? GetByIdForUser(int id, int userId);
         PlannedTask? GetAssignedByIdForUser(int id, int userId);
         (List<PlannedTask> Items, bool HasMore) GetPage(bool isOverdue, int userId, int page, int pageSize);
@@ -17,6 +18,8 @@ namespace Canopy.Repositories
         void Delete(PlannedTask task);
         void AddRange(List<PlannedTask> task);
         void RemoveRange(List<PlannedTask> task);
+        void OccuranceCheck(int id, DateTime OccurrenceDate);
+
 
     }
 }

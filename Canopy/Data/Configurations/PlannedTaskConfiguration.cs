@@ -53,6 +53,24 @@ namespace Canopy.Data.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+            builder.Property(t => t.Recurrence)
+                .HasColumnName("Task_Recurrence")
+                .HasDefaultValue(RecurrenceType.None)
+                .IsRequired();
+
+            builder.Property(t => t.RecurrenceWeekday)
+                .HasColumnName("Task_RecurrenceWeekday")
+                .IsRequired(false);
+
+            builder.Property(t => t.RecurrenceMonthDay)
+                .HasColumnName("Task_RecurrenceMonthDay")
+                .IsRequired(false);
+
+            builder.Property(t => t.IsRecurrenceEnded)
+                .HasColumnName("Task_IsRecurrenceEnded")
+                .HasDefaultValue(false)
+                .IsRequired();
+
             builder.Property(t => t.DeadLine)
                 .HasColumnName("Task_DeadLine")
                 .IsRequired(false);
@@ -63,13 +81,13 @@ namespace Canopy.Data.Configurations
                 .WithMany(u => u.TasksCreated)
                 .HasForeignKey(t => t.CreatorId)
                 .HasConstraintName("FK_PlannedTask_User")
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(t => t.AssignedTo)
                 .WithMany(u => u.TaskAssignee)
                 .HasForeignKey(t => t.AssignedToUID)
                 .HasConstraintName("FK_PlannedTask_AssignedTo")
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(t => t.Group)
                 .WithMany(g => g.Tasks)

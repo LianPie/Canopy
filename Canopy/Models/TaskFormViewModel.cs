@@ -9,6 +9,12 @@
         public DateTime? DeadLine { get; set; }
         public bool Status { get; set; }
         public bool IsEdit => Id.HasValue;
+
+
+        public RecurrenceType Recurrence { get; set; } = RecurrenceType.None;
+        public string? RecurrenceWeekday { get; set; }
+        public int? RecurrenceMonthDay { get; set; }
+        public bool IsRecurrenceEnded { get; set; }
     }
 
     public class TaskDataViewModel
@@ -21,6 +27,12 @@
         public bool Status { get; set; }
         public int? ProjectId { get; set; }
         public int? GroupId { get; set; }
+
+
+        public RecurrenceType Recurrence { get; set; } = RecurrenceType.None;
+        public string? RecurrenceWeekday { get; set; }
+        public int? RecurrenceMonthDay { get; set; }
+        public bool IsRecurrenceEnded { get; set; }
     }
 
 }

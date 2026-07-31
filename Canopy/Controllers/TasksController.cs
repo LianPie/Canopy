@@ -52,6 +52,13 @@ namespace Canopy.Controllers
             return Ok(tasks);
         }
 
+        [HttpGet("Getreaccuring")]
+        public IActionResult Getreaccuring()
+        {
+            var tasks = _taskRepo.Getreaccuring(GetUserId());
+            return Ok(tasks);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -81,7 +88,12 @@ namespace Canopy.Controllers
                     GroupId = viewModel.GroupId,
                     CreatorId = creatorId,
                     AssignedToUID = assigneeId,
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+
+                    Recurrence = viewModel.Recurrence,
+                    RecurrenceWeekday = viewModel.Recurrence == RecurrenceType.Weekly ? viewModel.RecurrenceWeekday : null,
+                    RecurrenceMonthDay = viewModel.Recurrence == RecurrenceType.Monthly ? viewModel.RecurrenceMonthDay : null,
+                    IsRecurrenceEnded = viewModel.IsRecurrenceEnded
                 };
 
                 var created = _taskRepo.Create(task);
@@ -107,7 +119,7 @@ namespace Canopy.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] TaskDataViewModel viewModel)
         {
             try
-            {
+             {
                 var target = _taskRepo.GetByIdForUser(id, GetUserId());
                 if (target == null)
                 {
@@ -122,6 +134,11 @@ namespace Canopy.Controllers
                 target.DeadLine = viewModel.DeadLine;
                 target.Status = viewModel.Status;
                 target.AssignedToUID = newAssigneeId;
+
+                target.Recurrence = viewModel.Recurrence;
+                target.RecurrenceWeekday = viewModel.Recurrence == RecurrenceType.Weekly ? viewModel.RecurrenceWeekday : null;
+                target.RecurrenceMonthDay = viewModel.Recurrence == RecurrenceType.Monthly ? viewModel.RecurrenceMonthDay : null;
+                target.IsRecurrenceEnded = viewModel.IsRecurrenceEnded;
 
                 _taskRepo.Update(target);
 
@@ -172,6 +189,17 @@ namespace Canopy.Controllers
             _taskRepo.Update(task);
 
             return Ok(new { task.Id, task.Status });
+        }
+
+        [HttpPost("OccuranceCheck")]
+        public IActionResult OccuranceCheck([FromForm] int id, [FromForm] DateTime OccurrenceDate)
+        {
+            var task = _taskRepo.GetByIdForUser(id, GetUserId());
+            if (task == null || task.AssignedToUID != GetUserId())
+                return NotFound();
+
+            _taskRepo.OccuranceCheck(id, OccurrenceDate);
+            return Ok();
         }
 
         [HttpGet("overdue")]
