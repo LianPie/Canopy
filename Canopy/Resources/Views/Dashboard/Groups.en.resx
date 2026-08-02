@@ -414,4 +414,19 @@
   <data name="Monday" xml:space="preserve">
     <value>Monday</value>
   </data>
+  <data name="Friday" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="DayOfWeek" xml:space="preserve">
+    <value>Day Of Week</value>
+  </data>
+  <data name="RecurrenceEnded" xml:space="preserve">
+    <value>Recurrence Ended</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
 </root>

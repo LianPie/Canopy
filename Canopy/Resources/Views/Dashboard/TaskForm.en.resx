@@ -192,4 +192,13 @@
   <data name="DayOfMonth" xml:space="preserve">
     <value>Day Of Month</value>
   </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Tomorrow</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="RecurrenceEnded" xml:space="preserve">
+    <value>Recurrence Ended</value>
+  </data>
 </root>

@@ -35,7 +35,7 @@ namespace Canopy.Repositories
             return _ctx.PlannedTask
                 .Include(p => p.Project)
                 .Include(p => p.Group)
-                .Where(x => x.AssignedToUID == userId && !x.DeadLine.HasValue && x.Recurrence == RecurrenceType.None)
+                .Where(x => x.AssignedToUID == userId && x.DeadLine.HasValue && x.Recurrence == RecurrenceType.None)
                 .ToList();
         }
 

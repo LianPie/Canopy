@@ -414,4 +414,19 @@
   <data name="Monday" xml:space="preserve">
     <value>دوشنبه</value>
   </data>
+  <data name="Friday" xml:space="preserve">
+    <value>جمعه</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>امروز</value>
+  </data>
+  <data name="DayOfWeek" xml:space="preserve">
+    <value>روز هفته</value>
+  </data>
+  <data name="RecurrenceEnded" xml:space="preserve">
+    <value>پایان تکرار</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>فردا</value>
+  </data>
 </root>

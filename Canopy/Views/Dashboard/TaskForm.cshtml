@@ -50,6 +50,7 @@
                        name="Deadline"
                        data-gregorian-value="@Model.DeadLine?.ToString("yyyy-MM-dd")"
                        value="@Model.DeadLine" />
+                <div class="d-flex flex-wrap gap-1 mt-2" id="taskDeadlineQuickPicks"></div>
             </div>
 
             <div class="mb-5">
@@ -125,7 +126,83 @@
         $('#taskDeadline').on('change', updateRecurrenceVisibility);
         $(document).ready(updateRecurrenceVisibility);
 
+                const QUICK_PICK_WEEKDAY_LABELS = {
+            Saturday: '@_localizer["Saturday"]',
+            Sunday: '@_localizer["Sunday"]',
+            Monday: '@_localizer["Monday"]',
+            Tuesday: '@_localizer["Tuesday"]',
+            Wednesday: '@_localizer["Wednesday"]',
+            Thursday: '@_localizer["Thursday"]',
+            Friday: '@_localizer["Friday"]'
+        };
+        const WEEKDAY_ORDER = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
 
+        function getWeekdayNameJs(date) {
+            const names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            return names[date.getDay()];
+        }
+
+        function buildTaskDeadlineQuickPicks() {
+            const $wrap = $('#taskDeadlineQuickPicks');
+            $wrap.empty();
+
+            const today = new Date(); today.setHours(0,0,0,0);
+            const chips = [];
+
+            chips.push({ label: '@_localizer["Today"]', date: new Date(today) });
+            const tomorrow = new Date(today.getTime() + 86400000);
+            chips.push({ label: '@_localizer["Tomorrow"]', date: tomorrow });
+
+            const todayWeekdayName = getWeekdayNameJs(today);
+            const todayIndex = WEEKDAY_ORDER.indexOf(todayWeekdayName);
+
+            for (let i = 2; i < 7; i++) {
+                const d = new Date(today.getTime() + i * 86400000);
+                const weekdayIndex = (todayIndex + i) % 7;
+                if (weekdayIndex < todayIndex) break;
+                chips.push({ label: QUICK_PICK_WEEKDAY_LABELS[WEEKDAY_ORDER[weekdayIndex]], date: d });
+            }
+
+            chips.forEach(chip => {
+                const $badge = $(`<span class="badge badge-light-primary rounded-pill px-3 py-2" style="cursor:pointer">${chip.label}</span>`);
+                $badge.on('click', () => setTaskDeadlineQuick(chip.date, $badge));
+                $wrap.append($badge);
+            });
+        }
+
+        function setTaskDeadlineQuick(date, $clickedBadge) {
+
+            const iso = toLocalISODate(date);
+
+            var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+            var $input = $('#taskDeadline');
+
+            if (isPersian) {
+                var pd = new persianDate(date);
+                var persianSlash = pd.format('YYYY/MM/DD');
+
+                $input.val(persianSlash);
+
+                var $hidden = $input.next('input[type="hidden"]');
+                if ($hidden.length) {
+                    $hidden.val(iso).trigger('change');
+                }
+            } else {
+                $input.val(iso);
+            }
+
+            $('#taskDeadlineQuickPicks .badge').removeClass('badge-primary').addClass('badge-light-primary');
+            $clickedBadge.removeClass('badge-light-primary').addClass('badge-primary');
+
+            if (typeof updateRecurrenceVisibility === 'function') {
+                updateRecurrenceVisibility();
+            }
+        }
+
+        $(document).ready(function () {
+            initPersianDatepickers($('.persian-date-input').closest('form'));
+            buildTaskDeadlineQuickPicks();
+        });
 
         $(document).ready(function() {
             var taskId = $('#taskId').val();
