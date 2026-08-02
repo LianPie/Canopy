@@ -97,7 +97,7 @@ namespace Canopy.Repositories
             return _ctx.PlannedTask
                 .Include(t => t.Project)
                 .Include(t => t.AssignedTo)
-                .Where(t =>   t.Recurrence == RecurrenceType.None && ((t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId))
+                .Where(t => t.Recurrence == RecurrenceType.None && ((t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId))
                 .AsNoTracking()
                 .ToList();
         }
@@ -109,7 +109,8 @@ namespace Canopy.Repositories
                 .Include(t => t.AssignedTo)
                 .Include(t => t.Occurrences)
                 .Where(t => t.Recurrence != RecurrenceType.None &&
-                    ((t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId))
+                    ((t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId) &&
+                    (t.DeadLine == null || t.DeadLine >= DateTime.Today))
                 .AsNoTracking().ToList();
         }
 

@@ -450,6 +450,7 @@
             return date.getDate(); 
         }
         function taskMatchesDate(t, date) {
+            if (t.deadLine && new Date(t.deadLine) < date) return false;
             if (t.recurrence === 'Daily') return true;
             if (t.recurrence === 'Weekly') return t.recurrenceWeekday === getWeekdayName(date);
             if (t.recurrence === 'Monthly') return t.recurrenceMonthDay === getDisplayMonthDay(date);
