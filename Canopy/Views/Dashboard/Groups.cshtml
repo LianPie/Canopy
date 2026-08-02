@@ -482,11 +482,46 @@
                 <div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["Description"]</label>
                     <textarea id="ntDescription" class="form-control" rows="2" placeholder="@_localizer["OptionalDescription"]"></textarea>
-                </div>
-                <div class="mb-3">
+                </div><div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["Deadline"]</label>
                     <input id="ntDeadline" class="form-control persian-date-input">
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">@_localizer["Recurrence"]</label>
+                    <select id="ntRecurrenceType" class="form-select">
+                        <option value="None">@_localizer["None"]</option>
+                        <option value="Daily">@_localizer["Daily"]</option>
+                        <option value="Weekly">@_localizer["Weekly"]</option>
+                        <option value="Monthly">@_localizer["Monthly"]</option>
+                    </select>
+                </div>
+
+                <div class="mb-3 d-none" id="ntRecurrenceWeeklyRow">
+                    <label class="form-label fw-semibold">@_localizer["DayOfWeek"]</label>
+                    <select id="ntRecurrenceWeekday" class="form-select">
+                        <option value="Saturday">@_localizer["Saturday"]</option>
+                        <option value="Sunday">@_localizer["Sunday"]</option>
+                        <option value="Monday">@_localizer["Monday"]</option>
+                        <option value="Tuesday">@_localizer["Tuesday"]</option>
+                        <option value="Wednesday">@_localizer["Wednesday"]</option>
+                        <option value="Thursday">@_localizer["Thursday"]</option>
+                        <option value="Friday">@_localizer["Friday"]</option>
+                    </select>
+                </div>
+
+                <div class="mb-3 d-none" id="ntRecurrenceMonthlyRow">
+                    <label class="form-label fw-semibold">@_localizer["DayOfMonth"]</label>
+                    <select id="ntRecurrenceMonthDay" class="form-select"></select>
+                </div>
+
+                <div class="mb-3 d-none" id="ntRecurrenceEndedRow">
+                    <label class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="ntRecurrenceEnded">
+                        <span class="form-check-label">@_localizer["RecurrenceEnded"]</span>
+                    </label>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label fw-semibold">@_localizer["AssignTo"]</label>
                     <select id="ntAssignee" class="form-select">
@@ -562,16 +597,20 @@
                         errUpdateProject:  '@_localizer["ErrUpdateProject"]',
                         errCreateTask:     '@_localizer["ErrCreateTask"]',
                         errDeleteGroup:    '@_localizer["ErrDeleteGroup"]',
+                        recurringTasks: '@_localizer["RecurringTasks"]',
+                        daily: '@_localizer["Daily"]',
+                        weekly: '@_localizer["Weekly"]',
+                        monthly: '@_localizer["Monthly"]'
+
                     };
 
                     const groupMembers = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
                                                                     Model.ToDictionary(
                                                                                     g => g.Id,
                                                                                     g => g.UserGroups
-                                                                                                    .Where(ug => ug.Status == InvitationStatus.Accepted)
-                                                                                                    .Select(ug => new { id = ug.UserId, name = ug.User!.UserName })
-                                                                    )
-                                                    ));
+                                                                                    .Where(ug => ug.Status == InvitationStatus.Accepted)
+                                                                                    .Select(ug => new { id = ug.UserId, name = ug.User!.UserName })
+                                                                    )));
 
                     let activeGroupId = null;
                     let activeProjectId = null;
@@ -644,17 +683,17 @@
 
 
                     // ── Mobile tap-to-reveal actions ─────────────────────────
-        if (window.matchMedia('(hover: none)').matches) {
-            $(document).on('click', '.g-task-item, .g-project-item, .g-group-item', function (e) {
-                if ($(e.target).closest('button, a, input').length) return;
-                const $row = $(this);
-                const wasActive = $row.hasClass('tapped');
-                $('.g-task-item, .g-project-item, .g-group-item').removeClass('tapped');
-                if (!wasActive) $row.addClass('tapped');
-            });
-        }
+                    if (window.matchMedia('(hover: none)').matches) {
+                        $(document).on('click', '.g-task-item, .g-project-item, .g-group-item', function (e) {
+                            if ($(e.target).closest('button, a, input').length) return;
+                            const $row = $(this);
+                            const wasActive = $row.hasClass('tapped');
+                            $('.g-task-item, .g-project-item, .g-group-item').removeClass('tapped');
+                            if (!wasActive) $row.addClass('tapped');
+                        });
+                    }
 
-        // ── Mobile back button ────────────────────────────────────
+                    // ── Mobile back button ────────────────────────────────────
                     $('#mobileBackBtn').click(function () {
                         $('.g-panel').first().show();
                         $('#detailPanel').removeClass('mobile-active');
@@ -662,11 +701,38 @@
                         activeGroupId = null;
                     });
 
+                    function getWeekdayName(date) {
+                        const names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                        return names[date.getDay()];
+                    }
                     
+                    function getDisplayMonthDay(date) {
+                        var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+                        if (isPersian) {
+                            var pd = new persianDate(date);
+                            return pd.date(); 
+                        }
+                        return date.getDate(); 
+                    }
+
+                    function taskMatchesDate(t, date) {
+                        if (t.recurrence === 'Daily') return true;
+                        if (t.recurrence === 'Weekly') return t.recurrenceWeekday === getWeekdayName(date);
+                        if (t.recurrence === 'Monthly') return t.recurrenceMonthDay === getDisplayMonthDay(date);
+                        return false;
+                    }
+                    function toIso(d) {
+                        const m = String(d.getMonth()+1).padStart(2,'0');
+                        const day = String(d.getDate()).padStart(2,'0');
+                        return `${d.getFullYear()}-${m}-${day}`;
+                    }
                     function loadGroupoverview(groupId) {
                         $.get(`/api/Groups/${groupId}/overview`, function (data) {
+                            const allRecurring = data.allRecurring ;
+                            const todayRecurring = allRecurring.filter(t => taskMatchesDate(t, new Date()));
+                    
                             renderProjects(data.projects);
-                            renderTaskList(data.tasks, true);
+                            renderTaskList(data.tasks, true, todayRecurring);
                             $('#overviewProjectCount').text(data.projects.length + ' ' + L.projectsLabel);
                             $('#overviewTaskCount').text(data.tasks.length + ' ' + L.tasksLabel);
                         });
@@ -712,12 +778,18 @@
                         $('#projectsList').html(html);
                     }
 
-                    function renderTaskList(tasks, groupByProject) {
+                function renderTaskList(tasks, groupByProject, recurringTasks) {
                         if (!tasks.length) {
                             $('#allTasksList').html(`<div class="g-empty py-10"><i class="ki-outline ki-check-circle fs-2tx mb-3"></i><p>${L.noTasksYet}</p></div>`);
                             return;
                         }
                         let html = '';
+
+                        if (recurringTasks && recurringTasks.length) {
+                            html += `<div class="px-4 pt-3 pb-1"><small class="text-muted text-uppercase fw-bold"><i class="ki-outline ki-arrows-circle fs-7 me-1"></i>${L.recurringTasks}</small></div>`;
+                            recurringTasks.forEach(t => { html += recurringTaskHtml(t); });
+                        }
+
                         if (groupByProject) {
                             const byProject = {};
                             tasks.forEach(t => {
@@ -735,13 +807,77 @@
                         $('#allTasksList').html(html);
                     }
 
-                    function taskHtml(t) {
-                        const done = t.status;
-                        const overdue = t.deadLine && !done && new Date(t.deadLine) < new Date();
-                        const deadlineVal = t.deadLine ? toLocalISODate(t.deadLine) : ''; // ← فیکس باگ timezone هم اینجا
+                    function recurrenceLabel(t) {
+                        if (t.recurrence === 'Daily') return L.daily;
+                        if (t.recurrence === 'Weekly') return L.weekly;
+                        if (t.recurrence === 'Monthly') return L.monthly;
+                        return '';
+                    }
+
+                    function isRecurringDoneToday(t) {
+                        const iso = toIso(new Date());
+                        const occ = (t.occurrences || []).find(o => toIso(new Date(o.occurrenceDate)) === iso);
+                        return occ ? occ.isCompleted : false;
+                    }
+
+                    function recurringTaskHtml(t) {
+                        const done = isRecurringDoneToday(t);
+                        const todayIso = toIso(new Date());
 
                         return `
                         <div class="g-task-item" data-task-id="${t.id}">
+                            <div class="form-check mt-1">
+                                <input class="form-check-input recurring-task-toggle" type="checkbox" ${done ? 'checked' : ''}
+                                       data-task-id="${t.id}" data-date="${todayIso}">
+                            </div>
+                            <div class="flex-grow-1">
+                                <span class="${done ? 'text-decoration-line-through text-muted' : 'fw-semibold'}">${t.title}</span>
+                                ${t.description ? `<br><small class="text-muted">${t.description}</small>` : ''}
+                                <br><small class="text-muted d-inline-flex align-items-center gap-1"><i class="ki-outline ki-arrows-circle fs-7"></i><span>${recurrenceLabel(t)}</span></small>
+                            </div>
+                            ${t.assignedTo ? `<small class="badge badge-light me-2">${t.assignedTo.userName}</small>` : ''}
+                            <div class="g-row-actions">
+                                ${t.creatorId === CURRENT_USER_ID ? `
+                                <button class="btn btn-xs btn-icon btn-light-primary edit-task-btn"
+                                    data-id="${t.id}" data-title="${t.title.replace(/"/g,'&quot;')}"
+                                    data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
+                                    data-deadline="${t.deadLine ? toLocalISODate(t.deadLine) : ''}" data-status="${t.status}"
+                                    data-assignee-id="${t.assignedToUID || ''}"
+                                    data-recurrence="${t.recurrence || 'None'}"
+                                    data-recurrence-weekday="${t.recurrenceWeekday || ''}"
+                                    data-recurrence-month-day="${t.recurrenceMonthDay || ''}"
+                                    data-is-recurrence-ended="${t.isRecurrenceEnded || false}"
+                                    title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>` : `
+                                <button class="btn btn-xs btn-icon btn-light-secondary" disabled title="${NO_ACCESS_HINT}">
+                                    <i class="ki-outline ki-lock fs-5"></i>
+                                </button>`}
+                            </div>
+                        </div>`;
+                    }
+
+                    $(document).on('change', '.recurring-task-toggle', function () {
+                        const taskId = $(this).data('task-id');
+                        const dateStr = $(this).data('date');
+                        var $checkbox = $(this);
+                        var $label = $checkbox.closest('.g-task-item').find('.flex-grow-1 > span').first();
+
+                        $.post('/api/tasks/OccuranceCheck', { id: taskId, OccurrenceDate: dateStr })
+                            .done(function () {
+                                $label.toggleClass('text-decoration-line-through text-muted fw-semibold');
+                            })
+                            .fail(function () {
+                                $checkbox.prop('checked', !$checkbox.is(':checked'));
+                                toastr.error('@_localizer["errorMs"]');
+                            });
+                    });
+
+                    function taskHtml(t) {
+                        const done = t.status;
+                        const overdue = t.deadLine && !done && new Date(t.deadLine) < new Date();
+                        const deadlineVal = t.deadLine ? toLocalISODate(t.deadLine) : '';
+
+                        return `
+                        <div class="g-task-item" data-task-id="${t.id}"وای>
                             <div class="form-check mt-1">
                                 <input class="form-check-input task-status-toggle" type="checkbox" ${done ? 'checked' : ''} data-task-id="${t.id}">
                             </div>
@@ -757,6 +893,10 @@
                                     data-desc="${(t.description||'').replace(/"/g,'&quot;')}"
                                     data-deadline="${deadlineVal}" data-status="${done}"
                                     data-assignee-id="${t.assignedToUID || ''}"
+                                    data-recurrence="${t.recurrence || 'None'}"
+                                    data-recurrence-weekday="${t.recurrenceWeekday || ''}"
+                                    data-recurrence-month-day="${t.recurrenceMonthDay || ''}"
+                                    data-is-recurrence-ended="${t.isRecurrenceEnded || false}"
                                     title="Edit"><i class="ki-outline ki-pencil fs-5"></i></button>
                                 <button class="btn btn-xs btn-icon btn-light-danger delete-task-btn"
                                     data-id="${t.id}" title="Delete"><i class="ki-outline ki-trash fs-5"></i></button>` : `
@@ -964,7 +1104,17 @@
                     $(document).on('click', '.edit-task-btn', function (e) {
                         e.stopPropagation();
                         const $b = $(this);
-                        openTaskModal($b.data('id'), $b.data('title'), $b.data('desc'), toPersianSlash($b.data('deadline')), $b.data('assignee-id'));
+                        openTaskModal(
+                            $b.data('id'),
+                            $b.data('title'), 
+                            $b.data('desc'), 
+                            toPersianSlash($b.data('deadline')), 
+                            $b.data('assignee-id'),
+                            $b.data('recurrence'),
+                            $b.data('recurrence-weekday'),
+                            $b.data('recurrence-month-day'),
+                            $b.data('is-recurrence-ended')
+                        );
                     });
 
                     $(document).on('click', '.delete-task-btn', function (e) {
@@ -1172,15 +1322,48 @@
                         });
                     });
 
+                    function populateNtMonthDaySelect() {
+                        var $select = $('#ntRecurrenceMonthDay');
+                        if ($select.children().length > 0) return;
+                        for (var i = 1; i <= 30; i++) {
+                            $select.append(`<option value="${i}">${i}</option>`);
+                        }
+                    }
+
+                    function updateNtRecurrenceVisibility() {
+                        var type = $('#ntRecurrenceType').val();
+                        $('#ntRecurrenceWeeklyRow').toggleClass('d-none', type !== 'Weekly');
+                        $('#ntRecurrenceMonthlyRow').toggleClass('d-none', type !== 'Monthly');
+
+                        var hasDeadline = !!$('#ntDeadline').val();
+                        var isRecurring = type !== 'None';
+                        $('#ntRecurrenceEndedRow').toggleClass('d-none', !(isRecurring && hasDeadline));
+                    }
+
+                    $(document).ready(function () {
+                        populateNtMonthDaySelect();
+                        $('#ntRecurrenceType').on('change', updateNtRecurrenceVisibility);
+                        $('#ntDeadline').on('change', updateNtRecurrenceVisibility);
+                    });
+
                     // ── New/Edit Task ─────────────────────────────────────────────
-                    function openTaskModal(id, title, desc, deadline, assigneeId) {
+                    function openTaskModal(id, title, desc, deadline, assigneeId, recurrence, recurrenceWeekday, recurrenceMonthDay, isRecurrenceEnded) {
                         $('#ntId').val(id || '');
                         $('#ntModalTitle').text(id ? L.editTask : L.newTask);
                         $('#ntTitle').val(title || '');
                         $('#ntDescription').val(desc || '');
+                        $('#ntDeadline').next('input[type="hidden"]').remove();
+                        var $freshDeadline = $('#ntDeadline').clone(false)
+                            .val(deadline)
+                            .addClass('persian-date-input');
+                        $('#ntDeadline').replaceWith($freshDeadline);
+                        initPersianDatepickers($('#newTaskModal'));
 
-                        console.log(deadline)
-                        $('#ntDeadline').val(deadline || '');
+                        $('#ntRecurrenceType').val(recurrence || 'None');
+                        $('#ntRecurrenceWeekday').val(recurrenceWeekday || 'Saturday');
+                        $('#ntRecurrenceMonthDay').val(recurrenceMonthDay || '1');
+                        $('#ntRecurrenceEnded').prop('checked', !!isRecurrenceEnded);
+                        updateNtRecurrenceVisibility()
 
                         const $select = $('#ntAssignee');
                         $select.html(`<option value="">${L.unassigned}</option>`);
@@ -1212,6 +1395,8 @@
                         const id = $('#ntId').val();
                         const isEdit = !!id;
                         const assigneeId = $('#ntAssignee').val();
+                        const recurrenceType = $('#ntRecurrenceType').val();
+
                         const payload = {
                             title,
                             description: $('#ntDescription').val().trim() || null,
@@ -1219,7 +1404,11 @@
                             status: false,
                             assigneeId: assigneeId ? parseInt(assigneeId) : null,
                             projectId: !isEdit ? (activeProjectId || null) : undefined,
-                            groupId: !isEdit ? (!activeProjectId ? activeGroupId : null) : undefined
+                            groupId: !isEdit ? (!activeProjectId ? activeGroupId : null) : undefined,
+                            recurrence: recurrenceType,
+                            recurrenceWeekday: recurrenceType === 'Weekly' ? $('#ntRecurrenceWeekday').val() : null,
+                            recurrenceMonthDay: recurrenceType === 'Monthly' ? parseInt($('#ntRecurrenceMonthDay').val(), 10) : null,
+                            isRecurrenceEnded: $('#ntRecurrenceEnded').is(':checked')
                         };
                         $.ajax({
                             url: isEdit ? `/api/Tasks/${id}` : '/api/Tasks',

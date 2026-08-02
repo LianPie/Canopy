@@ -18,6 +18,7 @@ namespace Canopy.Repositories
         List<UserGroup> GetSentInvites(int userId);
         List<Project> GetGroupProjects(int groupId);
         List<PlannedTask> GetGroupTasks(int groupId);
+        List<PlannedTask> GetGroupRecurrenceTasks(int groupId);
         UserGroup Invite(UserGroup userGroup);
         UserGroup UpdateMembership(UserGroup userGroup);
     }

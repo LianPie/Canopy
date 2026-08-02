@@ -222,7 +222,8 @@ namespace Canopy.Controllers
             return Ok(new
             {
                 projects = _repo.GetGroupProjects(id),
-                tasks = _repo.GetGroupTasks(id)
+                tasks = _repo.GetGroupTasks(id),
+                allRecurring = _repo.GetGroupRecurrenceTasks(id)
             });
         }
 
@@ -235,12 +236,20 @@ namespace Canopy.Controllers
             return Ok(_repo.GetGroupProjects(id));
         }
 
-            [HttpGet("{id}/tasks")]
+        [HttpGet("{id}/tasks")]
         public IActionResult GetGroupTasks(int id)
         {
             var group = _repo.GetById(id, GetUserId());
             if (group == null) return NotFound();
             return Ok(_repo.GetGroupTasks(id));
+        }
+
+        [HttpGet("{id}/RecurrenceTasks")]
+        public IActionResult GetGroupRecurrenceTasks(int id)
+        {
+            var group = _repo.GetById(id, GetUserId());
+            if (group == null) return NotFound();
+            return Ok(_repo.GetGroupRecurrenceTasks(id));
         }
 
         [HttpGet("invites/pending")]

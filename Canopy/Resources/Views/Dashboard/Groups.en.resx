@@ -372,4 +372,46 @@
   <data name="NoAccess" xml:space="preserve">
     <value>You don't have access</value>
   </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="RecurringTasks" xml:space="preserve">
+    <value>Recurring Tasks</value>
+  </data>
+  <data name="Weekly1" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Tuesday" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="Wednesday" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="Thursday" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="Sunday" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="Saturday" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="Recurrence" xml:space="preserve">
+    <value>Recurrence</value>
+  </data>
+  <data name="DayOfMonth" xml:space="preserve">
+    <value>Day Of Month</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Monday" xml:space="preserve">
+    <value>Monday</value>
+  </data>
 </root>

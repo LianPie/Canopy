@@ -95,11 +95,22 @@ namespace Canopy.Repositories
         public List<PlannedTask> GetGroupTasks(int groupId)
         {
             return _ctx.PlannedTask
-                .Where(t => (t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId)
                 .Include(t => t.Project)
                 .Include(t => t.AssignedTo)
+                .Where(t =>   t.Recurrence == RecurrenceType.None && ((t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId))
                 .AsNoTracking()
                 .ToList();
+        }
+
+        public List<PlannedTask> GetGroupRecurrenceTasks(int groupId)
+        {
+            return _ctx.PlannedTask
+                .Include(t => t.Project)
+                .Include(t => t.AssignedTo)
+                .Include(t => t.Occurrences)
+                .Where(t => t.Recurrence != RecurrenceType.None &&
+                    ((t.Project != null && t.Project.GroupId == groupId) || t.GroupId == groupId))
+                .AsNoTracking().ToList();
         }
 
         public UserGroup Invite(UserGroup userGroup)
