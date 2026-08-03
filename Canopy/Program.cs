@@ -173,6 +173,7 @@ app.MapControllerRoute(
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseStaticFiles();
 // Create database schema on startup when using Postgres (Railway)
 using (var scope = app.Services.CreateScope())
 {
