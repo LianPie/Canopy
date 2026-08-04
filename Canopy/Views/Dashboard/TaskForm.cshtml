@@ -159,7 +159,7 @@
             for (let i = 2; i < 7; i++) {
                 const d = new Date(today.getTime() + i * 86400000);
                 const weekdayIndex = (todayIndex + i) % 7;
-                if (weekdayIndex < todayIndex) break;
+               
                 chips.push({ label: QUICK_PICK_WEEKDAY_LABELS[WEEKDAY_ORDER[weekdayIndex]], date: d });
             }
 
