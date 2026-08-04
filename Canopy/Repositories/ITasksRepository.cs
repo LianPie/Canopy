@@ -9,9 +9,11 @@ namespace Canopy.Repositories
         List<PlannedTask> GetByDate(int userId, DateTime date);
         List<PlannedTask> GetWithoutDate(int userId);
         List<PlannedTask> Getreaccuring(int userId);
+        List<PlannedTask> GetreaccuringforToday(int userId);
+        DashboardViewData GetDashboardStats(int userId);
         PlannedTask? GetByIdForUser(int id, int userId);
         PlannedTask? GetAssignedByIdForUser(int id, int userId);
-        (List<PlannedTask> Items, bool HasMore) GetPage(bool isOverdue, int userId, int page, int pageSize);
+        (List<PlannedTask> Items, bool HasMore) GetPage(bool? isOverdue, int userId, int page, int pageSize);
         List<PlannedTask> GetByProjectId(int projectId, int userId);
         PlannedTask Create(PlannedTask task);
         PlannedTask Update(PlannedTask task);

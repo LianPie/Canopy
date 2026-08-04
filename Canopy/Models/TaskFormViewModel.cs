@@ -1,6 +1,14 @@
 ﻿namespace Canopy.Models
 {
 
+    public class DashboardViewData
+    {
+        public int CompletedCount { get; set; }
+        public int OverdueCount { get; set; }
+        public int UpcomingCount { get; set; }
+
+    }
+
     public class TaskFormViewModel
     {
         public int? Id { get; set; }

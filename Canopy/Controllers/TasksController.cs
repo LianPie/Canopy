@@ -179,6 +179,26 @@ namespace Canopy.Controllers
             }
         }
 
+
+        [HttpGet("DashboardOverview")]
+        public IActionResult GetDashboardOverview()
+        {
+            var userId = GetUserId();
+            var noDatePaged = _taskRepo.GetPage(null, userId, 1, 10);
+
+            return Ok(new
+            {
+                recurringTasks = _taskRepo.GetreaccuringforToday(userId),
+                todayTasks = _taskRepo.GetByDate(userId, DateTime.Today),
+                noDateTasks = new
+                {
+                    items = noDatePaged.Items,
+                    hasMore = noDatePaged.HasMore
+                }
+            });
+        }
+
+
         [HttpPatch("{id}/status")]
         public IActionResult ToggleStatus(int id)
         {

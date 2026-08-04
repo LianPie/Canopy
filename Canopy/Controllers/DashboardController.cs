@@ -26,7 +26,9 @@ namespace Canopy.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            DashboardViewData model = _tasksRepo.GetDashboardStats(GetUserId());
+
+            return View(model);
         }
         public IActionResult Tasks()
         {

@@ -1,7 +1,748 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@model Canopy.Models.DashboardViewData
+
+
+@inject IViewLocalizer _localizer
+
+@{
     Layout = "~/views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = @_localizer["Dashboard"];
 }
-@section Scripts{
+
+<style>
+    :root {
+        --bs-body-bg: var(--bs-scrollbar-color);
+        --card-bg: var(--bs-app-header-base-bg-color);
+        --card-border: var(--bs-scrollbar-hover-color);
+        --gray-400: #565a6e;
+        --success: var( --bs-link-color);
+        --radius: 0.775rem;
+        --bs-border-color: var(--bs-scrollbar-hover-color);
+    }
+
+
+    /* ═══ page shell ═══ */
+    .page-head {
+        flex: 0 0 auto;
+        margin-bottom: 18px;
+    }
+
+        .page-head h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 2px;
+        }
+
+        .page-head p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+    .overview-wrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* ═══ ROW 1 — stacked-paper stat cards ═══ */
+    .stat-row {
+        flex: 0 0 auto;
+        display: flex;
+        gap: 26px;
+        flex-wrap: wrap;
+    }
+
+    .stat-stack {
+        position: relative;
+        width: 210px;
+        padding-top: 6px; /* room for the papers peeking out */
+    }
+
+        .stat-stack::before,
+        .stat-stack::after {
+            content: '';
+            position: absolute;
+            left: 6%;
+            right: 6%;
+            top: 0;
+            height: 100%;
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+        }
+
+        .stat-stack::before {
+            transform: rotate(-4deg) translateY(2px);
+            z-index: 1;
+            opacity: 0.75;
+        }
+
+        .stat-stack::after {
+            transform: rotate(3deg) translateY(1px);
+            z-index: 2;
+            opacity: 0.9;
+        }
+
+        .stat-stack .card {
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 8px 18px -6px rgba(0,0,0,0.45);
+        }
+
+    .stat-card-body {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+    }
+
+    .stat-num {
+        font-size: 1.6rem;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+    }
+
+    /* ═══ ROW 2 — two columns ═══ */
+    .col-row {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 16px;
+    }
+
+    .col {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .col-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+        .col-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .col-body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.09);
+            border-radius: 10px;
+        }
+
+    .overview-wrap {
+        height: calc(100vh - 120px); /* تنظیم ارتفاع متناسب با هدر صفحه */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* جلوگیری از اسکرول خوردن کل کارت */
+    }
+
+    .col .card {
+        border: 1px solid var(--bs-border-color, #2b2b40) !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    /* today tasks */
+    .task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 9px 4px;
+        border-bottom: 1px dashed var(--card-border);
+    }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+    .task-check {
+        width: 17px;
+        height: 17px;
+        border-radius: 5px;
+        border: 1.5px solid var(--bs-gray-400);
+        flex: 0 0 auto;
+        margin-top: 2px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .task-check.done {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+            .task-check.done::after {
+                content: '';
+                width: 8px;
+                height: 5px;
+                border-left: 1.5px solid #10241a;
+                border-bottom: 1.5px solid #10241a;
+                transform: rotate(-45deg) translate(0.5px,-1px);
+            }
+
+    .task-title {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--gray-800);
+    }
+
+        .task-title.done {
+            color: var(--gray-500);
+            text-decoration: line-through;
+        }
+
+    .task-meta {
+        margin-top: 2px;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .section-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 14px 0 6px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--gray-500);
+    }
+
+        .section-eyebrow:first-child {
+            margin-top: 0;
+        }
+
+        .section-eyebrow::after {
+            content: '';
+            flex: 1 1 auto;
+            height: 1px;
+            background: var(--card-border);
+        }
+
+    .more-hint {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        padding: 4px 4px 0;
+    }
+
+    .empty-state {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px 10px;
+    }
+
+        .empty-state .msg {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 8px;
+        }
+
+        .empty-state .sub {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+    /* ═══ تنظیم مرکزچین شدن و سایز آیکون‌های Symbol ═══ */
+    .symbol {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0;
+        border-radius: 0.475rem;
+    }
+
+        .symbol.symbol-40 {
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        .symbol i {
+            line-height: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+        }
+
+
+    /* ═══ Under development — hazard tape framing ═══ */
+    .dev-col .card {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .tape {
+        height: 16px;
+        flex: 0 0 auto;
+        background: repeating-linear-gradient( -45deg, #ffc700, #ffc700 12px, #1a1c25 12px, #1a1c25 24px );
+    }
+
+    .dev-body {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative; /* Layer 1: Hazard tape lines | Layer 2: Universal dark overlay */
+        background: repeating-linear-gradient(-45deg, rgba(255, 199, 0, 9%) 0 12px, transparent 12px 24px), rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .dev-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--warning-light);
+        color: var(--warning);
+        font-size: 22px;
+        margin-bottom: 12px;
+        border: 1px dashed rgba(255,199,0,0.4);
+    }
+
+    .dev-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--gray-800);
+    }
+
+    .dev-sub {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        text-align: center;
+        max-width: 200px;
+        margin-top: 4px;
+        line-height: 1.5;
+    }
+
+    @@media (max-width: 900px) {
+        body {
+            height: auto;
+            overflow: auto;
+        }
+
+        .col-row {
+            grid-template-columns: 1fr;
+        }
+
+        .col {
+            max-height: 360px;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .stat-row {
+            flex-wrap: nowrap;
+            gap: 8px;
+        }
+
+        .stat-stack {
+            width: auto;
+            flex: 1 1 0;
+            min-width: 0;
+            padding-top: 4px;
+        }
+
+            .stat-stack::before, .stat-stack::after {
+                left: 4%;
+                right: 4%;
+            }
+
+        .stat-card-body {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 10px 10px;
+        }
+
+        .symbol-40 {
+            width: 30px;
+            height: 30px;
+        }
+
+            .symbol-40 i {
+                font-size: 1rem !important;
+            }
+
+        .stat-num {
+            font-size: 1.15rem;
+        }
+
+        .stat-label {
+            font-size: 0.62rem;
+            line-height: 1.25;
+        }
+    }
+    /* ── Skeleton Full Width Fixed ── */
+    .skeleton {
+        background: linear-gradient(90deg, var(--card-bg), var(--bs-body-bg), var(--card-bg));
+        background-size: 200% 100%;
+        animation: skeleton-wave 1.5s infinite ease-in-out;
+        border-radius: 4px;
+    }
+
+    @@keyframes skeleton-wave {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .skeleton-task {
+        display: flex !important;
+        flex-direction: row !important; /* چیدمان افقی تضمینی */
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 10px 0 !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .skeleton-check {
+        display: inline-block !important; /* حل مشکل افتادن به سطر بالا */
+        width: 18px !important;
+        height: 18px !important;
+        border-radius: 50% !important;
+        flex-shrink: 0 !important;
+    }
+
+    .skeleton-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        flex: 1 1 auto !important; /* پر کردن عرض بدون شکستن سطر */
+        min-width: 0 !important;
+    }
+
+    .skeleton-title {
+        display: block !important;
+        height: 14px !important;
+        width: 65% !important;
+    }
+
+    .skeleton-meta {
+        display: block !important;
+        height: 10px !important;
+        width: 25% !important;
+    }
+</style>
+<div class="page-head">
+    <h1>@_localizer["Overview_Title"]</h1>
+    <p>@_localizer["Overview_Subtitle"]</p>
+</div>
+
+<div class="overview-wrap">
+
+    <!-- ═══ ROW 1 — stacked stat cards ═══ -->
+    <div class="stat-row">
+
+        <div class="stat-stack">
+            <div class="card card-flush">
+                <div class="stat-card-body">
+                    <div class="symbol symbol-40 badge-light-success d-flex align-items-center justify-content-center">
+                        <i class="ki-outline ki-check-circle text-success fs-3 m-0"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num fw-bold text-gray-900 lh-1"> @Model.CompletedCount </div>
+                        <div class="stat-label fw-semibold text-gray-500">@_localizer["Stat_Completed"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-stack">
+            <div class="card card-flush">
+                <div class="stat-card-body">
+                    <div class="symbol symbol-40 badge-light-warning d-flex align-items-center justify-content-center">
+                        <i class="ki-outline ki-time text-warning fs-3 m-0"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num fw-bold text-gray-900 lh-1"> @Model.OverdueCount </div>
+                        <div class="stat-label fw-semibold text-gray-500">@_localizer["Stat_Overdue"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-stack">
+            <div class="card card-flush">
+                <div class="stat-card-body">
+                    <div class="symbol symbol-40 badge-light-info d-flex align-items-center justify-content-center">
+                        <i class="ki-outline ki-calendar-tick text-info fs-3 m-0"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num fw-bold text-gray-900 lh-1"> @Model.UpcomingCount </div>
+                        <div class="stat-label fw-semibold text-gray-500">@_localizer["Stat_Upcoming"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ═══ ROW 2 — two columns ═══ -->
+    <div class="col-row">
+
+        <!-- Today's tasks -->
+        <div class="col">
+            <div class="card" style="flex:1 1 auto; display:flex; flex-direction:column; overflow:hidden;">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="fw-bold text-gray-800 fs-6">@_localizer["Header_Today"]</span>
+                    </div>
+                </div>
+                <div class="card-body col-body" id="todayBody">
+
+                    <div class="section-eyebrow"><i class="ki-outline ki-arrows-circle"></i> @_localizer["Section_Recurring"]</div>
+                    <div id="recurringContainer">
+                    </div>
+
+                    <div class="section-eyebrow">@_localizer["Section_DueToday"]</div>
+                    <div id="todayContainer">
+                    </div>
+
+                    <div class="section-eyebrow noDateCount">@string.Format(_localizer["Section_NoDate"].Value, 0)</div>
+                    <div id="noDateContainer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Under development -->
+        <div class="col dev-col">
+            <div class="card">
+                <div class="tape"></div>
+                <div class="dev-body">
+                    <div class="dev-icon"><i class="ki-outline ki-abstract-26 fs-2x"></i></div>
+                    <div class="dev-title">@_localizer["Dev_Title"]</div>
+                    <div class="dev-sub">@_localizer["Dev_Subtitle"]</div>
+                </div>
+                <div class="tape"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const L = {
+            daily: '@_localizer["Daily"]',
+            weekly: '@_localizer["Weekly"]',
+            monthly: '@_localizer["Monthly"]',
+            NotasksToday: '@_localizer["NoTasksToday"]',
+            Notasks: '@_localizer["NoTasks"]',
+            errorMs: '@_localizer["errorMs"]',
+            noDateHeader: '@Html.Raw(_localizer["Section_NoDate"].Value)'
+
+        };
+
+        function renderSkeleton(containerId, count = 3) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            let html = '';
+            for (let i = 0; i < count; i++) {
+                html += `
+                <div class="skeleton-task">
+                    <div class="skeleton skeleton-check"></div>
+                    <div style="flex-1: 1; width: 100%;">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-meta"></div>
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function recurrenceLabel(t) {
+            if (!t.recurrence) return '';
+            const rec = t.recurrence.toLowerCase();
+            if (rec === 'daily') return L.daily;
+            if (rec === 'weekly') return L.weekly;
+            if (rec === 'monthly') return L.monthly;
+            return t.recurrence;
+        }
+
+        function isRecurringDoneToday(t) {
+            const iso = toIso(new Date());
+            const occ = (t.occurrences || []).find(o => toIso(new Date(o.occurrenceDate)) === iso);
+            return occ ? occ.isCompleted : false;
+        }
+        function toIso(d) {
+            const m = String(d.getMonth()+1).padStart(2,'0');
+            const day = String(d.getDate()).padStart(2,'0');
+            return `${d.getFullYear()}-${m}-${day}`;
+        }
+
+        function recurringTodayItemHtml(t) {
+            const done = isRecurringDoneToday(t);
+            const todayIso = toIso(new Date());
+            return `
+            <div class="task-item">
+                <div class="task-check ${done ? 'done' : ''}" data-kind="recurring" data-task-id="${t.id}" data-date="${todayIso}"></div>
+                <div>
+                    <div class="task-title ${done ? 'done' : ''}">${(t.title)}</div>
+                    <div class="task-meta"><span class="badge badge-light-info">${recurrenceLabel(t)}</span></div>
+                </div>
+            </div>`;
+        }
+
+        function dueTodayItemHtml(t) {
+            const done = t.status;
+            return `
+            <div class="task-item">
+                <div class="task-check ${done ? 'done' : ''}" data-kind="regular" data-task-id="${t.id}"></div>
+                <div>
+                    <div class="task-title ${done ? 'done' : ''}">${(t.title)}</div>
+                    ${t.project ? `<div class="task-meta text-gray-500" style="font-size:0.72rem;">${(t.project.title)}</div>` : ''}
+                </div>
+            </div>`;
+        }
+
+        function noDateItemHtml(t) {
+            const done = t.status;
+            return `
+            <div class="task-item">
+                <div class="task-check ${done ? 'done' : ''}" data-kind="regular" data-task-id="${t.id}"></div>
+                <div class="task-title ${done ? 'done' : ''}">${(t.title)}</div>
+            </div>`;
+        }
+
+        function fetchDashboardData() {
+            renderSkeleton('recurringContainer', 2);
+            renderSkeleton('todayContainer', 3);
+            renderSkeleton('noDateContainer', 3);
+
+            $.get('/api/tasks/DashboardOverview')
+                   .done(function (res) {
+                    recurringTasksCache = res.recurringTasks || [];
+                    const recHtml = recurringTasksCache.length
+                        ? recurringTasksCache.map(recurringTodayItemHtml).join('')
+                        : `<div class="text-gray-400 fs-7 my-2">${L.NotasksToday}</div>`;
+                    $('#recurringContainer').html(recHtml);
+
+                    const todayTasks = res.todayTasks || [];
+                    const todayHtml = todayTasks.length
+                        ? todayTasks.map(dueTodayItemHtml).join('')
+                        : `<div class="text-gray-400 fs-7 my-2">${L.NotasksToday}</div>`;
+                    $('#todayContainer').html(todayHtml);
+
+                    const noDateTasks = (res.noDateTasks && res.noDateTasks.items) ? res.noDateTasks.items : [];
+                    const headerText = L.noDateHeader.replace('{0}', noDateTasks.length);
+                    $('#noDateContainer').prev('.section-eyebrow').text(headerText);
+                    const noDateHtml = noDateTasks.length
+                        ? noDateTasks.map(noDateItemHtml).join('')
+                        : `<div class="text-gray-400 fs-7 my-2">${L.Notasks}</div>`;
+                    $('#noDateContainer').html(noDateHtml);
+                })
+                .fail(function () {
+                    toastr.error(L.errorMs);
+                });
+        }
+
+        // ── ۴. توابع Toggle وضعیت ────────────────────────────────────────────────
+        function toggleRecurringStatus(taskId, dateStr, $el) {
+            const $item = $el.closest('.task-item');
+            const $title = $item.find('.task-title');
+
+            $el.toggleClass('done');
+            $title.toggleClass('done');
+
+            $.post('/api/tasks/OccuranceCheck', { id: taskId, OccurrenceDate: dateStr })
+                .done(function () {
+                    const task = recurringTasksCache.find(t => t.id === taskId);
+                    if (task) {
+                        task.occurrences = task.occurrences || [];
+                        let occ = task.occurrences.find(o => toIso(new Date(o.occurrenceDate)) === dateStr);
+                        if (occ) {
+                            occ.isCompleted = !occ.isCompleted;
+                        } else {
+                            task.occurrences.push({ occurrenceDate: dateStr, isCompleted: true });
+                        }
+                    }
+                })
+                .fail(function () {
+                    $el.toggleClass('done');
+                    $title.toggleClass('done');
+                    toastr.error('خطا در تغییر وضعیت تسک');
+                });
+        }
+
+        function toggleStatus(id, $el) {
+            const $item = $el.closest('.task-item');
+            const $title = $item.find('.task-title');
+            const isDone = !$el.hasClass('done');
+
+            $el.toggleClass('done', isDone);
+            $title.toggleClass('done', isDone);
+
+            $.ajax({
+                url: `/api/tasks/${id}/status`,
+                type: 'PATCH',
+                error: function () {
+                    $el.toggleClass('done', !isDone);
+                    $title.toggleClass('done', !isDone);
+                    toastr.error('خطا در تغییر وضعیت تسک');
+                }
+            });
+
+            if (typeof taskCache !== 'undefined' && typeof activeDate !== 'undefined') {
+                delete taskCache[toIso(activeDate)];
+            }
+        }
+
+        $(document).ready(function () {
+            fetchDashboardData();
+
+            $(document).on('click', '.task-check', function () {
+                const $this = $(this);
+                const kind = $this.data('kind');
+                const taskId = $this.data('task-id');
+
+                if (kind === 'recurring') {
+                    const dateStr = $this.data('date');
+                    toggleRecurringStatus(taskId, dateStr, $this);
+                } else {
+                    toggleStatus(taskId, $this);
+                }
+            });
+        });
+    </script>
+
+
     <script>
 
         $("#DashboardMenu").addClass("active");

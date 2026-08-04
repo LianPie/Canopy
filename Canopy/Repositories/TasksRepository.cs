@@ -25,9 +25,9 @@ namespace Canopy.Repositories
             var tasks = _ctx.PlannedTask
                 .Include(p => p.Project)
                 .Include(p => p.Group)
-                .Where(x => x.AssignedToUID == userId && x.DeadLine.HasValue)
+                .Where(x => x.AssignedToUID == userId && x.DeadLine.HasValue && x.DeadLine.Value.Date == date.Date && x.Recurrence == RecurrenceType.None)
                 .ToList();
-            return tasks.Where(x => x.DeadLine.Value.Date == date.Date).ToList();
+            return tasks;
         }
 
         public List<PlannedTask> GetWithoutDate(int userId)
@@ -49,25 +49,73 @@ namespace Canopy.Repositories
                 .ToList();
         }
 
-
-        public (List<PlannedTask> Items, bool HasMore) GetPage(bool isOverdue, int userId, int page, int pageSize)
+        public List<PlannedTask> GetreaccuringforToday(int userId)
         {
             var today = DateTime.Today;
-            var base_ = _ctx.PlannedTask
+            var currentWeekday = today.DayOfWeek.ToString(); // DayOfWeek enum (e.g., DayOfWeek.Tuesday)
+            var currentDayOfMonth = today.Day;    // Integer (e.g., 4)
+
+            return _ctx.PlannedTask
+                .Include(p => p.Project)
+                .Include(p => p.Group)
+                .Include(p => p.Occurrences)
+                .Where(x => x.AssignedToUID == userId
+                         && x.Recurrence != RecurrenceType.None
+                         && !x.IsRecurrenceEnded
+                         && (
+                             x.Recurrence == RecurrenceType.Daily
+                             || (x.Recurrence == RecurrenceType.Weekly && x.RecurrenceWeekday == currentWeekday)
+                             || (x.Recurrence == RecurrenceType.Monthly && x.RecurrenceMonthDay == currentDayOfMonth)
+                         ))
+                .ToList();
+        }
+
+        public DashboardViewData GetDashboardStats(int userId)
+        {
+            var today = DateTime.Today;
+
+            var stats = _ctx.PlannedTask
+                .Where(x => x.AssignedToUID == userId || x.CreatorId == userId)
+                .GroupBy(x => 1)
+                .Select(g => new DashboardViewData
+                {
+                    CompletedCount = g.Count(x => x.Status == true),
+                    OverdueCount = g.Count(x => x.Status == false && x.DeadLine.HasValue && x.DeadLine.Value.Date < today),
+                    UpcomingCount = g.Count(x => x.Status == false && x.DeadLine.HasValue && x.DeadLine.Value.Date > today)
+                })
+                .FirstOrDefault();
+
+            return (stats);
+        }
+        public (List<PlannedTask> Items, bool HasMore) GetPage(bool? isOverdue, int userId, int page, int pageSize)
+        {
+            var today = DateTime.Today;
+            var baseQuery = _ctx.PlannedTask
                 .Include(x => x.Project)
                 .Include(x => x.Group)
-                .Where(x => (x.AssignedToUID == userId || x.CreatorId == userId) && x.Status == false && x.DeadLine.HasValue);
+                .Where(x => (x.AssignedToUID == userId || x.CreatorId == userId) && x.Status == false);
 
-            var query = isOverdue
-                ? base_.Where(x => x.DeadLine!.Value.Date < today).OrderBy(x => x.DeadLine)
-                : base_.Where(x => x.DeadLine!.Value.Date > today).OrderBy(x => x.DeadLine);
+            IQueryable<PlannedTask> query;
+
+            if (isOverdue.HasValue)
+            {
+                query = isOverdue.Value
+                    ? baseQuery.Where(x => x.DeadLine.HasValue && x.DeadLine.Value.Date < today).OrderBy(x => x.DeadLine)
+                    : baseQuery.Where(x => x.DeadLine.HasValue && x.DeadLine.Value.Date >= today).OrderBy(x => x.DeadLine); 
+            }
+            else
+            {
+                query = baseQuery.Where(x => !x.DeadLine.HasValue).OrderByDescending(x => x.DateCreated); 
+            }
 
             var items = query.Skip((page - 1) * pageSize).Take(pageSize + 1).ToList();
             var hasMore = items.Count > pageSize;
-            if (hasMore) items.RemoveAt(pageSize);
+
+            if (hasMore)
+                items.RemoveAt(pageSize);
+
             return (items, hasMore);
         }
-
 
 
         public PlannedTask? GetByIdForUser(int id, int userId)
