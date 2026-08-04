@@ -125,6 +125,24 @@ builder.Services.AddAuthentication(options =>
         {
             context.Token = context.Request.Cookies["access_token"];
             return Task.CompletedTask;
+        },
+
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
+
+            if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+                context.Request.Headers["Accept"].ToString().Contains("application/json"))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            }
+            else
+            {
+                var loginUrl = "/home/Login?returnUrl=" + Uri.EscapeDataString(context.Request.Path + context.Request.QueryString);
+                context.Response.Redirect(loginUrl);
+            }
+
+            return Task.CompletedTask;
         }
     };
 });
