@@ -35,7 +35,7 @@ namespace Canopy.Repositories
             return _ctx.PlannedTask
                 .Include(p => p.Project)
                 .Include(p => p.Group)
-                .Where(x => x.AssignedToUID == userId && x.DeadLine.HasValue && x.Recurrence == RecurrenceType.None)
+                .Where(x => x.AssignedToUID == userId && !x.DeadLine.HasValue && x.Recurrence == RecurrenceType.None)
                 .ToList();
         }
 
@@ -93,7 +93,7 @@ namespace Canopy.Repositories
             var baseQuery = _ctx.PlannedTask
                 .Include(x => x.Project)
                 .Include(x => x.Group)
-                .Where(x => (x.AssignedToUID == userId || x.CreatorId == userId) && x.Status == false);
+                .Where(x => (x.AssignedToUID == userId) && x.Status == false && x.Recurrence == RecurrenceType.None);
 
             IQueryable<PlannedTask> query;
 
