@@ -44,6 +44,8 @@ builder.Services.AddScoped<IProjectsRepository, ProjectsRepository>();
 builder.Services.AddScoped<IGroupsRepository, GroupsRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
+builder.Services.AddScoped<IChatsRepository, ChatsRepository>();
+builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
 
 
 builder.Services.AddSignalR();
