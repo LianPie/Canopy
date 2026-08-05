@@ -4,9 +4,11 @@ namespace Canopy.Repositories
 {
     public interface IChatsRepository
     {
-        List<Chat> GetByIdForUser(int id, int userId);
-        Chat Create(Chat chat);
-        Chat Update(Chat chat);
-        void Delete(Chat chat);
+        Task<List<int>> GetChatIdsForUserAsync(int userId);
+        Task<Chat?> GetByIdAsync(int chatId);
+        Task<List<Chat>>  GetByIdForUser(int id, int userId);
+        Task<Chat> Create(Chat chat);
+        Task<Chat> Update(Chat chat);
+        Task Delete(Chat chat);
     }
 }

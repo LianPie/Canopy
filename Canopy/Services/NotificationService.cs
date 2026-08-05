@@ -1,4 +1,5 @@
 using Canopy.Hubs;
+using Canopy.Models;
 using Canopy.Repositories;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
@@ -55,6 +56,21 @@ namespace Canopy.Services
             await SendPushAsync(userId, type, payload);
         }
 
+        public async Task NotifyNewMessageAsync(int chatId, MessageDto message, List<int> recipientUserIds)
+        {
+            var tasks = recipientUserIds.Select(userId =>
+                _hub.Clients.User(userId.ToString())
+                    .SendAsync("NewMessageNotification", new
+                    {
+                        chatId,
+                        messageId = message.Id,
+                        senderName = message.UserName,
+                        preview = message.Text?.Length > 50 ? message.Text[..50] + "…" : message.Text
+                    }));
+
+            await Task.WhenAll(tasks);
+        }
+
         private async Task SendPushAsync(int userId, NotificationType type, string payload)
         {
             var subscriptions = _pushRepo.GetByUser(userId);
@@ -68,7 +84,7 @@ namespace Canopy.Services
             {
                 try
                 {
-                    var pushSub = new PushSubscription(sub.Endpoint, sub.P256dh, sub.Auth);
+                    var pushSub = new WebPush.PushSubscription(sub.Endpoint, sub.P256dh, sub.Auth);
                     await client.SendNotificationAsync(pushSub, pushPayload, _vapid);
                 }
                 catch (WebPushException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Gone)
@@ -84,5 +100,7 @@ namespace Canopy.Services
 
             staleEndpoints.ForEach(_pushRepo.DeleteByEndpoint);
         }
+
+
     }
 }

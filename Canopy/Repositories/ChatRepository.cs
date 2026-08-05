@@ -11,7 +11,23 @@ namespace Canopy.Repositories
         private readonly ApplicationDbContext _ctx;
         public ChatsRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
-        public List<Chat> GetByIdForUser(int id, int GroupId)
+        public async Task<List<int>> GetChatIdsForUserAsync(int userId)
+        {
+            var groupIds = _ctx.UserGroup
+                .Where(ug => ug.UserId == userId)
+                .Select(ug => ug.GroupId);
+
+            return await _ctx.Chat
+                .Where(c => groupIds.Contains(c.GroupId) && c.IsActive)
+                .Select(c => c.Id)
+                .ToListAsync();
+        }
+        public async Task<Chat?> GetByIdAsync(int chatId)
+        {
+            return await _ctx.Chat.FirstOrDefaultAsync(c => c.Id == chatId);
+        }
+
+        public async Task<List<Chat>> GetByIdForUser(int id, int GroupId)
         {
             return _ctx.Chat.
                 Include(c => c.Messages)
@@ -19,7 +35,7 @@ namespace Canopy.Repositories
                 .ToList();
         }
 
-        public Chat Create(Chat chat)
+        public async Task<Chat> Create(Chat chat)
         {
             _ctx.Chat.Add(chat);
             _ctx.SaveChanges();
@@ -27,7 +43,7 @@ namespace Canopy.Repositories
             return chat;
         }
 
-        public Chat Update(Chat chat)
+        public async Task<Chat> Update(Chat chat)
         {
             _ctx.Chat.Update(chat);
             _ctx.SaveChanges();
@@ -35,7 +51,7 @@ namespace Canopy.Repositories
             return chat;
         }
 
-        public void Delete(Chat chat)
+        public async Task Delete(Chat chat)
         {
             _ctx.Chat.Remove(chat);
             _ctx.SaveChanges();

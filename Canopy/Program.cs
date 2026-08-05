@@ -43,6 +43,7 @@ builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<IProjectsRepository, ProjectsRepository>();
 builder.Services.AddScoped<IGroupsRepository, GroupsRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
 
 
 builder.Services.AddSignalR();
@@ -152,7 +153,7 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 

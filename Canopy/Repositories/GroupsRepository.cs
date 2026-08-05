@@ -51,6 +51,14 @@ namespace Canopy.Repositories
             _ctx.SaveChanges();
         }
 
+        public List<UserGroup> GetMembers(int groupId, int userId)
+        {
+            return _ctx.UserGroup
+                    .Include(ug => ug.User)
+                    .Where(ug => ug.GroupId == groupId)
+                    .ToList();
+        }
+
         public UserGroup? GetMembership(int groupId, int userId)
         {
             return _ctx.UserGroup

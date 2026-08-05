@@ -12,6 +12,7 @@ namespace Canopy.Repositories
         void Delete(Group group);
 
         // Membership
+        List<UserGroup> GetMembers(int groupId, int userId);
         UserGroup? GetMembership(int groupId, int userId);
         UserGroup? GetMembershipById(int userGroupId, int userId);
         List<UserGroup> GetPendingInvites(int userId);
