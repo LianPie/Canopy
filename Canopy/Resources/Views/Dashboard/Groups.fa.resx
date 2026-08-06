@@ -429,4 +429,10 @@
   <data name="Tomorrow" xml:space="preserve">
     <value>فردا</value>
   </data>
+  <data name="Chat" xml:space="preserve">
+    <value>چت</value>
+  </data>
+  <data name="Board" xml:space="preserve">
+    <value>برد</value>
+  </data>
 </root>

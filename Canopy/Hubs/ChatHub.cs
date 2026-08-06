@@ -25,6 +25,16 @@ namespace Canopy.Hubs
             await base.OnConnectedAsync();
         }
 
+        public async Task JoinChat(int chatId)
+        {
+            var userId = GetUserId();
+            if (!await _chatService.IsUserMemberOfChatAsync(chatId, userId))
+            {
+                await Clients.Caller.SendAsync("Error", "شما عضو این چت نیستید.");
+                return;
+            }
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"chat-{chatId}");
+        }
         public async Task SendMessage(int chatId, string text)
         {
             var userId = GetUserId(); // نه از پارامتر کلاینت

@@ -9,5 +9,8 @@ namespace Canopy.Services
         Task<MessageDto> SendMessageAsync(int chatId, int userId, string text);
         Task MarkMessageAsSeenAsync(int messageId, int userId, int chatId);
         Task<List<MessageDto>> GetMessagesAsync(int chatId, int skip = 0, int take = 50);
+        Task<Chat> GetOrCreateChatForGroupAsync(int groupId);
+
+
     }
 }

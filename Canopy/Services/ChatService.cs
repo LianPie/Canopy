@@ -75,5 +75,19 @@ namespace Canopy.Services
             var messages = await _messagesRepo.GetByChatIdAsync(chatId, skip, take);
             return messages.Select(MessageDto.FromEntity).ToList();
         }
+        public async Task<Chat> GetOrCreateChatForGroupAsync(int groupId)
+        {
+            var chat = await _chatsRepo.GetByGroupIdAsync(groupId);
+            if (chat is not null) return chat;
+
+            var newChat = new Chat
+            {
+                GroupId = groupId,
+                DateStarted = DateTime.Now,
+                IsActive = true
+            };
+
+            return await _chatsRepo.Create(newChat);
+        }
     }
 }

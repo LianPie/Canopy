@@ -429,4 +429,10 @@
   <data name="Tomorrow" xml:space="preserve">
     <value>Tomorrow</value>
   </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Board" xml:space="preserve">
+    <value>Board</value>
+  </data>
 </root>

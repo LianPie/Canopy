@@ -1,5 +1,6 @@
 ﻿using Canopy.Models;
 using Canopy.Repositories;
+using Canopy.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,11 +13,14 @@ namespace Canopy.Controllers
         private readonly ITasksRepository _tasksRepo;
         private readonly IProjectsRepository _projectRepo;
         private readonly IGroupsRepository _groupRepo;
-        public DashboardController(ITasksRepository taskRepo, IProjectsRepository projectRepo, IGroupsRepository groupRepo)
+        private readonly IChatService _chatService;
+        public DashboardController(ITasksRepository taskRepo, IProjectsRepository projectRepo,
+            IGroupsRepository groupRepo, IChatService chatService)
         {
             _tasksRepo = taskRepo;
             _projectRepo = projectRepo;
             _groupRepo = groupRepo;
+            _chatService = chatService;
         }
         private int GetUserId()
         {
@@ -93,6 +97,31 @@ namespace Canopy.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChatRoomTab(int groupId)
+        {
+            var userId = GetUserId();
+
+            var isMember = _groupRepo.GetMembership(groupId, userId) is not null;
+            if (!isMember)
+                return Forbid();
+
+
+            var chat = await _chatService.GetOrCreateChatForGroupAsync(groupId);
+            var messages = await _chatService.GetMessagesAsync(chat.Id);
+
+
+            var vm = new ChatRoomViewModel
+            {
+                ChatId = chat.Id,
+                GroupId = groupId,
+                CurrentUserId = userId,
+                Messages = messages
+            };
+
+            return PartialView("_ChatRoomPartial", vm);
         }
     }
 }

@@ -22,6 +22,12 @@ namespace Canopy.Repositories
                 .Select(c => c.Id)
                 .ToListAsync();
         }
+        public async Task<Chat?> GetByGroupIdAsync(int groupId)
+        {
+            return await _ctx.Chat
+                .FirstOrDefaultAsync(c => c.GroupId == groupId && c.IsActive);
+        }
+
         public async Task<Chat?> GetByIdAsync(int chatId)
         {
             return await _ctx.Chat.FirstOrDefaultAsync(c => c.Id == chatId);
