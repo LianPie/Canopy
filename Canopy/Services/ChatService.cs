@@ -9,17 +9,20 @@ namespace Canopy.Services
         private readonly IChatsRepository _chatsRepo;
         private readonly IGroupsRepository _groupsRepo;
         private readonly INotificationService _notificationService;
+        private readonly IMessageEncryptionService _encryptionService;
 
         public ChatService(
             IMessagesRepository messagesRepo,
             IChatsRepository chatsRepo,
             IGroupsRepository groupsRepo,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IMessageEncryptionService encryptionService)
         {
             _messagesRepo = messagesRepo;
             _chatsRepo = chatsRepo;
             _groupsRepo = groupsRepo;
             _notificationService = notificationService;
+            _encryptionService = encryptionService;
         }
 
         public async Task<List<int>> GetUserChatIdsAsync(int userId)
@@ -48,16 +51,17 @@ namespace Canopy.Services
             {
                 ChatId = chatId,
                 UserId = userId,
-                Text = text,
+                Text = _encryptionService.Encrypt(text),
                 Type = "text",
                 DateCreated = DateTime.Now
             };
 
             await _messagesRepo.CreateAsync(message);
             var dto = MessageDto.FromEntity(message);
+            dto.Text = text;
 
             var chat = await _chatsRepo.GetByIdAsync(chatId);
-            var memberIds =  _groupsRepo.GetMembers(chat!.GroupId, userId);
+            var memberIds = _groupsRepo.GetMembers(chat!.GroupId, userId);
             var recipients = memberIds.Where(x => x.UserId != userId).Select(x => x.UserId).ToList();
 
             await _notificationService.NotifyNewMessageAsync(chatId, dto, recipients);
@@ -73,7 +77,12 @@ namespace Canopy.Services
         public async Task<List<MessageDto>> GetMessagesAsync(int chatId, int skip = 0, int take = 50)
         {
             var messages = await _messagesRepo.GetByChatIdAsync(chatId, skip, take);
-            return messages.Select(MessageDto.FromEntity).ToList();
+            return messages.Select(m =>
+            {
+                var dto = MessageDto.FromEntity(m);
+                dto.Text = _encryptionService.Decrypt(m.Text ?? string.Empty);
+                return dto;
+            }).ToList();
         }
         public async Task<Chat> GetOrCreateChatForGroupAsync(int groupId)
         {

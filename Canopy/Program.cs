@@ -1,15 +1,16 @@
 using Canopy.Data;
-using System.Security.Claims;
+using Canopy.Hubs;
 using Canopy.Repositories;
 using Canopy.Repositories.TaskManager.Repositories;
 using Canopy.Services;
-using Canopy.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -35,6 +36,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     else
         options.UseSqlServer(sqlConn);
 });
+builder.Services.AddDataProtection()
+    .SetApplicationName("Canopy")
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\CanopyKeys"));
 
 
 // Register repository
@@ -157,6 +161,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IMessageEncryptionService, MessageEncryptionService>();
 
 
 builder.Services.AddSwaggerGen();
