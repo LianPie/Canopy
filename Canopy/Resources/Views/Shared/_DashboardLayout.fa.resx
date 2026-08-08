@@ -169,6 +169,6 @@
     <value>اعلانی وجود ندارد</value>
   </data>
   <data name="NotifNewMessage" xml:space="preserve">
-    <value>{0}: {1}</value>
+    <value>{0} پیام جدیدی فرستاد</value>
   </data>
 </root>

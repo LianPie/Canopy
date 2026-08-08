@@ -946,7 +946,7 @@
 
                     case 5:
                     case "NewMessage": 
-                        return fmt(LN.NewMessage, `<b>${p.senderName}</b>`, escapeHtml(p.preview));
+                        return fmt(LN.NewMessage, `<b>${p.senderName}</b>`);
 
                     default: 
                         return LN.fallback;

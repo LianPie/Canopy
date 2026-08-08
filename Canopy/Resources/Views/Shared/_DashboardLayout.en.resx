@@ -169,6 +169,6 @@
     <value>No notifications</value>
   </data>
   <data name="NotifNewMessage" xml:space="preserve">
-    <value>{0}: {1}</value>
+    <value>{0} Sent a new message</value>
   </data>
 </root>

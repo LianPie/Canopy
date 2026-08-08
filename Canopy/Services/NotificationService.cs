@@ -63,7 +63,6 @@ namespace Canopy.Services
                 chatId,
                 messageId = message.Id,
                 senderName = message.UserName,
-                preview = message.Text?.Length > 50 ? message.Text[..50] + "…" : message.Text
             });
 
             var tasks = recipientUserIds.Select(userId =>
