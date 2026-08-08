@@ -58,16 +58,15 @@ namespace Canopy.Services
 
         public async Task NotifyNewMessageAsync(int chatId, MessageDto message, List<int> recipientUserIds)
         {
-            var payload = JsonSerializer.Serialize(new
-            {
-                chatId,
-                messageId = message.Id,
-                senderName = message.UserName,
-                preview = message.Text?.Length > 50 ? message.Text[..50] + "…" : message.Text
-            });
-
             var tasks = recipientUserIds.Select(userId =>
-                SendAsync(userId, NotificationType.NewMessage, payload));
+                _hub.Clients.User(userId.ToString())
+                    .SendAsync("NewMessageNotification", new
+                    {
+                        chatId,
+                        messageId = message.Id,
+                        senderName = message.UserName,
+                        preview = message.Text?.Length > 50 ? message.Text[..50] + "…" : message.Text
+                    }));
 
             await Task.WhenAll(tasks);
         }

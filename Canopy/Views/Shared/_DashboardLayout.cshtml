@@ -778,11 +778,10 @@
         <script>
             const LN = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
                 groupInvite     = V["NotifGroupInvite"].Value,
-                GroupInvitationAccepted = V["NotifInviteAccepted "].Value,
-                GroupInvitationDeclined   = V["NotifGroupInvitationDeclined "].Value,
-                TaskAssigned = V["NotifTaskAssigned"].Value,
+                inviteAccepted  = V["NotifInviteAccepted"].Value,
+                inviteDeclined  = V["NotifInviteDeclined"].Value,
+                taskAssigned    = V["NotifTaskAssigned"].Value,
                 projectAssigned = V["NotifProjectAssigned"].Value,
-                NewMessage = V["NotifNewMessage"].Value,
                 fallback        = V["NotifFallback"].Value,
                 empty           = V["NotifEmpty"].Value
             }));
@@ -926,31 +925,24 @@
             function buildNotifText(type, p) {
                 switch (type) {
                     case "GroupInvitation": return fmt(LN.groupInvite,     `<b>${p.invitedBy}</b>`,  `<b>${p.groupTitle}</b>`);
-                    case "GroupInvitationAccepted": return fmt(LN.GroupInvitationAccepted ,  `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
-                    case "GroupInvitationDeclined": return fmt(LN.GroupInvitationDeclined ,  `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
-                    case "TaskAssigned": return fmt(LN.TaskAssigned,    `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
+                    case "InviteAccepted": return fmt(LN.inviteAccepted,  `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
+                    case "InviteDeclined": return fmt(LN.inviteDeclined,  `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
+                    case "TaskAssigned": return fmt(LN.taskAssigned,    `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
                     case "ProjectAssigned": return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
-                    case "NewMessage": return fmt(LN.NewMessage, `<b>${p.senderName}</b>`, escapeHtml(p.preview));
                     default: return LN.fallback;
                 }
             }
             function buildNotifLink(type, p) {
                 switch (type) {
                     case "GroupInvitation": return `/dashboard/Groups/`;       // group invite
-                    case "GroupInvitationAccepted": return `/dashboard/Groups/`;           // invite accepted
-                    case "GroupInvitationDeclined": return `/dashboard/Groups/`;           // invite declined
+                    case "InviteAccepted": return `/dashboard/Groups/`;           // invite accepted
+                    case "InviteDeclined": return `/dashboard/Groups/`;           // invite declined
                     case "TaskAssigned": return `/dashboard/Tasks/`;             // task assigned
                     case "ProjectAssigned": return `/dashboard/Groups`;       // project assigned
-                    case "NewMessage": return `/dashboard/Groups/`;
                     default: return '#';    
                 }
             }
-            function escapeHtml(str) {
-                if (!str) return '';
-                const div = document.createElement('div');
-                div.textContent = str;
-                return div.innerHTML;
-            }
+
             function fmt(template, ...args) {
                 return template.replace(/\{(\d+)\}/g, (_, i) => args[i] ?? '');
             }
@@ -988,8 +980,6 @@
 
             // ─── Toast ───────────────────────────────────────────────────────────────
             function showNotifToast(n) {
-            console.log(n.type)
-            console.log(payload)
                 const payload = tryParseJson(n.payload);
                 notyf.open({ type: 'notification', message: buildNotifText(n.type, payload) });
             }

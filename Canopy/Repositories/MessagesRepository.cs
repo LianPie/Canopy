@@ -26,9 +26,6 @@ namespace Canopy.Repositories
         {
             _ctx.Message.Add(message);
             await _ctx.SaveChangesAsync();
-
-            await _ctx.Entry(message).Reference(m => m.User).LoadAsync();
-
             return message;
         }
 
