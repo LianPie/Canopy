@@ -17,5 +17,6 @@ public enum NotificationType
     GroupInvitationAccepted = 1,
     GroupInvitationDeclined = 2,
     TaskAssigned = 3,
-    ProjectAssigned = 4
+    ProjectAssigned = 4,
+    NewMessage = 5
 }
