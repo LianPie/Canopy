@@ -238,22 +238,50 @@
      data-current-user-id="@Model.CurrentUserId">
 
    
-
     <div class="chatroom-input-bar">
         <button type="button" class="chat-icon-btn" id="chatAttachBtn" title="@_localizer["Attach"]">
             <i class="ki-outline ki-plus fs-3"></i>
         </button>
-        <input type="text" id="chatMessageInput" class="chat-input" placeholder="@_localizer["Message"]" />
-        @* <button type="button" class="chat-icon-btn" id="chatMicBtn" title="@_localizer["VoiceMessage"]">
-            <i class="ki-outline ki-microphone-2 fs-3"></i>
-        </button> *@    
+
+        <div class="chat-input-wrapper" style="position: relative; flex-grow: 1;">
+            <textarea id="chatMessageInput"
+                      class="chat-input"
+                      placeholder="@_localizer["Message"]"
+                      maxlength="1000"
+                      rows="1"
+                      style="resize: none; overflow-y: auto; max-height: 120px; width: 100%;"></textarea>
+        </div>
+
+        <span id="chatCharCounter" class="chat-char-counter text-muted fs-8" style="align-self: center; margin: 0 8px;">0/1000</span>
+
+        <button type="button" class="chat-icon-btn disabled" id="chatSendBtn" title="@_localizer["Send"]" disabled>
+            <i class="ki-outline ki-send fs-3"></i>
+        </button>
     </div>
 
     <div class="chatroom-messages" id="chatMessages">
-        <div class="chat-date-divider"><span>@_localizer["Today"]</span></div>
+        @{
+            DateTime? lastDate = null;
+            var today = DateTime.Today;
+        }
 
         @foreach (var msg in Model.Messages)
         {
+            var msgDate = msg.DateCreated.Date;
+
+            @if (lastDate == null || lastDate != msgDate)
+            {
+                var dateText = msgDate == today
+                    ? _localizer["Today"].Value
+                    : msgDate.ToString("yyyy/MM/dd"); // or msgDate.ToString("d") for localized short date
+
+                <div class="chat-date-divider" data-date="@msgDate.ToString("yyyy-MM-dd")">
+                    <span>@dateText</span>
+                </div>
+
+                lastDate = msgDate;
+            }
+
             var isOwn = msg.UserId == Model.CurrentUserId;
             <div class="chat-bubble-row @(isOwn ? "own" : "other")" data-message-id="@msg.Id">
                 @if (!isOwn)
@@ -267,8 +295,7 @@
                     @msg.DateCreated.ToString("HH:mm")
                     @if (isOwn)
                     {
-                         <span class="chat-delivered" title="تحویل داده شد">✓✓</span>
-                    
+                        <span class="chat-delivered" title="@_localizer["Delivered"]">✓✓</span>
                     }
                 </div>
             </div>
@@ -322,10 +349,60 @@
         });
 
         $('#chatSendBtn, .chat-icon-btn#chatMicBtn').off('click');
-        $('#chatMessageInput').off('keypress').on('keypress', function (e) {
-            if (e.which === 13) sendChatMessage(chatId);
+
+        const maxChars = 1000;
+        // Input state handler: Adjust height, toggle Send button, update counter
+        $('#chatMessageInput').on('input', function () {
+            const text = $(this).val();
+            const length = text.trim().length;
+
+            // Auto-expand textarea height up to its max-height
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+
+            // Update character limit display
+            $('#chatCharCounter').text(`${text.length}/${maxChars}`);
+
+            // Enable/Disable Send Button based on non-whitespace content
+            if (length > 0) {
+                $('#chatSendBtn').prop('disabled', false).removeClass('disabled');
+            } else {
+                $('#chatSendBtn').prop('disabled', true).addClass('disabled');
+            }
         });
+
+        // Keydown handler: Enter sends, Shift+Enter creates a new line
+        $('#chatMessageInput').on('keydown', function (e) {
+            if (e.which === 13 && !e.shiftKey) {
+                e.preventDefault(); // Prevent default newline insertion
+
+                if ($(this).val().trim().length > 0) {
+                    triggerSend();
+                }
+            }
+        });
+
+        // Send Button Click
+        $('#chatSendBtn').on('click', function () {
+            if ($('#chatMessageInput').val().trim().length > 0) {
+                triggerSend();
+            }
+        });
+        // Helper function to dispatch message and reset input controls
+        function triggerSend() {
+            sendChatMessage(chatId);
+
+            // Reset textarea state
+            const $input = $('#chatMessageInput');
+            $input.val('').css('height', 'auto');
+            $('#chatCharCounter').text(`0/${maxChars}`);
+            $('#chatSendBtn').prop('disabled', true).addClass('disabled');
+        }
     }
+
+
+    
+
 
     function sendChatMessage(chatId) {
         const $input = $('#chatMessageInput');
@@ -341,21 +418,49 @@
          .catch(err => console.error('Send failed:', err));
     }
 
-   function appendMessage(msg, currentUserId) {
+      // Initialize last render date from existing DOM dividers, or default to null
+    let lastRenderedDateString = $('#chatMessages .chat-date-divider').last().data('date') || null;
+
+    function appendMessage(msg, currentUserId) {
         const isOwn = (msg.userId || msg.UserId) === currentUserId;
         const text = msg.text || msg.Text;
         const senderName = msg.userName || msg.UserName;
-        const time = new Date(msg.dateCreated || msg.DateCreated)
-            .toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+
+        const msgDateObj = new Date(msg.dateCreated || msg.DateCreated);
+
+        // Formatters
+        const time = msgDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        const dateKey = msgDateObj.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+        // Insert date divider if message date changed
+        if (lastRenderedDateString !== dateKey) {
+            const todayKey = new Date().toISOString().split('T')[0];
+
+            let labelText = msgDateObj.toLocaleDateString();
+            if (dateKey === todayKey) {
+                labelText = '@_localizer["Today"]';
+            }
+
+            const dividerHtml = `
+                <div class="chat-date-divider" data-date="${dateKey}">
+                    <span>${labelText}</span>
+                </div>`;
+
+            $('#chatMessages').append(dividerHtml);
+            lastRenderedDateString = dateKey;
+        }
 
         const safeText = $('<div>').text(text).html();
 
         const html = `
-             <div class="chat-bubble-row ${isOwn ? 'own' : 'other'}" data-message-id="${msg.id || msg.Id}">
-                 ${!isOwn ? `<div class="chat-sender-name">${senderName}</div>` : ''}
-                 <div class="chat-bubble"><span class="chat-bubble-text">${safeText}</span></div>
-                 <div class="chat-bubble-meta">${time}${isOwn ? '<span class="chat-delivered" title="تحویل داده شد">✓✓</span>' : ''}</div>
-             </div>`;
+            <div class="chat-bubble-row ${isOwn ? 'own' : 'other'}" data-message-id="${msg.id || msg.Id}">
+                ${!isOwn ? `<div class="chat-sender-name">${senderName}</div>` : ''}
+                <div class="chat-bubble"><span class="chat-bubble-text">${safeText}</span></div>
+                <div class="chat-bubble-meta">
+                    ${time}
+                    ${isOwn ? '<span class="chat-delivered" title="@_localizer["Delivered"]">✓✓</span>' : ''}
+                </div>
+            </div>`;
 
         $('#chatMessages').append(html);
     }
