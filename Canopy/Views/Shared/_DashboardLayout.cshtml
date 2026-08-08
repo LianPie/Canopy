@@ -782,6 +782,7 @@
                 inviteDeclined  = V["NotifInviteDeclined"].Value,
                 taskAssigned    = V["NotifTaskAssigned"].Value,
                 projectAssigned = V["NotifProjectAssigned"].Value,
+                NewMessage = V["NotifNewMessage"].Value,
                 fallback        = V["NotifFallback"].Value,
                 empty           = V["NotifEmpty"].Value
             }));
@@ -922,14 +923,33 @@
                 </div>`;    
             }
 
-            function buildNotifText(type, p) {
-                switch (type) {
-                    case "GroupInvitation": return fmt(LN.groupInvite,     `<b>${p.invitedBy}</b>`,  `<b>${p.groupTitle}</b>`);
-                    case "InviteAccepted": return fmt(LN.inviteAccepted,  `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
-                    case "InviteDeclined": return fmt(LN.inviteDeclined,  `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
-                    case "TaskAssigned": return fmt(LN.taskAssigned,    `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
-                    case "ProjectAssigned": return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
-                    default: return LN.fallback;
+            function buildNotifText(type, p) {switch (type) {
+                    case 0:
+                    case "GroupInvitation": 
+                        return fmt(LN.groupInvite, `<b>${p.invitedBy}</b>`, `<b>${p.groupTitle}</b>`);
+
+                    case 1:
+                    case "GroupInvitationAccepted": 
+                        return fmt(LN.inviteAccepted, `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
+
+                    case 2:
+                    case "GroupInvitationDeclined": 
+                        return fmt(LN.inviteDeclined, `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
+
+                    case 3:
+                    case "TaskAssigned": 
+                        return fmt(LN.taskAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
+
+                    case 4:
+                    case "ProjectAssigned": 
+                        return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
+
+                    case 5:
+                    case "NewMessage": 
+                        return fmt(LN.NewMessage, `<b>${p.senderName}</b>`, escapeHtml(p.preview));
+
+                    default: 
+                        return LN.fallback;
                 }
             }
             function buildNotifLink(type, p) {
@@ -939,12 +959,20 @@
                     case "InviteDeclined": return `/dashboard/Groups/`;           // invite declined
                     case "TaskAssigned": return `/dashboard/Tasks/`;             // task assigned
                     case "ProjectAssigned": return `/dashboard/Groups`;       // project assigned
+                    case "NewMessage": return `/dashboard/Groups`;      
                     default: return '#';    
                 }
             }
 
             function fmt(template, ...args) {
                 return template.replace(/\{(\d+)\}/g, (_, i) => args[i] ?? '');
+            }
+
+            function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
             }
 
             // ─── Skeleton ────────────────────────────────────────────────────────────
@@ -980,7 +1008,7 @@
 
             // ─── Toast ───────────────────────────────────────────────────────────────
             function showNotifToast(n) {
-                const payload = tryParseJson(n.payload);
+            const payload = tryParseJson(n.payload);
                 notyf.open({ type: 'notification', message: buildNotifText(n.type, payload) });
             }
 

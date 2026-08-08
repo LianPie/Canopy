@@ -25,7 +25,10 @@ namespace Canopy.Repositories
         public async Task<Message> CreateAsync(Message message)
         {
             _ctx.Message.Add(message);
-            await _ctx.SaveChangesAsync();
+            await _ctx.SaveChangesAsync(); 
+
+            await _ctx.Entry(message).Reference(m => m.User).LoadAsync();
+
             return message;
         }
 

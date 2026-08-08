@@ -168,4 +168,7 @@
   <data name="NotifEmpty" xml:space="preserve">
     <value>No notifications</value>
   </data>
+  <data name="NotifNewMessage" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
 </root>
