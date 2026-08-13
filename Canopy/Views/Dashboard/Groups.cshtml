@@ -633,6 +633,24 @@
         </div>
     </div>
 
+<!-- Working On It Modal -->
+<div class="modal fade" id="workingOnItModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content text-center p-3">
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="mb-3">
+                    <!-- Replace the src with your image or GIF path -->
+                    <img src="~/img/working on it.png" id="workingOnItImg" class="img-fluid rounded-3 object-fit-cover" style="max-height: 140px;" alt="Working on it" />
+                </div>
+                <h5 class="fw-bold mb-2 text-gray-900">@_localizer["WorkingOnItTitle"]</h5>
+                <p class="text-muted fs-7 mb-0">@_localizer["WorkingOnIt"]</p>
+            </div>
+        </div>
+    </div>
+</div>
     @section Scripts {
         <script>
                         $("#groupsMenu").addClass("active");
@@ -735,6 +753,7 @@
                             $('#tasksCol').removeClass('d-none').addClass('d-flex');
                             $('#tasksColTitle').text(L.allTasks);
                             $('#tasksColMeta').text('');
+                            $('#mobileBackBar').show();
                             $('#overviewTaskCount').removeClass().addClass('badge badge-light-primary');
 
                             requestAnimationFrame(() => {
@@ -801,6 +820,9 @@
                         $('#mobileBackBtn').click(function () {
                             $('.g-panel').first().show();
                             $('#detailPanel').removeClass('mobile-active');
+                            $('#detailPanel').addClass('d-none');
+                            $('#projectsCol').addClass('d-none');
+                            $('#tasksCol').addClass('d-none');
                             $('#mobileBackBar').hide();
                             activeGroupId = null;
                         });

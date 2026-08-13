@@ -456,6 +456,28 @@
         height: 10px !important;
         width: 25% !important;
     }
+
+    .sprite-icon {
+        width: 64px; /* Width of ONE single frame */
+        height: 64px; /* Height of ONE single frame */
+        background: url('/img/1786659555673.png') no-repeat;
+        background-size: cover;
+        margin: 0 auto;
+        animation: playSprite 2s steps(30) infinite;
+    }
+
+
+    @@keyframes playSprite {
+        from {
+            background-position: 0 0;
+        }
+
+        to {
+            background-position: -1920px 0;
+        }
+        /* Total Width of Spritesheet (64px * 8 frames) */
+    }
+
 </style>
 <div class="page-head">
     <h1>@_localizer["Overview_Title"]</h1>
@@ -544,7 +566,9 @@
             <div class="card">
                 <div class="tape"></div>
                 <div class="dev-body">
-                    <div class="dev-icon"><i class="ki-outline ki-abstract-26 fs-2x"></i></div>
+                    <div class="symbol symbol-50 d-flex align-items-center justify-content-center">
+                        <div class="sprite-icon"></div>
+                    </div>
                     <div class="dev-title">@_localizer["Dev_Title"]</div>
                     <div class="dev-sub">@_localizer["Dev_Subtitle"]</div>
                 </div>

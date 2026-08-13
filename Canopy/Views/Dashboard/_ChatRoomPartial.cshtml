@@ -265,32 +265,123 @@
         letter-spacing: -2px;
         display: inline-block;
     }
+    /* ── Textarea Wrapper & Inline Actions ───────────────────────── */
+    .chat-input-wrapper {
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Adjust textarea padding to make room for inside button & counter */
+    .chat-input {
+        width: 100%;
+        resize: none;
+        overflow-y: auto;
+        max-height: 120px;
+        padding-right: 78px !important; /* Extra right padding so text doesn't overlap button */
+        border-radius: 20px;
+    }
+
+    /* RTL layout padding adjustment */
+    [dir="rtl"] .chat-input {
+        padding-right: 16px !important;
+        padding-left: 78px !important;
+    }
+
+    /* Absolute action container inside the textbox */
+    .chat-input-actions {
+        position: absolute;
+        right: 6px;
+        bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    [dir="rtl"] .chat-input-actions {
+        right: auto;
+        left: 6px;
+    }
+
+    /* Embedded Send Button */
+    .chat-send-inside-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        background: var(--chat-bubble-own-bg, #50c070);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+        .chat-send-inside-btn.disabled,
+        .chat-send-inside-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: var(--chat-icon-color, #8e8e93);
+        }
+
+    /* Compact Character Counter (Mobile Friendly) */
+    .chat-char-counter {
+        font-size: 0.7rem;
+        color: var(--chat-meta-color, #8e8e93);
+        user-select: none;
+        line-height: 1;
+    }
+
+    /* Mobile responsive sizing */
+    @@media (max-width: 576px) {
+        .chat-char-counter {
+            font-size: 0.62rem; /* Shrunk on mobile screens */
+            opacity: 0.8;
+        }
+
+        .chat-send-inside-btn {
+            width: 28px;
+            height: 28px;
+        }
+
+        .chat-input {
+            padding-right: 68px !important;
+            font-size: 0.88rem;
+        }
+
+        [dir="rtl"] .chat-input {
+            padding-left: 68px !important;
+        }
+    }
 </style>
 <div class="chatroom-container"
      data-chat-id="@Model.ChatId"
      data-group-id="@Model.GroupId"
      data-current-user-id="@Model.CurrentUserId">
 
-   
     <div class="chatroom-input-bar">
         <button type="button" class="chat-icon-btn" id="chatAttachBtn" title="@_localizer["Attach"]">
             <i class="ki-outline ki-plus fs-3"></i>
         </button>
 
-        <div class="chat-input-wrapper" style="position: relative; flex-grow: 1;">
+        <!-- Textarea Wrapper containing Input + Counter + Send Button -->
+        <div class="chat-input-wrapper">
             <textarea id="chatMessageInput"
                       class="chat-input"
                       placeholder="@_localizer["Message"]"
                       maxlength="1000"
-                      rows="1"
-                      style="resize: none; overflow-y: auto; max-height: 120px; width: 100%;"></textarea>
+                      rows="1"></textarea>
+
+            <!-- Inline Actions Inside Textbox -->
+            <div class="chat-input-actions">
+                <span id="chatCharCounter" class="chat-char-counter">0/1000</span>
+                <button type="button" class="chat-send-inside-btn disabled" id="chatSendBtn" title="@_localizer["Send"]" disabled>
+                    <i class="ki-outline ki-send fs-4"></i>
+                </button>
+            </div>
         </div>
-
-        <span id="chatCharCounter" class="chat-char-counter text-muted fs-8" style="align-self: center; margin: 0 8px;">0/1000</span>
-
-        <button type="button" class="chat-icon-btn disabled" id="chatSendBtn" title="@_localizer["Send"]" disabled>
-            <i class="ki-outline ki-send fs-3"></i>
-        </button>
     </div>
 
     <div class="chatroom-messages" id="chatMessages">
@@ -345,10 +436,23 @@
         }
     </div>
 </div>
-
 <script>
     let chatConnectionReady = null; // پرامیس اتصال، برای هماهنگی با join
+    $(function () {
+        let attachClickCount = 0;
 
+        $('#chatAttachBtn').on('click', function (e) {
+            e.preventDefault();
+            attachClickCount++;
+
+            // Trigger modal on the second click and onwards
+            if (attachClickCount > 1) {
+                var modalEl = document.getElementById('workingOnItModal');
+                var modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modalInstance.show();
+            }
+        });
+    });
     function initChatRoom() {
         const $container = $('.chatroom-container');
         const chatId = parseInt($container.data('chat-id'));

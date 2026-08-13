@@ -384,9 +384,6 @@
   <data name="RecurringTasks" xml:space="preserve">
     <value>Recurring Tasks</value>
   </data>
-  <data name="Weekly1" xml:space="preserve">
-    <value>Weekly</value>
-  </data>
   <data name="Tuesday" xml:space="preserve">
     <value>Tuesday</value>
   </data>
@@ -434,5 +431,11 @@
   </data>
   <data name="Board" xml:space="preserve">
     <value>Board</value>
+  </data>
+  <data name="WorkingOnIt" xml:space="preserve">
+    <value>Stop Clicking It's not ready yet :(</value>
+  </data>
+  <data name="WorkingOnItTitle" xml:space="preserve">
+    <value>Working on it</value>
   </data>
 </root>

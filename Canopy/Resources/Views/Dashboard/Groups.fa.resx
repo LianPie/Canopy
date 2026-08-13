@@ -384,9 +384,6 @@
   <data name="RecurringTasks" xml:space="preserve">
     <value> تسک های تکرارشونده</value>
   </data>
-  <data name="Weekly1" xml:space="preserve">
-    <value>هفتگی</value>
-  </data>
   <data name="Tuesday" xml:space="preserve">
     <value>سه شنبه</value>
   </data>
@@ -434,5 +431,11 @@
   </data>
   <data name="Board" xml:space="preserve">
     <value>برد</value>
+  </data>
+  <data name="WorkingOnIt" xml:space="preserve">
+    <value>انقدر کلیک نکن آماده نیست :(</value>
+  </data>
+  <data name="WorkingOnItTitle" xml:space="preserve">
+    <value>دارم روش کار میکنم</value>
   </data>
 </root>
