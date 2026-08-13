@@ -44,6 +44,12 @@
     <EmbeddedResource Update="Resources\SharedResources.fa.resx">
       <CustomToolNamespace></CustomToolNamespace>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Dashboard\Settings.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Dashboard\Settings.fa.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Views\Dashboard\_ChatRoomPartial.en.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>

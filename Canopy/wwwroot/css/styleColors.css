@@ -1,3 +1,13 @@
+
+@font-face {
+    font-family: 'yekan';
+    src: url('../fonts/yekan.woff') format('woff');
+}
+
+*:not(i, span) {
+    font-family: 'yekan', 'DM Sans', sans-serif;
+}
+
 :root,
 [data-bs-theme=light] {
     --bs-blue: #50c070;
@@ -82,7 +92,7 @@
     /* deep cream for body text */
     --bs-body-bg-rgb: 250, 249, 245;
     /* light cream background for the page */
-    --bs-font-sans-serif: Inter, Helvetica, "sans-serif";
+    --bs-font-sans-serif: Helvetica, 'yekan', 'DM Sans', sans-serif;
     --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
     --bs-body-font-family: var(--bs-font-sans-serif);

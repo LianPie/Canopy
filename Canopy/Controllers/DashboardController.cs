@@ -10,13 +10,15 @@ namespace Canopy.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
+        private readonly IUserRepository _userRepo;
         private readonly ITasksRepository _tasksRepo;
         private readonly IProjectsRepository _projectRepo;
         private readonly IGroupsRepository _groupRepo;
         private readonly IChatService _chatService;
-        public DashboardController(ITasksRepository taskRepo, IProjectsRepository projectRepo,
+        public DashboardController(IUserRepository userRepo, ITasksRepository taskRepo, IProjectsRepository projectRepo,
             IGroupsRepository groupRepo, IChatService chatService)
         {
+            _userRepo = userRepo;
             _tasksRepo = taskRepo;
             _projectRepo = projectRepo;
             _groupRepo = groupRepo;
@@ -123,5 +125,31 @@ namespace Canopy.Controllers
 
             return PartialView("_ChatRoomPartial", vm);
         }
+
+        public IActionResult Profile()
+        {
+            var user = _userRepo.GetById(GetUserId());
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var model = new ProfileViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                ProfilePictureUrl = user.ImageUrl,
+                DateCreated = user.DateCreated,
+                LastLoginAt = user.LastLogin
+            };
+
+            return View(model);
+        }
+
+        public IActionResult Settings()
+        {
+            return View();
+        }
+
     }
 }

@@ -1,15 +1,12 @@
 ﻿
-@font-face {
-    font-family: 'yekan';
-    src: url('../fonts/yekan.woff') format('woff');
-}
+
 
 body {
     direction: rtl;
 }
 
 *:not(i, span) {
-    font-family: 'yekan';
+    font-family: 'yekan', 'DM Sans', sans-serif;
     box-sizing: border-box;
 }
 i {

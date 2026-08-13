@@ -45,6 +45,18 @@ namespace Canopy.Repositories
                 Task.FromResult(PasswordHelper.VerifyPassword(plainPassword, user.Password));
 
 
+            public async Task<User> UpdateAsync(User user)
+            {
+                _ctx.Users.Update(user);
+                _ctx.SaveChanges();
+                return user;
+            }
+
+            public async void DeleteAsync(User user)
+            {
+                _ctx.Users.Remove(user);
+                _ctx.SaveChanges();
+            }
 
 
 

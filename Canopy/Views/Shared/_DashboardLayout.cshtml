@@ -93,9 +93,15 @@
         }
 
         @@keyframes skeleton-pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
         }
+
         .notif-skeleton .skeleton-line,
         .notif-skeleton .skeleton-circle {
             animation: skeleton-pulse 1.4s ease-in-out infinite;
@@ -387,30 +393,26 @@
                                 </div>
                             </div>
                             <div class="app-navbar-item ms-1 ms-md-3" id="kt_header_user_menu_toggle">
-                                <div class=" cursor-pointer symbol symbol-30px symbol-md-40px"
-                                     data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
+                                <!-- Navbar Header Avatar -->
+                                <div class="cursor-pointer symbol symbol-35px symbol-md-40px"
+                                     data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+                                     data-kt-menu-attach="parent"
                                      data-kt-menu-placement="bottom-end">
-                                    <i class="ki-duotone ki-profile-circle fs-2x">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
+                                    <img id="navUserAvatar" src="~/pfp/0.jpg" alt="Profile" class="rounded-circle object-fit-cover" />
                                 </div>
+
+                                <!-- Dropdown Menu -->
                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
                                      data-kt-menu="true">
                                     <div class="menu-item px-3">
                                         <div class="menu-content d-flex align-items-center px-3">
+                                            <!-- Dropdown Avatar -->
                                             <div class="symbol symbol-50px me-5">
-                                                <i class="ki-duotone ki-profile-circle fs-2x">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
+                                                <img id="menuUserAvatar" src="~/pfp/0.jpg" alt="Profile" class="rounded-circle object-fit-cover" />
                                             </div>
                                             <div class="d-flex flex-column">
                                                 <div class="fw-bold d-flex align-items-center fs-5">
                                                     <span id="userName">
-
                                                         <i class="fas fa-spinner fa-spin"></i>
                                                     </span>
                                                 </div>
@@ -422,7 +424,7 @@
                                     </div>
                                     <div class="separator my-2"></div>
                                     <div class="menu-item px-5">
-                                        <a href="/dashboard/MyProfile" class="menu-link px-5">@V["3_Profile"]</a>
+                                        <a href="/dashboard/Profile" class="menu-link px-5">@V["3_Profile"]</a>
                                     </div>
                                     <div class="menu-item px-5">
                                         <a href="/Logout" class="menu-link px-5">@SR["LogOutBtn"]</a>
@@ -509,7 +511,7 @@
                                     </div>
                                 </div>
                                 <div class="menu-item">
-                                    <a class="menu-link" href="/dashboard/MyProfile" id="MyProfileList">
+                                    <a class="menu-link" href="/dashboard/Profile" id="MyProfileList">
                                         <span class="menu-icon">
                                             <i class="ki-duotone ki-profile-circle fs-2">
                                                 <span class="path1"></span>
@@ -563,207 +565,212 @@
         </div>
     </div>
 
-    @section Scripts{
+    @section Scripts {
         <script src="~/prismjs/prismjs.bundle.js"></script>
         <script src="~/js/scripts.bundle.js"></script>
         <script src="~/datatables/datatables.bundle.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
-        
-        <script>// Reusable function that can target specific elements or containers
+
+        <script>
+            // Reusable function that can target specific elements or containers
             (function () {
-                var originalToISOString = Date.prototype.toISOString;
-                Date.prototype.toISOString = function () {
-                    var year = this.getFullYear();
-                    var month = String(this.getMonth() + 1).padStart(2, '0');
-                    var day = String(this.getDate()).padStart(2, '0');
-                    var hours = String(this.getHours()).padStart(2, '0');
-                    var minutes = String(this.getMinutes()).padStart(2, '0');
-                    var seconds = String(this.getSeconds()).padStart(2, '0');
-                    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`;
-                };
+            var originalToISOString = Date.prototype.toISOString;
+            Date.prototype.toISOString = function () {
+            var year = this.getFullYear();
+            var month = String(this.getMonth() + 1).padStart(2, '0');
+            var day = String(this.getDate()).padStart(2, '0');
+            var hours = String(this.getHours()).padStart(2, '0');
+            var minutes = String(this.getMinutes()).padStart(2, '0');
+            var seconds = String(this.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`;
+            };
             })();
 
             function initPersianDatepickers($selector) {
-                // If no specific selector is provided, target all uninitialized fields
-                var $elements = $selector ? $selector.find('.persian-date-input') : $('.persian-date-input');
+            // If no specific selector is provided, target all uninitialized fields
+            var $elements = $selector ? $selector.find('.persian-date-input') : $('.persian-date-input');
 
-                $elements.each(function() {
-                    var $displayInput = $(this);
-        
-                    // Prevent double initialization
-                    if ($displayInput.data('initialized')) return;
-                    $displayInput.data('initialized', true);
+            $elements.each(function() {
+            var $displayInput = $(this);
 
-                    var fieldName = $displayInput.attr('name') || 'task_deadline_' + Math.floor(Math.random() * 10000);
-        
-                    // Check current language
-                    var isPersian = $('html').attr('lang') === 'fa' || 
-                                    $('html').attr('lang') === 'fa-IR';
-        
-                    if (isPersian) {
-                         var $hiddenInput = $('<input>')
-                            .attr('type', 'hidden')
-                            .attr('name', fieldName)
-                            .attr('id', fieldName + '_gregorian');
-            
-                        $displayInput.attr('name', fieldName + '_display');
-                        $displayInput.after($hiddenInput);
-            
-                        var initialGregorian = $displayInput.data('gregorian-value') || $displayInput.val();
-                        var rawPersian = $displayInput.val(); 
-                        var initialPersian = '';
+            // Prevent double initialization
+            if ($displayInput.data('initialized')) return;
+            $displayInput.data('initialized', true);
 
-                        if (rawPersian) {
-                            var datePart = rawPersian.split(' ')[0]; 
-                            var parts = datePart.split('/');
-                            if (parts.length === 3) {
-                                var year = parts[0];
-                                var month = parts[1].padStart(2, '0');
-                                var day = parts[2].padStart(2, '0');
-    
-                                initialPersian = `${year}/${month}/${day}`;
-                            }
-                        }
-            
-                        $displayInput.persianDatepicker({
-                            format: 'YYYY/MM/DD',
-                            autoClose: true,
-                            initialValue: false, 
-                            initialValueType: 'persian',
-                            onSelect: function(unixDate) {
-                                var pd = new persianDate(unixDate);
-                                var gregorianDate = pd.toCalendar('gregorian').format('YYYY-MM-DD');
-                                $hiddenInput.val(gregorianDate);
-                                $hiddenInput.trigger('change');
-                            }
-                        });
+            var fieldName = $displayInput.attr('name') || 'task_deadline_' + Math.floor(Math.random() * 10000);
 
-                        if (initialPersian) {
-                            $displayInput.persianDatepicker('setDate', initialPersian);
-                            $displayInput.val(initialPersian);
-                        }
-                    } else {
-                        // ENGLISH MODE: Convert to HTML5 date input
-                        var currentValue = $displayInput.val();
-                        var validDate = '';
-                        if (currentValue && currentValue !== 'null') {
-                            if (currentValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                                validDate = currentValue;
-                            } else {
-                                var date = new Date(currentValue);
-                                if (!isNaN(date.getTime())) {
-                                    validDate = date.toISOString().split('T')[0];
-                                }
-                            }
-                        }
-            
-                        var $newInput = $('<input>')
-                            .attr('type', 'date')
-                            .attr('name', fieldName)
-                            .attr('id', $displayInput.attr('id'))
-                            .attr('class', $displayInput.attr('class'))
-                            .val(validDate)
-                            .data('initialized', true); // Mark the converted element as initialized
+            // Check current language
+            var isPersian = $('html').attr('lang') === 'fa' ||
+            $('html').attr('lang') === 'fa-IR';
 
-                        $displayInput.replaceWith($newInput);
-                    }
-                });
+            if (isPersian) {
+            var $hiddenInput = $('<input>')
+            .attr('type', 'hidden')
+            .attr('name', fieldName)
+            .attr('id', fieldName + '_gregorian');
+
+            $displayInput.attr('name', fieldName + '_display');
+            $displayInput.after($hiddenInput);
+
+            var initialGregorian = $displayInput.data('gregorian-value') || $displayInput.val();
+            var rawPersian = $displayInput.val();
+            var initialPersian = '';
+
+            if (rawPersian) {
+            var datePart = rawPersian.split(' ')[0];
+            var parts = datePart.split('/');
+            if (parts.length === 3) {
+            var year = parts[0];
+            var month = parts[1].padStart(2, '0');
+            var day = parts[2].padStart(2, '0');
+
+            initialPersian = `${year}/${month}/${day}`;
+            }
+            }
+
+            $displayInput.persianDatepicker({
+            format: 'YYYY/MM/DD',
+            autoClose: true,
+            initialValue: false,
+            initialValueType: 'persian',
+            onSelect: function(unixDate) {
+            var pd = new persianDate(unixDate);
+            var gregorianDate = pd.toCalendar('gregorian').format('YYYY-MM-DD');
+            $hiddenInput.val(gregorianDate);
+            $hiddenInput.trigger('change');
+            }
+            });
+
+            if (initialPersian) {
+            $displayInput.persianDatepicker('setDate', initialPersian);
+            $displayInput.val(initialPersian);
+            }
+            } else {
+            // ENGLISH MODE: Convert to HTML5 date input
+            var currentValue = $displayInput.val();
+            var validDate = '';
+            if (currentValue && currentValue !== 'null') {
+            if (currentValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            validDate = currentValue;
+            } else {
+            var date = new Date(currentValue);
+            if (!isNaN(date.getTime())) {
+            validDate = date.toISOString().split('T')[0];
+            }
+            }
+            }
+
+            var $newInput = $('<input>')
+            .attr('type', 'date')
+            .attr('name', fieldName)
+            .attr('id', $displayInput.attr('id'))
+            .attr('class', $displayInput.attr('class'))
+            .val(validDate)
+            .data('initialized', true); // Mark the converted element as initialized
+
+            $displayInput.replaceWith($newInput);
+            }
+            });
             }
 
             // Initialize on page load
             $(document).ready(function() {
-                initPersianDatepickers();
+            initPersianDatepickers();
             });
 
-    function normalizeToGregorian(dateString) {
-        if (!dateString) return null;
+            function normalizeToGregorian(dateString) {
+            if (!dateString) return null;
 
-        // Helper to convert Persian/Arabic digits to English digits (for the input)
-        var englishNumbers = dateString.replace(/[۰-۹]/g, function (d) {
+            // Helper to convert Persian/Arabic digits to English digits (for the input)
+            var englishNumbers = dateString.replace(/[۰-۹]/g, function (d) {
             return d.charCodeAt(0) - 1776;
-        }).replace(/[٠-٩]/g, function (d) {
+            }).replace(/[٠-٩]/g, function (d) {
             return d.charCodeAt(0) - 1632;
-        });
+            });
 
-        // 1. Clean up the input: grab just the date part if there's a time attached
-        var cleanString = englishNumbers.trim().split(' ')[0];
-    
-        // 2. Split into Year, Month, Day components
-        var parts = cleanString.split(/[-/]/); 
-        if (parts.length !== 3) return null;
+            // 1. Clean up the input: grab just the date part if there's a time attached
+            var cleanString = englishNumbers.trim().split(' ')[0];
 
-        var year = parseInt(parts[0], 10);
-        var month = parseInt(parts[1], 10);
-        var day = parseInt(parts[2], 10);
+            // 2. Split into Year, Month, Day components
+            var parts = cleanString.split(/[-/]/);
+            if (parts.length !== 3) return null;
 
-        // 3. Check if it's a Persian year
-        if (year < 1700) {
+            var year = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10);
+            var day = parseInt(parts[2], 10);
+
+            // 3. Check if it's a Persian year
+            if (year < 1700) {
             try {
-                var pd = new persianDate([year, month, day]).toCalendar('gregorian');
-            
-                // FIX: Force the format method to output English digits
-                // In most versions of this library, passing 'gregorian' or setting the locale works:
-                pd.formatPersian = false; 
-                return pd.format('YYYY-MM-DD');
+            var pd = new persianDate([year, month, day]).toCalendar('gregorian');
+
+            // FIX: Force the format method to output English digits
+            // In most versions of this library, passing 'gregorian' or setting the locale works:
+            pd.formatPersian = false;
+            return pd.format('YYYY-MM-DD');
             } catch (e) {
-                console.error("Failed to parse Persian date:", dateString);
-                return null;
+            console.error("Failed to parse Persian date:", dateString);
+            return null;
             }
-        }
+            }
 
-        // 4. If it's already Gregorian, pad month/day to ensure strict YYYY-MM-DD format
-        var strMonth = month.toString().padStart(2, '0');
-        var strDay = day.toString().padStart(2, '0');
-    
-        return `${year}-${strMonth}-${strDay}`;
-    }
-    function toPersianSlash(isoDateStr) {
-        if (!isoDateStr) return '';
+            // 4. If it's already Gregorian, pad month/day to ensure strict YYYY-MM-DD format
+            var strMonth = month.toString().padStart(2, '0');
+            var strDay = day.toString().padStart(2, '0');
 
-        var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+            return `${year}-${strMonth}-${strDay}`;
+            }
+            function toPersianSlash(isoDateStr) {
+            if (!isoDateStr) return '';
 
-        if (isPersian) {
+            var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+
+            if (isPersian) {
             var pd = new persianDate(new Date(isoDateStr));
             return pd.format('YYYY/MM/DD');
-        }
+            }
 
-        return isoDateStr;
-    }
-    function formatDeadlineForList(dateStr) {
-        if (!dateStr) return '';
-        var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
+            return isoDateStr;
+            }
+            function formatDeadlineForList(dateStr) {
+            if (!dateStr) return '';
+            var isPersian = $('html').attr('lang') === 'fa' || $('html').attr('lang') === 'fa-IR';
 
-        if (isPersian) {
+            if (isPersian) {
             var pd = new persianDate(new Date(dateStr));
             // مثلاً: "۲۲ تیر"
             return pd.format('D MMMM');
-        }
+            }
 
-        return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-    }
-    function toLocalISODate(dateInput) {
-        const d = new Date(dateInput);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-    </script>
+            return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            }
+            function toLocalISODate(dateInput) {
+            const d = new Date(dateInput);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+            }
+        </script>
 
         <script>
 
             $(document).ready(function() {
-                resetAndLoad();
+            resetAndLoad();
 
 
-                $.ajax({
-                    url: '/api/account/me',
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
+            $.ajax({
+                url: '/api/account/me',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
                         $('#userName').text(data.userName);
                         $('#userEmail').text(data.email);
+
+                        var pfpName = (data.imageUrl || data.profilePictureUrl) ? (data.imageUrl || data.profilePictureUrl) : '0';
+                        var pfpPath = '/pfp/' + pfpName + '.jpg';
+                        $('#navUserAvatar, #menuUserAvatar').attr('src', pfpPath);
                     },
                     error: function(xhr) {
                         if (xhr.status === 401) {
@@ -776,196 +783,197 @@
         <script src="~/js/notyf.min.js"></script>
         <script src="~/js/signalr.min.js"></script>
         <script>
-            const LN = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
-                groupInvite     = V["NotifGroupInvite"].Value,
-                inviteAccepted  = V["NotifInviteAccepted"].Value,
-                inviteDeclined  = V["NotifInviteDeclined"].Value,
-                taskAssigned    = V["NotifTaskAssigned"].Value,
+            const LN = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+            {
+                groupInvite = V["NotifGroupInvite"].Value,
+                inviteAccepted = V["NotifInviteAccepted"].Value,
+                inviteDeclined = V["NotifInviteDeclined"].Value,
+                taskAssigned = V["NotifTaskAssigned"].Value,
                 projectAssigned = V["NotifProjectAssigned"].Value,
                 NewMessage = V["NotifNewMessage"].Value,
-                fallback        = V["NotifFallback"].Value,
-                empty           = V["NotifEmpty"].Value
+                fallback = V["NotifFallback"].Value,
+                empty = V["NotifEmpty"].Value
             }));
         </script>
         <script>
             // ─── Notyf ───────────────────────────────────────────────────────────────
             const notyf = new Notyf({
-                duration: 5000,
-                position: { x: 'right', y: 'top' },
-                types: [{
-                    type: 'notification',
-                    background: 'var(--bs-primary)',
-                    icon: { className: 'ki-outline ki-notification fs-4', tagName: 'i' }
-                }]
+            duration: 5000,
+            position: { x: 'right', y: 'top' },
+            types: [{
+            type: 'notification',
+            background: 'var(--bs-primary)',
+            icon: { className: 'ki-outline ki-notification fs-4', tagName: 'i' }
+            }]
             });
 
             // ─── State ───────────────────────────────────────────────────────────────
             const notif = {
-                page: 1,
-                pageSize: 10,
-                loading: false,
-                hasMore: true,
-                loaded: false,
-                unreadCount: 0
+            page: 1,
+            pageSize: 10,
+            loading: false,
+            hasMore: true,
+            loaded: false,
+            unreadCount: 0
             };
 
             // ─── SignalR ─────────────────────────────────────────────────────────────
             const notifConnection = new signalR.HubConnectionBuilder()
-                .withUrl("/hubs/notification")
-                .withAutomaticReconnect()
-                .build();
+            .withUrl("/hubs/notification")
+            .withAutomaticReconnect()
+            .build();
 
             notifConnection.on("ReceiveNotification", function (n) {
-                prependNotif(n);
-                setUnreadCount(notif.unreadCount + 1);
-                showNotifToast(n);
+            prependNotif(n);
+            setUnreadCount(notif.unreadCount + 1);
+            showNotifToast(n);
 
-                if ((n.type === 0 || n.type === 1 || n.type === 2) &&
-                typeof window.updatePendingInvitesBadge === 'function') {
-                        window.updatePendingInvitesBadge();
-                }
+            if ((n.type === 0 || n.type === 1 || n.type === 2) &&
+            typeof window.updatePendingInvitesBadge === 'function') {
+            window.updatePendingInvitesBadge();
+            }
             });
 
             notifConnection.start();
 
             // ─── Open bell ───────────────────────────────────────────────────────────
             document.getElementById('notifDropdown').closest('.app-navbar-item')
-                .querySelector('[data-kt-menu-trigger]').addEventListener('click', function () {
-                    if (!notif.loaded) {
-                        resetAndLoad();
-                    }
-                });
+            .querySelector('[data-kt-menu-trigger]').addEventListener('click', function () {
+            if (!notif.loaded) {
+            resetAndLoad();
+            }
+            });
 
             // ─── Infinite scroll ─────────────────────────────────────────────────────
             document.getElementById('notifList').addEventListener('scroll', function () {
-                const el = this;
-                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20) {
-                    loadNextPage();
-                }
+            const el = this;
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20) {
+            loadNextPage();
+            }
             });
 
             // ─── Mark all read ───────────────────────────────────────────────────────
             document.getElementById('markAllReadBtn').addEventListener('click', function () {
-                $.ajax({
-                    url: '/api/Notifications/read-all', type: 'PATCH',
-                    success: function () {
-                        setUnreadCount(0);
-                        document.querySelectorAll('#notifList .notif-item.unread').forEach(el => {
-                            el.classList.remove('unread', 'bg-light-primary');
-                            el.querySelector('.bullet-dot')?.remove();
-                        });
-                    }
-                });
+            $.ajax({
+            url: '/api/Notifications/read-all', type: 'PATCH',
+            success: function () {
+            setUnreadCount(0);
+            document.querySelectorAll('#notifList .notif-item.unread').forEach(el => {
+            el.classList.remove('unread', 'bg-light-primary');
+            el.querySelector('.bullet-dot')?.remove();
+            });
+            }
+            });
             });
 
             // ─── Load ─────────────────────────────────────────────────────────────────
             function resetAndLoad() {
-                notif.page = 1;
-                notif.hasMore = true;
-                notif.loaded = false;
-                document.getElementById('notifList').innerHTML = '';
-                loadNextPage();
+            notif.page = 1;
+            notif.hasMore = true;
+            notif.loaded = false;
+            document.getElementById('notifList').innerHTML = '';
+            loadNextPage();
             }
 
             function loadNextPage() {
-                if (notif.loading || !notif.hasMore) return;
-                notif.loading = true;
+            if (notif.loading || !notif.hasMore) return;
+            notif.loading = true;
 
-                showSkeletons(3);
+            showSkeletons(3);
 
-                $.get(`/api/Notifications?page=${notif.page}&pageSize=${notif.pageSize}`, function (res) {
-                    removeSkeletons();
-                    notif.loading = false;
-                    notif.hasMore = res.hasMore;
-                    notif.loaded = true;
+            $.get(`/api/Notifications?page=${notif.page}&pageSize=${notif.pageSize}`, function (res) {
+            removeSkeletons();
+            notif.loading = false;
+            notif.hasMore = res.hasMore;
+            notif.loaded = true;
 
-                    if (notif.page === 1 && res.unreadCount !== null) {
-                        setUnreadCount(res.unreadCount);
-                    }
+            if (notif.page === 1 && res.unreadCount !== null) {
+            setUnreadCount(res.unreadCount);
+            }
 
-                    if (notif.page === 1 && res.items.length === 0) {
-                        document.getElementById('notifList').innerHTML =
-                            `<div class="text-center text-muted py-5 fs-7">${LN.empty}</div>`;
-                        return;
-                    }
+            if (notif.page === 1 && res.items.length === 0) {
+            document.getElementById('notifList').innerHTML =
+            `<div class="text-center text-muted py-5 fs-7">${LN.empty}</div>`;
+            return;
+            }
 
-                    res.items.forEach(n => appendNotif(n));
-                    notif.page++;
-                });
+            res.items.forEach(n => appendNotif(n));
+            notif.page++;
+            });
             }
 
             // ─── Render helpers ──────────────────────────────────────────────────────
             function appendNotif(n) {
-                document.getElementById('notifList').insertAdjacentHTML('beforeend', notifItemHtml(n));
+            document.getElementById('notifList').insertAdjacentHTML('beforeend', notifItemHtml(n));
             }
 
             function prependNotif(n) {
-                const list = document.getElementById('notifList');
-                const empty = list.querySelector('.text-center');
-                if (empty) empty.remove();
-                list.insertAdjacentHTML('afterbegin', notifItemHtml(n));
+            const list = document.getElementById('notifList');
+            const empty = list.querySelector('.text-center');
+            if (empty) empty.remove();
+            list.insertAdjacentHTML('afterbegin', notifItemHtml(n));
             }
 
             function notifItemHtml(n) {
-                const payload = tryParseJson(n.payload);
-                const text = buildNotifText(n.type, payload);
-                const link = buildNotifLink(n.type, payload);
-                const dot = n.isRead ? '' : '<span class="bullet bullet-dot bg-primary me-2 flex-shrink-0"></span>';
-                const time = new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const unreadClass = n.isRead ? '' : 'unread bg-light-primary';
-               return `<div class="notif-item d-flex align-items-center px-4 py-3 border-bottom ${unreadClass}"
-                 data-id="${n.id}" data-link="${link}" style="cursor:pointer">
-                    ${dot}
-                    <div class="flex-grow-1">
-                        <span class="fs-7">${text}</span>
-                        <br><small class="text-muted">${time}</small>
-                    </div>
-                </div>`;    
+            const payload = tryParseJson(n.payload);
+            const text = buildNotifText(n.type, payload);
+            const link = buildNotifLink(n.type, payload);
+            const dot = n.isRead ? '' : '<span class="bullet bullet-dot bg-primary me-2 flex-shrink-0"></span>';
+            const time = new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const unreadClass = n.isRead ? '' : 'unread bg-light-primary';
+            return `<div class="notif-item d-flex align-items-center px-4 py-3 border-bottom ${unreadClass}"
+            data-id="${n.id}" data-link="${link}" style="cursor:pointer">
+            ${dot}
+            <div class="flex-grow-1">
+            <span class="fs-7">${text}</span>
+            <br><small class="text-muted">${time}</small>
+            </div>
+            </div>`;
             }
 
             function buildNotifText(type, p) {switch (type) {
-                    case 0:
-                    case "GroupInvitation": 
-                        return fmt(LN.groupInvite, `<b>${p.invitedBy}</b>`, `<b>${p.groupTitle}</b>`);
+            case 0:
+            case "GroupInvitation":
+            return fmt(LN.groupInvite, `<b>${p.invitedBy}</b>`, `<b>${p.groupTitle}</b>`);
 
-                    case 1:
-                    case "GroupInvitationAccepted": 
-                        return fmt(LN.inviteAccepted, `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
+            case 1:
+            case "GroupInvitationAccepted":
+            return fmt(LN.inviteAccepted, `<b>${p.acceptedBy}</b>`, `<b>${p.groupTitle}</b>`);
 
-                    case 2:
-                    case "GroupInvitationDeclined": 
-                        return fmt(LN.inviteDeclined, `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
+            case 2:
+            case "GroupInvitationDeclined":
+            return fmt(LN.inviteDeclined, `<b>${p.declinedBy}</b>`, `<b>${p.groupTitle}</b>`);
 
-                    case 3:
-                    case "TaskAssigned": 
-                        return fmt(LN.taskAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
+            case 3:
+            case "TaskAssigned":
+            return fmt(LN.taskAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.taskTitle}</b>`);
 
-                    case 4:
-                    case "ProjectAssigned": 
-                        return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
+            case 4:
+            case "ProjectAssigned":
+            return fmt(LN.projectAssigned, `<b>${p.assignedBy}</b>`, `<b>${p.projectTitle}</b>`);
 
-                    case 5:
-                    case "NewMessage": 
-                        return fmt(LN.NewMessage, `<b>${p.senderName}</b>`);
+            case 5:
+            case "NewMessage":
+            return fmt(LN.NewMessage, `<b>${p.senderName}</b>`);
 
-                    default: 
-                        return LN.fallback;
-                }
+            default:
+            return LN.fallback;
+            }
             }
             function buildNotifLink(type, p) {
-                switch (type) {
-                    case "GroupInvitation": return `/dashboard/Groups/`;       // group invite
-                    case "InviteAccepted": return `/dashboard/Groups/`;           // invite accepted
-                    case "InviteDeclined": return `/dashboard/Groups/`;           // invite declined
-                    case "TaskAssigned": return `/dashboard/Tasks/`;             // task assigned
-                    case "ProjectAssigned": return `/dashboard/Groups`;       // project assigned
-                    case "NewMessage": return `/dashboard/Groups`;      
-                    default: return '#';    
-                }
+            switch (type) {
+            case "GroupInvitation": return `/dashboard/Groups/`;       // group invite
+            case "InviteAccepted": return `/dashboard/Groups/`;           // invite accepted
+            case "InviteDeclined": return `/dashboard/Groups/`;           // invite declined
+            case "TaskAssigned": return `/dashboard/Tasks/`;             // task assigned
+            case "ProjectAssigned": return `/dashboard/Groups`;       // project assigned
+            case "NewMessage": return `/dashboard/Groups`;
+            default: return '#';
+            }
             }
 
             function fmt(template, ...args) {
-                return template.replace(/\{(\d+)\}/g, (_, i) => args[i] ?? '');
+            return template.replace(/\{(\d+)\}/g, (_, i) => args[i] ?? '');
             }
 
             function escapeHtml(str) {
@@ -977,102 +985,102 @@
 
             // ─── Skeleton ────────────────────────────────────────────────────────────
             function showSkeletons(count) {
-                const list = document.getElementById('notifList');
-                for (let i = 0; i < count; i++) {
-                    list.insertAdjacentHTML('beforeend', `
-                        <div class="notif-skeleton d-flex align-items-center px-4 py-3 border-bottom">
-                            <div class="skeleton-circle me-3 flex-shrink-0" style="width:8px;height:8px;border-radius:50%;background:var(--bs-gray-300);"></div>
-                            <div class="flex-grow-1">
-                                <div class="skeleton-line mb-1" style="height:12px;width:75%;border-radius:4px;background:var(--bs-gray-300);"></div>
-                                <div class="skeleton-line" style="height:10px;width:35%;border-radius:4px;background:var(--bs-gray-200);"></div>
-                            </div>
-                        </div>`);
-                }
+            const list = document.getElementById('notifList');
+            for (let i = 0; i < count; i++) {
+            list.insertAdjacentHTML('beforeend', `
+            <div class="notif-skeleton d-flex align-items-center px-4 py-3 border-bottom">
+            <div class="skeleton-circle me-3 flex-shrink-0" style="width:8px;height:8px;border-radius:50%;background:var(--bs-gray-300);"></div>
+            <div class="flex-grow-1">
+            <div class="skeleton-line mb-1" style="height:12px;width:75%;border-radius:4px;background:var(--bs-gray-300);"></div>
+            <div class="skeleton-line" style="height:10px;width:35%;border-radius:4px;background:var(--bs-gray-200);"></div>
+            </div>
+            </div>`);
+            }
             }
 
             function removeSkeletons() {
-                document.querySelectorAll('#notifList .notif-skeleton').forEach(el => el.remove());
+            document.querySelectorAll('#notifList .notif-skeleton').forEach(el => el.remove());
             }
 
             // ─── Badge ───────────────────────────────────────────────────────────────
             function setUnreadCount(count) {
-                notif.unreadCount = count;
-                const badge = document.getElementById('notifBadge');
-                if (count > 0) {
-                    badge.textContent = count > 99 ? '99+' : count;
-                    badge.style.display = '';
-                } else {
-                    badge.style.display = 'none';
-                }
+            notif.unreadCount = count;
+            const badge = document.getElementById('notifBadge');
+            if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = '';
+            } else {
+            badge.style.display = 'none';
+            }
             }
 
             // ─── Toast ───────────────────────────────────────────────────────────────
             function showNotifToast(n) {
             const payload = tryParseJson(n.payload);
-                notyf.open({ type: 'notification', message: buildNotifText(n.type, payload) });
+            notyf.open({ type: 'notification', message: buildNotifText(n.type, payload) });
             }
 
             function tryParseJson(str) {
-                try { return JSON.parse(str); } catch { return {}; }
+            try { return JSON.parse(str); } catch { return {}; }
             }
 
             // ─── Notification Click Handler ───────────────────────────────────────────────────────────────
             document.addEventListener('click', async function (e) {
-                const item = e.target.closest('.notif-item');
-                if (!item) return;
+            const item = e.target.closest('.notif-item');
+            if (!item) return;
 
-                const id = item.dataset.id;
-                const link = item.dataset.link;
+            const id = item.dataset.id;
+            const link = item.dataset.link;
 
-                try {
-                    await fetch(`/api/notifications/${id}/read`, {
-                        method: 'PATCH'
-                    });
-                } catch (err) {
-                    console.error('Failed to mark notification as read', err);
-                    // still navigate even if marking read fails, so the user isn't blocked
-                }
+            try {
+            await fetch(`/api/notifications/${id}/read`, {
+            method: 'PATCH'
+            });
+            } catch (err) {
+            console.error('Failed to mark notification as read', err);
+            // still navigate even if marking read fails, so the user isn't blocked
+            }
 
-                if (link && link !== '#') {
-                    window.location.href = link;
-                }
+            if (link && link !== '#') {
+            window.location.href = link;
+            }
             });
 
             function tryParseJson(str) {
-                try { return JSON.parse(str); } catch { return {}; }
+            try { return JSON.parse(str); } catch { return {}; }
             }
         </script>
 
         <script>
             // ─── Web Push registration ────────────────────────────────────────────────
             if ('serviceWorker' in navigator && 'PushManager' in window) {
-                navigator.serviceWorker.register('/sw.js').then(async function (reg) {
-                    const permission = await Notification.requestPermission();
-                    if (permission !== 'granted') return;
+            navigator.serviceWorker.register('/sw.js').then(async function (reg) {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') return;
 
-                    const existing = await reg.pushManager.getSubscription();
-                    if (existing) return; // already subscribed
+            const existing = await reg.pushManager.getSubscription();
+            if (existing) return; // already subscribed
 
-                    const { publicKey } = await fetch('/api/push/public-key').then(r => r.json());
+            const { publicKey } = await fetch('/api/push/public-key').then(r => r.json());
 
-                    const subscription = await reg.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(publicKey)
-                    });
+            const subscription = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicKey)
+            });
 
-                    await fetch('/api/push/subscribe', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(subscription)
-                    });
-                });
+            await fetch('/api/push/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+            });
+            });
             }
 
             function urlBase64ToUint8Array(base64String) {
-                const padding = '='.repeat((4 - base64String.length % 4) % 4);
-                const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-                const raw = atob(base64);
-                return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const raw = atob(base64);
+            return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
             }
         </script>
 

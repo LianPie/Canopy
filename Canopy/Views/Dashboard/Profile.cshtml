@@ -1,0 +1,681 @@
+﻿@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@model Canopy.Models.ProfileViewModel
+@inject IWebHostEnvironment Environment
+
+@inject IViewLocalizer _localizer
+@{
+    Layout = "~/views/Shared/_DashboardLayout.cshtml";
+}
+
+<style>
+    :root {
+        --canopy-cream: #F7F2E7;
+        --canopy-forest: #5a976a;
+        --canopy-moss: #5C8A5A;
+        --canopy-amber: #D98E3F;
+        --canopy-scribble: #C94F3D;
+        --canopy-ink: #1C2620;
+    }
+
+    .idcard-wrap {
+        display: flex;
+        justify-content: center;
+        padding: 56px 16px 72px;
+    }
+
+    .idcard {
+        width: 100%;
+        max-width: 360px;
+        background: var(--canopy-cream);
+        border: 3px solid var(--canopy-forest);
+        border-radius: 20px;
+        padding: 30px 26px 24px;
+        position: relative;
+        box-shadow: 0 18px 40px rgba(36, 64, 43, 0.22), 0 3px 0 rgba(36, 64, 43, 0.12) inset;
+        transform: rotate(-1.4deg);
+        transition: transform .35s ease, box-shadow .35s ease;
+    }
+
+        .idcard:hover {
+            transform: rotate(0deg) translateY(-4px);
+            box-shadow: 0 24px 48px rgba(36, 64, 43, 0.28), 0 3px 0 rgba(36, 64, 43, 0.12) inset;
+        }
+
+    .idcard__clip {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 56px;
+        height: 22px;
+        background: var(--canopy-forest);
+        border-radius: 6px;
+    }
+
+        .idcard__clip::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: var(--canopy-cream);
+            border: 2px solid var(--canopy-forest);
+            border-radius: 50%;
+        }
+
+    .idcard__stamp {
+        position: absolute;
+        top: 20px;
+        right: -12px;
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        border: 3px solid var(--canopy-amber);
+        outline: 2px solid var(--canopy-amber);
+        outline-offset: 3px;
+        transform: rotate(-14deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: var(--canopy-amber);
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 10px;
+        line-height: 1.35;
+        letter-spacing: .4px;
+        padding: 6px;
+        background: rgba(217, 142, 63, 0.06);
+    }
+
+    .idcard__avatar,
+    .idcard__avatar--empty {
+        cursor: pointer;
+    }
+
+    .idcard__avatar--empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--canopy-forest);
+    }
+
+    .pfp-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .pfp-grid__item {
+        position: relative;
+        display: block;
+        cursor: pointer;
+    }
+
+        .pfp-grid__item img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            transition: border-color .15s ease;
+        }
+
+        .pfp-grid__item.is-selected img {
+            border-color: var(--canopy-amber);
+        }
+
+    .pfp-grid__radio {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .idcard__avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        display: block;
+        margin: 14px auto 12px;
+        border: 4px solid var(--canopy-forest);
+        object-fit: cover;
+        background: var(--canopy-moss);
+    }
+
+    .idcard__name {
+        font-family: 'Fredoka', sans-serif;
+        font-weight: 700;
+        font-size: 22px;
+        text-align: center;
+        color: var(--canopy-forest);
+        margin: 0;
+    }
+
+    .idcard__role {
+        text-align: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--canopy-moss);
+        margin-top: 2px;
+    }
+
+    .idcard__divider {
+        border-top: 2px dashed rgba(36, 64, 43, 0.25);
+        margin: 20px 0 4px;
+    }
+
+    .idcard__field {
+        margin-top: 14px;
+    }
+
+    .idcard__label {
+        font-family: 'Space Mono', monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--canopy-moss);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .idcard__value {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--canopy-ink);
+        margin-top: 3px;
+    }
+
+    .idcard__password-row {
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        margin-top: 5px;
+        padding: 2px 4px;
+        border-radius: 6px;
+        transition: background .2s ease;
+    }
+
+        .idcard__password-row:hover {
+            background: rgba(217, 142, 63, 0.14);
+        }
+
+            .idcard__password-row:hover .idcard__password-hint {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+    .idcard__password-dots {
+        font-family: 'Space Mono', monospace;
+        font-size: 16px;
+        letter-spacing: 3px;
+        color: var(--canopy-ink);
+        opacity: .45;
+        position: relative;
+        z-index: 1;
+    }
+
+    .idcard__scribble {
+        position: absolute;
+        inset: -6px -10px;
+        width: calc(100% + 20px);
+        height: calc(100% + 12px);
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .idcard__password-hint {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 11px;
+        color: var(--canopy-scribble);
+        font-weight: 600;
+        opacity: 0;
+        transform: translateX(-4px);
+        transition: all .2s ease;
+    }
+
+    .idcard__barcode {
+        height: 26px;
+        margin-top: 6px;
+        border-radius: 2px;
+        opacity: .3;
+        background: repeating-linear-gradient( 90deg, var(--canopy-ink) 0 2px, transparent 2px 5px, var(--canopy-ink) 5px 6px, transparent 6px 9px, var(--canopy-ink) 9px 11px, transparent 11px 16px );
+    }
+
+    .idcard__footnote {
+        text-align: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 9px;
+        letter-spacing: 1px;
+        color: rgba(28, 38, 32, 0.4);
+        margin-top: 8px;
+    }
+
+    /* Modal tweaks so it still feels like part of the same doodle */
+    #changePasswordModal .modal-content {
+        border-radius: 16px;
+        border: 2px solid var(--canopy-forest);
+    }
+
+    #changePasswordModal .modal-header {
+        border-bottom: 2px dashed rgba(36, 64, 43, 0.2);
+    }
+
+    #changePasswordModal .modal-title {
+        font-family: 'Fredoka', sans-serif;
+        color: var(--canopy-forest);
+    }
+
+    #changePasswordModal .btn-canopy {
+        background: var(--canopy-forest);
+        border-color: var(--canopy-forest);
+        color: var(--canopy-cream);
+    }
+
+        #changePasswordModal .btn-canopy:hover {
+            background: var(--canopy-moss);
+            border-color: var(--canopy-moss);
+        }
+
+    #pwFeedback.success {
+        color: var(--canopy-moss);
+    }
+
+    #pwFeedback.error {
+        color: var(--canopy-scribble);
+    }
+
+
+</style>
+@{
+    var hasProfilePicture = !string.IsNullOrWhiteSpace(Model.ProfilePictureUrl);
+
+    var pfpDirectory = System.IO.Path.Combine(Environment.WebRootPath, "pfp");
+    var availablePictures = System.IO.Directory.Exists(pfpDirectory)
+        ? System.IO.Directory.GetFiles(pfpDirectory)
+              .Select(f => System.IO.Path.GetFileNameWithoutExtension(f))
+              .Where(f => int.TryParse(f, out _))
+              .OrderBy(f => int.Parse(f))
+              .ToList()
+        : new List<string>();
+}
+
+<div class="idcard-wrap">
+    <div class="idcard">
+        <div class="idcard__clip"></div>
+
+        <div class="idcard__stamp">
+            <span class="idcard__stamp-label">@_localizer["MemberSinceLabel"]</span>
+            <strong>
+                <span id="membershipDuration"
+                      data-created="@Model.DateCreated.ToString("o")"
+                      data-lang="@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)"></span>
+            </strong>
+        </div>
+
+        @if (hasProfilePicture)
+        {
+            <img class="idcard__avatar" src="~/pfp/@(Model.ProfilePictureUrl).jpg"
+                 alt="@_localizer["ProfilePictureAlt"]" id="idcardAvatar"
+                 data-bs-toggle="modal" data-bs-target="#choosePictureModal" role="button" />
+        }
+        else
+        {
+            <img class="idcard__avatar" src="~/pfp/0.jpg"
+                 alt="@_localizer["ProfilePictureAlt"]" id="idcardAvatar"
+                 data-bs-toggle="modal" data-bs-target="#choosePictureModal" role="button" />
+        }
+
+        <p class="idcard__name">@Model.UserName</p>
+        <p class="idcard__role">@_localizer["RoleLabel"]</p>
+
+        <div class="idcard__divider"></div>
+
+        <div class="idcard__field">
+            <div class="idcard__label">🔒 @_localizer["EmailLabel"]</div>
+            <div class="idcard__value">@Model.Email</div>
+        </div>
+
+        <div class="idcard__field">
+            <div class="idcard__label">@_localizer["PasswordLabel"]</div>
+            <div class="idcard__password-row" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <span class="idcard__password-dots">••••••••••</span>
+                <svg class="idcard__scribble" viewBox="0 0 140 30" preserveAspectRatio="none">
+                    <path d="M4,18 C12,6 20,26 28,12 C36,-2 44,24 52,10
+                    C60,-2 68,22 76,12 C84,4 92,24 100,10
+                    C108,0 116,20 124,10 C130,4 134,14 136,10"
+                          fill="none" stroke="var(--canopy-scribble)" stroke-width="3.5"
+                          stroke-linecap="round" />
+                </svg>
+                <span class="idcard__password-hint">@_localizer["PasswordHint"]</span>
+            </div>
+        </div>
+
+        <div class="idcard__field">
+            <div class="idcard__label">@_localizer["LastSeenLabel"]</div>
+            <div class="idcard__value">
+                @(Model.LastLoginAt.HasValue
+                    ? DateTime.SpecifyKind(Model.LastLoginAt.Value, DateTimeKind.Utc).ToString("MMM d, yyyy · h:mm tt")
+                    : _localizer["FirstTimeHere"].Value)
+            </div>
+            <div class="idcard__barcode"></div>
+        </div>
+
+        <div class="idcard__footnote">@_localizer["Footnote"]</div>
+    </div>
+</div>
+
+<div class="modal fade" id="choosePictureModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="changePfpForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">@_localizer["ChoosePhotoTitle"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (availablePictures.Any())
+                    {
+                        <div class="pfp-grid">
+                            @foreach (var picture in availablePictures)
+                            {
+                                <label class="pfp-grid__item @(picture == Model.ProfilePictureUrl ? "is-selected" : "")">
+                                    <input type="radio" name="selectedImage" value="@picture"
+                                           class="pfp-grid__radio"
+                                           checked="@(picture == Model.ProfilePictureUrl)" />
+                                    <img src="~/pfp/@(picture).jpg" alt="" />
+                                </label>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">@_localizer["NoPicturesAvailable"]</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["CancelButton"]</button>
+                    <button id="savePfpBtn" class="btn btn-primary">@_localizer["SaveButton"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Change password modal --><!-- Change password modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="changePasswordForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">@_localizer["ChangePasswordTitle"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Current Password -->
+                    <div class="mb-3">
+                        <label class="form-label">@_localizer["CurrentPasswordLabel"]</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="OldPassword" id="OldPassword" required />
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- New Password -->
+                    <div class="mb-3">
+                        <label class="form-label">@_localizer["NewPasswordLabel"]</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="NewPassword" id="NewPassword" required minlength="8" />
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Confirm New Password -->
+                    <div class="mb-2">
+                        <label class="form-label">@_localizer["ConfirmNewPasswordLabel"]</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="ConfirmNewPassword" id="ConfirmNewPassword" required minlength="8" />
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="pwFeedback" class="small mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["CancelButton"]</button>
+                    <button type="submit" class="btn btn-canopy" id="pwSubmitBtn">@_localizer["UpdatePasswordButton"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const L = {
+            UpdatFailed: '@_localizer["UpdatFailed"]',
+            UpdateFailed: '@_localizer["UpdateFailed"]',
+            PasswordUpdatedSuccess: '@_localizer["PasswordUpdatedSuccess"]',
+            InvalidCurrentPassword: '@_localizer["InvalidCurrentPassword"]',
+            ConfirmNoMatch: '@_localizer["ConfirmNoMatch"]',
+            UserNotFound: '@_localizer["UserNotFound"]',
+            PasswordComplexity:    '@_localizer["PasswordComplexity"]'
+        };
+        function formatMembershipDuration(dateCreatedIso, lang) {
+                const created = new Date(dateCreatedIso);
+                const now = new Date();
+                const totalDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+
+                const fa = { today: "امروز", day: "روز", month: "ماه", year: "سال" };
+                const en = { today: "Today", day: "day", month: "month", year: "year" };
+                const t = lang === "fa" ? fa : en;
+
+                if (totalDays < 1) return t.today;
+
+                if (totalDays < 30) {
+                    return lang === "fa" ? `${totalDays} ${t.day}` : `${totalDays} ${t.day}${totalDays === 1 ? "" : "s"}`;
+                }
+
+                const totalMonths = Math.floor(totalDays / 30.44);
+
+                if (totalMonths < 12) {
+                    return lang === "fa" ? `${totalMonths} ${t.month}` : `${totalMonths} ${t.month}${totalMonths === 1 ? "" : "s"}`;
+                }
+
+                const years = Math.floor(totalMonths / 12);
+                const remMonths = totalMonths % 12;
+
+                if (lang === "fa") {
+                    return remMonths > 0 ? `${years} سال و ${remMonths} ماه` : `${years} سال`;
+                }
+                return remMonths > 0 ? `${years}y ${remMonths}m` : `${years} year${years === 1 ? "" : "s"}`;
+            }
+
+
+
+        $(function () {
+            // Toggle selection highlight
+            $('.pfp-grid__radio').on('change', function () {
+                $('.pfp-grid__item').removeClass('is-selected');
+                $(this).closest('.pfp-grid__item').addClass('is-selected');
+            });
+
+            // Handle AJAX submission on form submit
+            $('#savePfpBtn').on('click', function (e) {
+                e.preventDefault();
+
+                // Get selected image name (e.g., "avatar1")
+                var selectedImage = $('input[name="selectedImage"]:checked').val();
+                if (!selectedImage) return;
+
+                var $saveBtn = $('#savePfpBtn');
+                $saveBtn.prop('disabled', true);
+
+                $.ajax({
+                    url: '/api/account/changePfp?img=' + encodeURIComponent(selectedImage),
+                    type: 'PATCH',
+                    success: function (response) {
+                        $('#idcardAvatar').attr('src', '/pfp/' + selectedImage + '.jpg');
+                        
+                        var $modal = $('#choosePictureModal');
+                        var $closeBtn = $modal.find('.btn-close');
+
+                        if ($closeBtn.length) {
+                            $closeBtn.click();
+                } else {
+                    // Fallback to official BS5 JS API instance
+                    var modalInstance = bootstrap.Modal.getOrCreateInstance($modal[0]);
+                    modalInstance.hide();
+                }
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Failed to update profile picture:", error);
+                        toastr.error(L.UpdatFailed);
+                    },
+                    complete: function () {
+                        $saveBtn.prop('disabled', false);
+                    }
+                });
+            });
+        });
+
+        $(function () {
+            // Toggle password visibility on click
+            $('.toggle-password').on('click', function () {
+                var $btn = $(this);
+                var $input = $btn.closest('.input-group').find('input');
+                var $icon = $btn.find('i');
+
+                // Check current input type
+                if ($input.attr('type') === 'password') {
+                    $input.attr('type', 'text');
+                    // Swap icons (Bootstrap Icons example: bi-eye -> bi-eye-slash)
+                    $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                } else {
+                    $input.attr('type', 'password');
+                    $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                }
+            });
+
+            // Reset password field types back to 'password' when modal closes
+            $('#changePasswordModal').on('hidden.bs.modal', function () {
+                var $modal = $(this);
+                $modal.find('input[type="text"]').attr('type', 'password');
+                $modal.find('.toggle-password i').removeClass('bi-eye-slash').addClass('bi-eye');
+            });
+        });
+
+        $(function () {
+            const passRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@@#$%^&*])(?=.{8,})");
+
+            $('#changePasswordForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var $form = $(this);
+                var $btn = $('#pwSubmitBtn');
+                var $feedback = $('#pwFeedback');
+
+                var oldPassword = $('#OldPassword').val();
+                var newPassword = $('#NewPassword').val();
+                var confirmPassword = $('#ConfirmNewPassword').val();
+
+                if (!passRegex.test(newPassword)) {
+                    $feedback
+                        .removeClass('text-success')
+                        .addClass('text-danger')
+                        .text(L.PasswordComplexity);
+                    return;
+                }
+
+                // 1. Client-side check before making the AJAX call
+                if (newPassword !== confirmPassword) {
+                    $feedback
+                        .removeClass('text-success')
+                        .addClass('text-danger')
+                        .text(L.ConfirmNoMatch);
+                    return;
+                }
+
+                // 2. Clear old error messages & disable submit button
+                $feedback.removeClass('text-danger text-success').text('');
+                $btn.prop('disabled', true);
+
+                // 3. Prepare JSON payload
+                var payload = {
+                    OldPassword: oldPassword,
+                    NewPassword: newPassword,
+                    ConfirmNewPassword: confirmPassword
+                };
+
+                var token = $('input[name="__RequestVerificationToken"]', $form).val();
+
+                $.ajax({
+                    url: '/api/account', 
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    data: JSON.stringify(payload),
+                    success: function (response) {
+                        // Clear form & close modal
+                        $form[0].reset();
+                        
+                        $('#changePasswordModal').find('.btn-close').click();
+
+                        // Success toast notification
+                        toastr.success(L.PasswordUpdatedSuccess);
+                    },
+                    error: function (xhr) {
+                        var errorMessage = L.UpdateFailed;
+
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.message === 'InvalidCredentials') {
+                                errorMessage = L.InvalidCurrentPassword;
+                            } else if (xhr.responseJSON.message === 'ConfirmNoMatch') {
+                                errorMessage = L.ConfirmNoMatch;
+                            }
+                        } else if (xhr.status === 404) {
+                            errorMessage = L.UserNotFound;
+                        }
+
+                        // Display error inside modal feedback area + toast notification
+                        $feedback.removeClass('text-success').addClass('text-danger').text(errorMessage);
+                        toastr.error(errorMessage);
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Reset form fields and error message on modal close
+            $('#changePasswordModal').on('hidden.bs.modal', function () {
+                $('#changePasswordForm')[0].reset();
+                $('#pwFeedback').removeClass('text-danger text-success').text('');
+            });
+        });
+
+            $(function () {
+                var dateCreatedIso = $('#membershipDuration').data('created');
+                var lang = $('#membershipDuration').data('lang');
+                $('#membershipDuration').text(formatMembershipDuration(dateCreatedIso, lang));
+            });
+
+
+    </script>
+}

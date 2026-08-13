@@ -213,6 +213,9 @@ namespace Canopy.Controllers
                 });
             }
 
+            user.LastLogin = DateTime.Now;
+            await _repo.UpdateAsync(user);
+
             // Return user data
             return Ok(new
             {

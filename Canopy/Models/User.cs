@@ -1,4 +1,6 @@
-﻿namespace Canopy.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Canopy.Models
 {
     public class User
     {
@@ -28,5 +30,19 @@
         public ICollection<MessageSeenStatus> MessageSeenStatuses { get; set; } = new List<MessageSeenStatus>();
 
 
+    }
+    public class ProfileViewModel
+    {
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? ProfilePictureUrl { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime? LastLoginAt { get; set; }
+    }
+    public class ChangePasswordRequest
+    {
+        public string OldPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+        public string ConfirmNewPassword { get; set; } = string.Empty;
     }
 }
