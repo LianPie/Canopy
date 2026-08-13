@@ -67,6 +67,11 @@ namespace Canopy.Controllers
             return View();
         }
 
+        public IActionResult TermsOfService()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)

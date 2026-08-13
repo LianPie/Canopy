@@ -32,7 +32,7 @@ namespace Canopy.Controllers
 
         public IActionResult Index()
         {
-            DashboardViewData model = _tasksRepo.GetDashboardStats(GetUserId());
+            DashboardViewData model = _tasksRepo.GetDashboardStats(GetUserId()) ?? new DashboardViewData();
 
             return View(model);
         }

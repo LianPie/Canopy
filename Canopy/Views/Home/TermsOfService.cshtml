@@ -1,0 +1,37 @@
+﻿@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@inject IHtmlLocalizer<SharedResources> SR
+
+@section Head
+{
+    <link href="~/css/loginstyle.css" rel="stylesheet" />
+    <style>
+        .input-box {
+            margin-bottom: 8px;
+        }
+    </style>
+}
+
+<div class="login-container">
+        <div class="login-card signup-card">
+            <div class="avatar-container">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+            </div>
+            <h1>By agreeing to this you sell you soul to me</h1>
+            <h4>just kidding i don't own this server idk what actually happens</h4>
+            <p>
+                if you read this, you might be very smart actually.
+            </p>
+
+            
+        </div>
+</div>
+
+
+@section Scripts {
+
+}
