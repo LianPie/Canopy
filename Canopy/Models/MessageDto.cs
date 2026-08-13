@@ -6,6 +6,7 @@
         public int ChatId { get; set; }
         public int UserId { get; set; }
         public string? UserName { get; set; }
+        public string? ImageUrl { get; set; }
         public string? Text { get; set; }
         public string Type { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }
@@ -16,6 +17,7 @@
             ChatId = m.ChatId,
             UserId = m.UserId,
             UserName = m.User?.UserName,
+            ImageUrl = m.User?.ImageUrl,
             Text = m.Text,
             Type = m.Type,
             DateCreated = m.DateCreated

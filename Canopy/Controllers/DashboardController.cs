@@ -120,7 +120,8 @@ namespace Canopy.Controllers
                 ChatId = chat.Id,
                 GroupId = groupId,
                 CurrentUserId = userId,
-                Messages = messages
+                Messages = messages,
+
             };
 
             return PartialView("_ChatRoomPartial", vm);

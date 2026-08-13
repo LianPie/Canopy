@@ -3,7 +3,6 @@
 
 
 @inject IViewLocalizer _localizer
-
 <style>
     /* ── Light mode ───────────────────────── */
     .chatroom-container {
@@ -45,22 +44,25 @@
         --chat-icon-hover-bg: #2b2625;
     }
 
-
+    /* ── Layout & Containers ───────────────────────── */
     .chatroom-container {
         display: flex;
         flex-direction: column-reverse;
         height: 100%;
-        max-height: 100vh; /* یا هر ارتفاعی که برای کادر چت مشخص کرده‌اید */
+        max-height: 100vh;
         min-height: 0;
         background: var(--chat-bg);
-        overflow: hidden; /* جلوگیری از بیرون زدن کل چت روم */
+        overflow: hidden;
     }
 
     .chatroom-messages {
-        flex-direction: column-reverse !important; /* اسکرول را به انتهای چت هدایت می‌کند */
-        overflow-y: auto !important; /* فعال‌سازی اسکرول فقط داخل بخش پیام‌ها */
-        overflow-x: hidden !important; /* جلوگیری از اسکرول افقی */
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 16px;
     }
+
     .chat-date-divider {
         text-align: center;
         color: var(--chat-date-divider-color);
@@ -68,42 +70,7 @@
         margin: 12px 0;
     }
 
-    .chat-sender-name {
-        font-size: 0.72rem;
-        color: var(--chat-sender-name-color);
-        margin-bottom: 2px;
-        padding: 0 6px;
-    }
-
-
-    .chat-bubble-meta {
-        position: absolute;
-        bottom: -18px;
-        right: 4px;
-        left: auto;
-        font-size: 0.68rem;
-        color: var(--chat-meta-color);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        white-space: nowrap;
-        pointer-events: none;
-    }
-
-    .chat-bubble-row.other .chat-bubble-meta {
-        right: auto;
-        left: 4px;
-    }
-
-    .chat-delivered {
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: var(--chat-meta-color);
-        margin-left: 2px;
-        letter-spacing: -2px; 
-        display: inline-block;
-    }
-
+    /* ── Input Bar ───────────────────────── */
     .chatroom-input-bar {
         flex-shrink: 0;
         display: flex;
@@ -153,20 +120,68 @@
             border-color: var(--chat-input-border-focus);
         }
 
-    .chatroom-messages {
+    /* ── Unified Bubble & Avatar Layout ───────────────────────── */
+    .chat-bubble-row {
         display: flex !important;
-        flex-direction: column !important;
+        align-items: flex-end;
+        gap: 8px;
+        max-width: 75%;
+        width: fit-content;
+        margin-bottom: 22px; /* Space for timestamp underneath */
+        position: relative;
     }
 
+        /* Messages from other users (Left aligned) */
+        .chat-bubble-row.other {
+            flex-direction: row !important;
+            align-self: flex-start !important;
+            margin-right: auto !important;
+            margin-left: 0 !important;
+        }
 
-        /* ── Clean & Unified Bubble Fix ───────────────────────── */
-    .chat-bubble-row {
+        /* Messages from current user (Right aligned) */
+        .chat-bubble-row.own {
+            flex-direction: row-reverse !important;
+            align-self: flex-end !important;
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        }
+
+    /* Avatar Container & Image */
+    .chat-avatar-wrapper {
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .chat-pfp {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    /* Content Wrapper (Sender Name + Bubble + Meta) */
+    .chat-content-wrapper {
         display: flex;
         flex-direction: column;
-        max-width: 72%;
-        width: fit-content;
-        margin-bottom: 22px;
         position: relative;
+        max-width: 100%;
+    }
+
+    .chat-bubble-row.own .chat-content-wrapper {
+        align-items: flex-end;
+    }
+
+    .chat-bubble-row.other .chat-content-wrapper {
+        align-items: flex-start;
+    }
+
+    .chat-sender-name {
+        font-size: 0.72rem;
+        color: var(--chat-sender-name-color);
+        margin-bottom: 2px;
+        padding: 0 4px;
     }
 
     .chat-bubble {
@@ -178,58 +193,76 @@
         word-break: break-word;
     }
 
-    /* پیام‌های من (همیشه راست) */
-    .chat-bubble-row.own {
-        align-self: flex-end !important;
-        align-items: flex-end !important;
-        margin-left: auto !important;
-        margin-right: 0 !important;
-    }
+    /* Own Bubble Styling & Tail */
     .chat-bubble-row.own .chat-bubble {
         background: var(--chat-bubble-own-bg);
         color: var(--chat-bubble-own-text);
         border-bottom-right-radius: 2px;
         border-bottom-left-radius: 20px;
     }
-    .chat-bubble-row.own .chat-bubble::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        right: -6px;
-        left: auto;
-        width: 16px;
-        height: 16px;
-        background: var(--chat-bubble-own-bg);
-        border-bottom-left-radius: 14px;
-        border-bottom-right-radius: 0;
-        clip-path: polygon(100% 0, 0% 100%, 100% 100%);
-    }
 
-    /* پیام‌های مخاطب (همیشه چپ) */
-    .chat-bubble-row.other {
-        align-self: flex-start !important;
-        align-items: flex-start !important;
-        margin-right: auto !important;
-        margin-left: 0 !important;
-    }
+        .chat-bubble-row.own .chat-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -6px;
+            width: 16px;
+            height: 16px;
+            background: var(--chat-bubble-own-bg);
+            border-bottom-left-radius: 14px;
+            clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+        }
+
+    /* Other Bubble Styling & Tail */
     .chat-bubble-row.other .chat-bubble {
         background: var(--chat-bubble-other-bg);
         color: var(--chat-bubble-other-text);
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 20px;
     }
-    .chat-bubble-row.other .chat-bubble::after {
-        content: "";
+
+        .chat-bubble-row.other .chat-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -6px;
+            width: 16px;
+            height: 16px;
+            background: var(--chat-bubble-other-bg);
+            border-bottom-right-radius: 14px;
+            clip-path: polygon(0 0, 0% 100%, 100% 100%);
+        }
+
+    /* Timestamp & Meta */
+    .chat-bubble-meta {
         position: absolute;
-        bottom: 0;
-        left: -6px;
+        bottom: -18px;
+        font-size: 0.68rem;
+        color: var(--chat-meta-color);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+        pointer-events: none;
+    }
+
+    .chat-bubble-row.own .chat-bubble-meta {
+        right: 4px;
+        left: auto;
+    }
+
+    .chat-bubble-row.other .chat-bubble-meta {
+        left: 4px;
         right: auto;
-        width: 16px;
-        height: 16px;
-        background: var(--chat-bubble-other-bg);
-        border-bottom-right-radius: 14px;
-        border-bottom-left-radius: 0;
-        clip-path: polygon(0 0, 0% 100%, 100% 100%);
+    }
+
+    .chat-delivered {
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: var(--chat-meta-color);
+        margin-left: 2px;
+        letter-spacing: -2px;
+        display: inline-block;
     }
 </style>
 <div class="chatroom-container"
@@ -283,20 +316,29 @@
             }
 
             var isOwn = msg.UserId == Model.CurrentUserId;
+
+            // Fallback to "0" if user has no image
+            var pfpName = !string.IsNullOrEmpty(msg.ImageUrl) ? msg.ImageUrl : "0";
+
             <div class="chat-bubble-row @(isOwn ? "own" : "other")" data-message-id="@msg.Id">
-                @if (!isOwn)
-                {
-                    <div class="chat-sender-name">@msg.UserName</div>
-                }
-                <div class="chat-bubble">
-                    <span class="chat-bubble-text">@msg.Text</span>
+                <div class="chat-avatar-wrapper">
+                    <img src="~/pfp/@(pfpName).jpg" class="chat-pfp" alt="@msg.UserName" />
                 </div>
-                <div class="chat-bubble-meta">
-                    @msg.DateCreated.ToString("HH:mm")
-                    @if (isOwn)
+                <div class="chat-content-wrapper">
+                    @if (!isOwn)
                     {
-                        <span class="chat-delivered" title="@_localizer["Delivered"]">✓✓</span>
+                        <div class="chat-sender-name">@msg.UserName</div>
                     }
+                    <div class="chat-bubble">
+                        <span class="chat-bubble-text">@msg.Text</span>
+                    </div>
+                    <div class="chat-bubble-meta">
+                        @msg.DateCreated.ToString("HH:mm")
+                        @if (isOwn)
+                        {
+                            <span class="chat-delivered" title="@_localizer["Delivered"]">✓✓</span>
+                        }
+                    </div>
                 </div>
             </div>
         }
@@ -334,7 +376,6 @@
                 console.error('Chat error:', message);
             });
 
-            // موقع reconnect (قطعی موقت نت)، باید دوباره join بشه چون Groups پاک می‌شن
             chatConnection.onreconnected(function () {
                 chatConnection.invoke('JoinChat', chatId).catch(err => console.error(err));
             });
@@ -426,6 +467,9 @@
         const text = msg.text || msg.Text;
         const senderName = msg.userName || msg.UserName;
 
+        const pfp = (msg.imageUrl || msg.ImageUrl || msg.userPfp || msg.UserPfp) || '0';
+        const avatarUrl = `/pfp/${pfp}.jpg`;
+
         const msgDateObj = new Date(msg.dateCreated || msg.DateCreated);
 
         // Formatters
@@ -452,15 +496,20 @@
 
         const safeText = $('<div>').text(text).html();
 
-        const html = `
-            <div class="chat-bubble-row ${isOwn ? 'own' : 'other'}" data-message-id="${msg.id || msg.Id}">
+       const html = `
+        <div class="chat-bubble-row ${isOwn ? 'own' : 'other'}" data-message-id="${msg.id || msg.Id}">
+            <div class="chat-avatar-wrapper">
+                <img src="${avatarUrl}" class="chat-pfp" alt="${senderName}" />
+            </div>
+            <div class="chat-content-wrapper">
                 ${!isOwn ? `<div class="chat-sender-name">${senderName}</div>` : ''}
                 <div class="chat-bubble"><span class="chat-bubble-text">${safeText}</span></div>
                 <div class="chat-bubble-meta">
                     ${time}
                     ${isOwn ? '<span class="chat-delivered" title="@_localizer["Delivered"]">✓✓</span>' : ''}
                 </div>
-            </div>`;
+            </div>
+        </div>`;
 
         $('#chatMessages').append(html);
     }
