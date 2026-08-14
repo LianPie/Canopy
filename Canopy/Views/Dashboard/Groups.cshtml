@@ -269,6 +269,36 @@
     .tab-pane.active.show#chatTabPane {
         display: flex !important;
     }
+
+    @@media (max-width: 991.98px) {
+    /* 1. LOCK THE PANEL TO MOBILE VIEWPORT HEIGHT */
+    #detailPanel, 
+    .g-detail-panel {
+        height: 100dvh !important;       /* Uses dynamic mobile screen height */
+        max-height: 100dvh !important;   /* Hard cap: prevents extending */
+        overflow: hidden !important;     /* Cuts off outer scrolling */
+        
+    }
+
+    /* 2. FORCE TAB CONTENT TO FILL ONLY REMAINING SPACE */
+    #detailPanel .tab-content {
+        height: calc(100% - 90px) !important; /* Subtract header + tab height */
+        overflow: hidden !important;
+    }
+
+    /* 3. ENSURE TASK COLUMN AND LIST ARE LOCKED & SCROLL INTERNALLY */
+    #tasksCol {
+        height: 100% !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+    }
+
+    #allTasksList {
+        height: calc(100% - 50px) !important; /* Subtract column title header height */
+        overflow-y: auto !important;           /* FORCE internal scrollbar here */
+        -webkit-overflow-scrolling: touch;     /* Smooth scroll for iOS Safari */
+    }
+}
 </style>
 
 <div class="toolbar d-flex justify-content-between align-items-center mb-4">
@@ -358,10 +388,10 @@
             <!-- Tab content: takes all remaining height -->
             <div class="tab-content flex-grow-1 min-h-0">
 
-            <div class="tab-pane fade show active h-100 d-flex flex-column min-h-0" id="boardTabPane">
-                <div class="g-board-row d-flex flex-grow-1 min-h-0">
-                    <!-- Col 1: Projects -->
-                        <div class="g-board-col h-100 min-h-0" id="col1">
+                <div class="tab-pane fade show active h-100" id="boardTabPane">
+                    <div class="g-board-row">
+                        <!-- Col 1: Projects -->
+                        <div class="g-board-col" id="col1">
                             <div class="g-empty" id="noGroupSelected">
                                 <i class="ki-outline ki-people fs-2tx mb-3"></i>
                                 <p>@_localizer["SelectGroupPrompt"]</p>
@@ -382,8 +412,8 @@
                         </div>
 
                         <!-- Col 2: Tasks -->
-                    <div class="g-board-col h-100 min-h-0" id="col2" style="display:none;">
-                        <div class="g-empty" id="noGroupSelected2">
+                        <div class="g-board-col" id="col2" style="display:none;">
+                            <div class="g-empty" id="noGroupSelected2">
                                 <i class="ki-outline ki-check-circle fs-2tx mb-3"></i>
                                 <p>@_localizer["SelectGroupTasksPrompt"]</p>
                             </div>
