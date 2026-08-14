@@ -8,6 +8,20 @@
     font-family: 'yekan', 'DM Sans', sans-serif;
 }
 
+i {
+    box-sizing: border-box;
+}
+
+.input-box input {
+    padding: 10px;
+    font-size: 13px;
+}
+
+.input-box i {
+    padding: 14px;
+    width: 48px;
+}
+
 :root,
 [data-bs-theme=light] {
     --bs-blue: #50c070;

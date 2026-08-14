@@ -438,20 +438,23 @@
 </div>
 <script>
     let chatConnectionReady = null; // پرامیس اتصال، برای هماهنگی با join
-    $(function () {
-        let attachClickCount = 0;
+    $(document).off('click', '#chatAttachBtn').on('click', '#chatAttachBtn', function (e) {
+        e.preventDefault();
 
-        $('#chatAttachBtn').on('click', function (e) {
-            e.preventDefault();
-            attachClickCount++;
+        let $btn = $(this);
 
-            // Trigger modal on the second click and onwards
-            if (attachClickCount > 1) {
-                var modalEl = document.getElementById('workingOnItModal');
+        // Read current click count from element data, or default to 0
+        let clicks = ($btn.data('click-count') || 0) + 1;
+        $btn.data('click-count', clicks);
+
+        // Trigger modal on the second click and onwards
+        if (clicks > 1) {
+            var modalEl = document.getElementById('workingOnItModal');
+            if (modalEl) {
                 var modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
                 modalInstance.show();
             }
-        });
+        }
     });
     function initChatRoom() {
         const $container = $('.chatroom-container');

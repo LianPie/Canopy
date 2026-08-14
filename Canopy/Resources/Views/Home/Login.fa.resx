@@ -153,4 +153,10 @@
   <data name="ErrorGeneric" xml:space="preserve">
     <value>خطایی رخ داد. لطفاً دوباره تلاش کن!</value>
   </data>
+  <data name="WorkingOnItTitle" xml:space="preserve">
+    <value>دارم روش کار میکنم</value>
+  </data>
+  <data name="WorkingOnIt" xml:space="preserve">
+    <value>اکانتت از دست رفت متاسفم</value>
+  </data>
 </root>

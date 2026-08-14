@@ -358,10 +358,10 @@
             <!-- Tab content: takes all remaining height -->
             <div class="tab-content flex-grow-1 min-h-0">
 
-                <div class="tab-pane fade show active h-100" id="boardTabPane">
-                    <div class="g-board-row">
-                        <!-- Col 1: Projects -->
-                        <div class="g-board-col" id="col1">
+            <div class="tab-pane fade show active h-100 d-flex flex-column min-h-0" id="boardTabPane">
+                <div class="g-board-row d-flex flex-grow-1 min-h-0">
+                    <!-- Col 1: Projects -->
+                        <div class="g-board-col h-100 min-h-0" id="col1">
                             <div class="g-empty" id="noGroupSelected">
                                 <i class="ki-outline ki-people fs-2tx mb-3"></i>
                                 <p>@_localizer["SelectGroupPrompt"]</p>
@@ -382,8 +382,8 @@
                         </div>
 
                         <!-- Col 2: Tasks -->
-                        <div class="g-board-col" id="col2" style="display:none;">
-                            <div class="g-empty" id="noGroupSelected2">
+                    <div class="g-board-col h-100 min-h-0" id="col2" style="display:none;">
+                        <div class="g-empty" id="noGroupSelected2">
                                 <i class="ki-outline ki-check-circle fs-2tx mb-3"></i>
                                 <p>@_localizer["SelectGroupTasksPrompt"]</p>
                             </div>
