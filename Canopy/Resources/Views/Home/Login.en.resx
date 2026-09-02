@@ -159,4 +159,7 @@
   <data name="WorkingOnIt" xml:space="preserve">
     <value>Your account is gone sorry oops</value>
   </data>
+  <data name="EnterLoginUname" xml:space="preserve">
+    <value>Please enter your Account Email or Username</value>
+  </data>
 </root>

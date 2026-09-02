@@ -2,6 +2,7 @@
 using Canopy.Models;
 using Canopy.Repositories;
 using Canopy.Repositories.TaskManager.Repositories;
+using Canopy.Services;
 using crypto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,13 @@ namespace Canopy.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IUserRepository _repo;
-        public AccountController(IUserRepository repo) => _repo = repo;
+        private readonly IEmailSender _emailSender;
+        public AccountController(IUserRepository repo,
+        IEmailSender emailSender)
+        {
+            _repo = repo;
+            _emailSender = emailSender;
+        }
 
         [Authorize]
         private int GetUserId()
@@ -31,7 +38,7 @@ namespace Canopy.Controllers
             var userNameTaken = await _repo.UserNameExistsAsync(username);
 
             return Ok(new { userNameTaken });
-        }   
+        }
 
         [HttpGet("checkEmail")]
         public async Task<IActionResult> CheckEmailAvailability(
@@ -39,7 +46,46 @@ namespace Canopy.Controllers
         {
             var emailTaken = await _repo.EmailExistsAsync(email);
 
-            return Ok(new {emailTaken });
+            return Ok(new { emailTaken });
+        }
+
+        [HttpGet("sendCode")]
+        public async Task<IActionResult> sendCode(
+           [FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { code = new[] { "InvalidData" } });
+            }
+
+            var user = await _repo.GetByUserNameOrEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest(new { general = new[] { "UserNotFound" } });
+            }
+
+            // Generate a new 6-digit verification code
+            var newCode = new Random().Next(100000, 999999).ToString();
+            user.EmailVerificationCode = newCode;
+            user.VerificationCodeExpiry = DateTime.UtcNow.AddMinutes(15);
+
+            await _repo.UpdateAsync(user);
+
+            // Send email
+            try
+            {
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "Verify your email",
+                    $"Your new verification code is: {newCode}"
+                );
+            }
+            catch
+            {
+                return BadRequest(new { general = new[] { "EmailSendFailed" } });
+            }
+
+            return Ok(new { success = true, key = "CodeResent" });
         }
 
         [Authorize]
@@ -70,15 +116,15 @@ namespace Canopy.Controllers
                 {
                     await _repo.IncrementFailedAttemptsAsync(user.Id);
 
-                        ModelState.AddModelError(string.Empty, "InvalidCredentials");
-                        return BadRequest(new
-                        {
-                            message = "InvalidCredentials",
-                            errors = ModelState.ToDictionary(
-                            x => x.Key,
-                            x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                        )
-                        });
+                    ModelState.AddModelError(string.Empty, "InvalidCredentials");
+                    return BadRequest(new
+                    {
+                        message = "InvalidCredentials",
+                        errors = ModelState.ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    )
+                    });
                 }
 
                 if (model.NewPassword != model.ConfirmNewPassword)
@@ -144,5 +190,87 @@ namespace Canopy.Controllers
                 user.ImageUrl
             });
         }
+
+        [Authorize]
+        [HttpPost("RequestDeleteAccountCode")]
+        public async Task<IActionResult> RequestDeleteAccountCode()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var user = _repo.GetById(userId);
+            if (user == null)
+                return NotFound(new { general = new[] { "UserNotFound" } });
+
+            // Generate 6-digit deletion verification code
+            var verificationCode = new Random().Next(100000, 999999).ToString();
+            user.EmailVerificationCode = verificationCode;
+            user.VerificationCodeExpiry = DateTime.UtcNow.AddMinutes(15);
+
+            await _repo.UpdateAsync(user);
+
+            try
+            {
+                string requestTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm UTC", System.Globalization.CultureInfo.InvariantCulture);
+                string emailBody = $@"
+            <h3>Account Deletion Request</h3>
+            <p>A request was made to permanently delete your Canopy account on: <strong>{requestTime}</strong></p>
+            <p>Your verification code is: <strong>{verificationCode}</strong></p>
+            <p>If you did not request this, please change your password immediately.</p>";
+
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "Confirm Account Deletion",
+                    emailBody
+                );
+            }
+            catch
+            {
+                return BadRequest(new { general = new[] { "EmailSendFailed" } });
+            }
+
+            return Ok(new { success = true, key = "CodeResent" });
+        }
+
+        [Authorize]
+        [HttpPost("DeleteAccount")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequestModel model)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            if (model == null || string.IsNullOrWhiteSpace(model.Code))
+            {
+                return BadRequest(new { code = new[] { "InvalidData" } });
+            }
+
+            var user = _repo.GetById(userId);
+            if (user == null)
+                return NotFound(new { general = new[] { "UserNotFound" } });
+
+            // Verify confirmation code
+            if (user.EmailVerificationCode != model.Code)
+            {
+                return BadRequest(new { code = new[] { "InvalidCode" } });
+            }
+
+            if (!user.VerificationCodeExpiry.HasValue || user.VerificationCodeExpiry < DateTime.UtcNow)
+            {
+                return BadRequest(new { code = new[] { "CodeExpired" } });
+            }
+
+            _repo.DeleteAsync(user);
+
+            Response.Cookies.Delete("access_token");
+            Response.Cookies.Delete("session_type");
+
+            return Ok(new { success = true });
+        }
+
+
     }
 }

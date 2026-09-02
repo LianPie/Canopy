@@ -43,9 +43,13 @@ namespace Canopy.Data.Configurations
                 .HasMaxLength(500)
                 .IsRequired(false);
 
-            builder.Property(u => u.Token)
-                .HasColumnName("User_Token")
-                .HasMaxLength(500)
+            builder.Property(u => u.EmailVerificationCode)
+                .HasColumnName("User_EmailVerificationCode")
+                .HasMaxLength(6)
+                .IsRequired(false);
+
+            builder.Property(u => u.VerificationCodeExpiry)
+                .HasColumnName("User_VerificationCodeExpiry")
                 .IsRequired(false);
 
             // DateTime Fields

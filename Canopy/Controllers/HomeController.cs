@@ -17,6 +17,7 @@ namespace Canopy.Controllers
         private readonly IStringLocalizer<HomeController> _localizer;
         private readonly IUserRepository _repo;
         private readonly ITokenService _tokenService;
+        private readonly IEmailSender _emailSender;
 
 
         public HomeController(
@@ -24,13 +25,15 @@ namespace Canopy.Controllers
         ILogger<HomeController> logger,
         IStringLocalizer<HomeController> localizer,
         IUserRepository repo,
-        ITokenService tokenService)
+        ITokenService tokenService,
+        IEmailSender emailSender)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _repo = repo ?? throw new ArgumentNullException(nameof(repo));
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
         }
 
 
@@ -173,53 +176,33 @@ namespace Canopy.Controllers
             await _repo.ResetFailedAttemptsAsync(user.Id);
 
 
-            //session and cookie
-            var token = model.RememberMe
-                ? _tokenService.GenerateToken(user.Id, user.UserName, expiryDays: 7)
-                : _tokenService.GenerateToken(user.Id, user.UserName);
-
-            if (model.RememberMe)
+            // CHECK IF EMAIL IS NOT VERIFIED (Status 2 = Unverified)
+            if (user.Status == 2)
             {
-                // Remember Me = 7 days
-                CookieHelper.Set(
-                    response: Response,
-                    key: "access_token",
-                    value: token,
-                    expiresDays: 7,
-                    httpOnly: true,
-                    secure: true
-                );
-
-                CookieHelper.Set(
-                    response: Response,
-                    key: "session_type",
-                    value: "Remember",
-                    expiresDays: 7,
-                    httpOnly: false,
-                    secure: true
-                );
-            }
-            else
-            {
-                // Session only = browser closes = NO expiration set
-                var options = new CookieOptions
+                // Re-send verification code if expired
+                if (!user.VerificationCodeExpiry.HasValue || user.VerificationCodeExpiry < DateTime.UtcNow)
                 {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict
-                };
-                Response.Cookies.Append("access_token", token, options);
+                    var code = new Random().Next(100000, 999999).ToString();
+                    user.EmailVerificationCode = code;
+                    user.VerificationCodeExpiry = DateTime.UtcNow.AddMinutes(15);
+                    await _repo.UpdateAsync(user);
 
-                Response.Cookies.Append("session_type", "temporary", new CookieOptions
+                    await _emailSender.SendEmailAsync(
+                        user.Email,
+                        "Verify your email",
+                        $"Your verification code is: {code}"
+                    );
+                }
+
+                return Json(new
                 {
-                    Expires = DateTime.UtcNow.AddDays(1),
-                    HttpOnly = false,
-                    Secure = true
+                    requiresVerification = true,
+                    redirectUrl = Url.Action("VerifyEmail", "Home", new { email = user.Email })
                 });
             }
 
-            user.LastLogin = DateTime.Now;
-            await _repo.UpdateAsync(user);
+            // CREATE SESSION VIA HELPER METHOD
+            await IssueSessionCookiesAsync(user, model.RememberMe);
 
             // Return user data
             return Ok(new
@@ -233,7 +216,6 @@ namespace Canopy.Controllers
                 },
                 rememberMe = model.RememberMe
             });
-
         }
 
         [HttpPost]
@@ -277,19 +259,146 @@ namespace Canopy.Controllers
             var hashed = PasswordHelper.HashPassword(model.Password);
             model.Password = hashed;
 
-
+            // Generate a 6-digit random code
+            var verificationCode = new Random().Next(100000, 999999).ToString();
 
             User usermodel = new User
             {
-                Id = 0,
                 UserName = model.Username,
                 Email = model.Email,
-                Password = model.Password,
+                Password = hashed,
+                EmailVerificationCode = verificationCode,
+                VerificationCodeExpiry = DateTime.UtcNow.AddMinutes(15),
+                Status = 2
             };
 
             await _repo.AddAsync(usermodel);
 
-            return RedirectToAction("Welcome", "Home");
+            // Send the email with the code
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Verify your email",
+                $"Your verification code is: {verificationCode}"
+            );
+
+            // Pass the email or user identifier to the verification view
+            return RedirectToAction("VerifyEmail", new { email = model.Email });
+
+        }
+
+        [HttpGet]
+        public IActionResult VerifyEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Signup");
+
+            var model = new VerifyEmailViewModel { Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword([FromForm] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest(new { code = new[] { "InvalidData" } });
+            }
+
+            var user = await _repo.GetByUserNameOrEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest(new { general = new[] { "UserNotFound" } });
+            }
+
+            // 1. Generate a secure random password (e.g. 10 chars)
+            string temporaryPassword = GenerateRandomPassword(10);
+            string hashedPassword = PasswordHelper.HashPassword(temporaryPassword);
+
+            // 2. Generate a 6-digit verification code
+            string verificationCode = new Random().Next(100000, 999999).ToString();
+
+            // 3. Update user record: new password, deactivate status, set verification code
+            user.Password = hashedPassword;
+            user.Status = 2; // Deactivated / Pending Verification
+            user.EmailVerificationCode = verificationCode;
+            user.VerificationCodeExpiry = DateTime.UtcNow.AddMinutes(15);
+
+            await _repo.UpdateAsync(user);
+
+            // 4. Send email with temporary password and verification code
+            try
+            {
+                string requestTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm UTC", System.Globalization.CultureInfo.InvariantCulture);
+                string emailBody = $@"
+            <h3>Password Change Request</h3>
+            <p>Password change request at: <strong>{requestTime}</strong></p>
+            <p>Your new temporary password: <strong>{temporaryPassword}</strong></p>
+            <p>Your verification code: <strong>{verificationCode}</strong></p>
+            <p>Please proceed to verify your email so you can log in again.</p>";
+
+                await _emailSender.SendEmailAsync(
+                    user.Email,
+                    "Password Change Request & Email Verification",
+                    emailBody
+                );
+            }
+            catch
+            {
+                return BadRequest(new { general = new[] { "EmailSendFailed" } });
+            }
+
+            // 5. Redirect to VerifyEmail page with the email in query string
+            return Json(new { redirectUrl = Url.Action("VerifyEmail", "Home", new { email = user.Email }) });
+        }
+
+        // Helper method for random password generation
+        private string GenerateRandomPassword(int length)
+        {
+            const string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+            var random = new Random();
+            var chars = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                chars[i] = validChars[random.Next(0, validChars.Length)];
+            }
+            return new string(chars);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { Code = new[] { "InvalidData" } });
+            }
+
+            var user = await _repo.GetByUserNameOrEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest(new { General = new[] { "UserNotFound"} });
+            }
+
+            if (user.EmailVerificationCode != model.Code)
+            {
+                return BadRequest(new { Code = new[] {"InvalidCode"} });
+            }
+
+            if (user.VerificationCodeExpiry < DateTime.UtcNow)
+            {
+                return BadRequest(new { Code = new[] { "CodeExpired" } });
+            }
+
+            // Activate user account
+            user.Status = 1; // 1 = Active
+            user.EmailVerificationCode = null;
+            user.VerificationCodeExpiry = null;
+
+            // Issue JWT tokens and Session cookies directly upon verification
+            await IssueSessionCookiesAsync(user, rememberMe: false);
+
+            return Json(new { redirectUrl = Url.Action("Welcome", "Home") });
         }
 
         [HttpGet("/Logout")]
@@ -304,6 +413,57 @@ namespace Canopy.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        private async Task IssueSessionCookiesAsync(User user, bool rememberMe)
+        {
+            var token = rememberMe
+                ? _tokenService.GenerateToken(user.Id, user.UserName, expiryDays: 7)
+                : _tokenService.GenerateToken(user.Id, user.UserName);
+
+            if (rememberMe)
+            {
+                // Remember Me = 7 days
+                CookieHelper.Set(
+                    response: Response,
+                    key: "access_token",
+                    value: token,
+                    expiresDays: 7,
+                    httpOnly: true,
+                    secure: true
+                );
+
+                CookieHelper.Set(
+                    response: Response,
+                    key: "session_type",
+                    value: "Remember",
+                    expiresDays: 7,
+                    httpOnly: false,
+                    secure: true
+                );
+            }
+            else
+            {
+                // Session only
+                var options = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                };
+                Response.Cookies.Append("access_token", token, options);
+
+                Response.Cookies.Append("session_type", "temporary", new CookieOptions
+                {
+                    Expires = DateTime.UtcNow.AddDays(1),
+                    HttpOnly = false,
+                    Secure = true
+                });
+            }
+
+            user.LastLogin = DateTime.UtcNow;
+            await _repo.UpdateAsync(user);
         }
     }
 }

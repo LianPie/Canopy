@@ -10,7 +10,8 @@ namespace Canopy.Models
         public string Password { get; set; } = string.Empty;
         public string? Nickname { get; set; }
         public string? ImageUrl { get; set; }
-        public string? Token { get; set; }
+        public string? EmailVerificationCode { get; set; }
+        public DateTime? VerificationCodeExpiry { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public DateTime? LastLogin { get; set; }
         public int Status { get; set; } = 1;
@@ -44,5 +45,20 @@ namespace Canopy.Models
         public string OldPassword { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
         public string ConfirmNewPassword { get; set; } = string.Empty;
+    }
+
+    public class VerifyEmailViewModel
+    {
+        [Required]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "Code must be 6 digits.")]
+        public string Code { get; set; }
+    }
+
+    public class DeleteAccountRequestModel
+    {
+        public string Code { get; set; } = string.Empty;
     }
 }

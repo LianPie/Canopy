@@ -8,7 +8,6 @@
 @{
     Layout = "~/views/Shared/_DashboardLayout.cshtml";
 }
-
 <style>
     :root {
         --canopy-cream: #F7F2E7;
@@ -41,6 +40,31 @@
         .idcard:hover {
             transform: rotate(0deg) translateY(-4px);
             box-shadow: 0 24px 48px rgba(36, 64, 43, 0.28), 0 3px 0 rgba(36, 64, 43, 0.12) inset;
+        }
+
+    /* Trash Button Positioned Safely on Top-Left */
+    .idcard__delete-btn {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(201, 79, 61, 0.08);
+        border: 1.5px solid var(--canopy-scribble);
+        color: var(--canopy-scribble);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all .2s ease;
+        z-index: 3;
+    }
+
+        .idcard__delete-btn:hover {
+            background: var(--canopy-scribble);
+            color: var(--canopy-cream);
+            transform: scale(1.08) rotate(-8deg);
         }
 
     .idcard__clip {
@@ -258,19 +282,34 @@
         margin-top: 8px;
     }
 
-    /* Modal tweaks so it still feels like part of the same doodle */
-    #changePasswordModal .modal-content {
+    /* Modals Styling */
+    #changePasswordModal .modal-content,
+    #confirmDeleteModal .modal-content,
+    #verifyDeleteCodeModal .modal-content {
         border-radius: 16px;
         border: 2px solid var(--canopy-forest);
     }
 
-    #changePasswordModal .modal-header {
+    #confirmDeleteModal .modal-content,
+    #verifyDeleteCodeModal .modal-content {
+        border-color: var(--canopy-scribble);
+    }
+
+    #changePasswordModal .modal-header,
+    #confirmDeleteModal .modal-header,
+    #verifyDeleteCodeModal .modal-header {
         border-bottom: 2px dashed rgba(36, 64, 43, 0.2);
     }
 
     #changePasswordModal .modal-title {
         font-family: 'Fredoka', sans-serif;
         color: var(--canopy-forest);
+    }
+
+    #confirmDeleteModal .modal-title,
+    #verifyDeleteCodeModal .modal-title {
+        font-family: 'Fredoka', sans-serif;
+        color: var(--canopy-scribble);
     }
 
     #changePasswordModal .btn-canopy {
@@ -284,6 +323,18 @@
             border-color: var(--canopy-moss);
         }
 
+    .btn-scribble {
+        background: var(--canopy-scribble);
+        border-color: var(--canopy-scribble);
+        color: var(--canopy-cream);
+    }
+
+        .btn-scribble:hover {
+            background: #B03E2D;
+            border-color: #B03E2D;
+            color: var(--canopy-cream);
+        }
+
     #pwFeedback.success {
         color: var(--canopy-moss);
     }
@@ -291,8 +342,6 @@
     #pwFeedback.error {
         color: var(--canopy-scribble);
     }
-
-
 </style>
 @{
     var hasProfilePicture = !string.IsNullOrWhiteSpace(Model.ProfilePictureUrl);
@@ -310,6 +359,10 @@
 <div class="idcard-wrap">
     <div class="idcard">
         <div class="idcard__clip"></div>
+
+        <button type="button" class="idcard__delete-btn" id="openDeleteModalBtn" title="@_localizer["DeleteAccountLabel"]">
+            <i class="fa-solid fa-trash-can"></i>
+        </button>
 
         <div class="idcard__stamp">
             <span class="idcard__stamp-label">@_localizer["MemberSinceLabel"]</span>
@@ -369,6 +422,52 @@
         </div>
 
         <div class="idcard__footnote">@_localizer["Footnote"]</div>
+    </div>
+</div>
+
+<!-- Modal 1: Initial Delete Account Confirmation -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@_localizer["DeleteAccountTitle"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">@_localizer["DeleteAccountWarning"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["CancelButton"]</button>
+                <button type="button" class="btn btn-scribble" id="sendDeleteCodeBtn">@_localizer["SendCodeButton"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Verification Code Entry -->
+<div class="modal fade" id="verifyDeleteCodeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="verifyDeleteCodeForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">@_localizer["VerifyCodeTitle"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2">@_localizer["VerifyCodeInstructions"]</p>
+                    <div class="mb-3">
+                        <label class="form-label">@_localizer["VerificationCodeLabel"]</label>
+                        <input type="text" class="form-control text-center" id="deleteCodeInput" maxlength="6" placeholder="123456" required autocomplete="off" />
+                    </div>
+                    <div id="deleteCodeFeedback" class="small text-danger"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">@_localizer["CancelButton"]</button>
+                    <button type="submit" class="btn btn-scribble" id="submitDeleteAccountBtn">@_localizer["ConfirmDeleteButton"]</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -472,7 +571,20 @@
             InvalidCurrentPassword: '@_localizer["InvalidCurrentPassword"]',
             ConfirmNoMatch: '@_localizer["ConfirmNoMatch"]',
             UserNotFound: '@_localizer["UserNotFound"]',
-            PasswordComplexity:    '@_localizer["PasswordComplexity"]'
+            PasswordComplexity:    '@_localizer["PasswordComplexity"]',
+
+            DeleteAccountLabel: '@_localizer["DeleteAccountLabel"]',
+            DeleteAccountTitle: '@_localizer["DeleteAccountTitle"]',
+            DeleteAccountWarning: '@_localizer["DeleteAccountWarning"]',
+            SendCodeButton: '@_localizer["SendCodeButton"]',
+            VerifyCodeTitle: '@_localizer["VerifyCodeTitle"]',
+            VerifyCodeInstructions: '@_localizer["VerifyCodeInstructions"]',
+            VerificationCodeLabel: '@_localizer["VerificationCodeLabel"]',
+            ConfirmDeleteButton: '@_localizer["ConfirmDeleteButton"]',
+            AccountDeleted: '@_localizer["AccountDeleted"]',
+            InvalidCode: '@_localizer["InvalidCode"]',
+            CodeExpired: '@_localizer["CodeExpired"]',
+            CodeResent: '@_localizer["CodeResent"]'
         };
         function formatMembershipDuration(dateCreatedIso, lang) {
                 const created = new Date(dateCreatedIso);
@@ -677,5 +789,98 @@
             });
 
 
+
+
+    $(document).ready(function () {
+
+            // 1. Open initial confirmation modal when clicking trash icon
+            $('#openDeleteModalBtn').on('click', function () {
+                var confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                confirmModal.show();
+            });
+
+            // 2. Request verification code
+            $('#sendDeleteCodeBtn').on('click', function () {
+                var $btn = $(this);
+                $btn.prop('disabled', true);
+
+                $.ajax({
+                    url: '/api/account/RequestDeleteAccountCode',
+                    type: 'POST',
+                    success: function () {
+                        $btn.prop('disabled', false);
+
+                        // Hide initial modal and show verification code entry modal
+                        bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                        var codeModal = new bootstrap.Modal(document.getElementById('verifyDeleteCodeModal'));
+                        codeModal.show();
+
+                        toastr.success(L["CodeResent"] || "Verification code sent to your email.");
+                    },
+                    error: function (xhr) {
+                        $btn.prop('disabled', false);
+                        var res = xhr.responseJSON;
+                        var errorMsg = L["UnexpectedError"] || "Failed to send verification code.";
+
+                        if (res) {
+                            var rawKey = (res.code && res.code.length > 0) ? res.code[0] :
+                                         (res.general && res.general.length > 0) ? res.general[0] : null;
+
+                            if (rawKey && L[rawKey]) {
+                                errorMsg = L[rawKey];
+                            }
+                        }
+                        toastr.error(errorMsg);
+                    }
+                });
+            });
+
+            // 3. Confirm deletion with code
+            $('#verifyDeleteCodeForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var code = $('#deleteCodeInput').val().trim();
+                var $btn = $('#submitDeleteAccountBtn');
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                if (!code) return;
+
+                $btn.prop('disabled', true);
+                $('#deleteCodeFeedback').text('');
+
+                $.ajax({
+                    url: '/api/account/DeleteAccount',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: {
+                        "RequestVerificationToken": token
+                    },
+                    data: JSON.stringify({ code: code }),
+                    success: function () {
+                        toastr.success(L["AccountDeleted"] || "Account deleted successfully.");
+                        setTimeout(function () {
+                            window.location.href = '/Home/Login';
+                        }, 1200);
+                    },
+                    error: function (xhr) {
+                        $btn.prop('disabled', false);
+                        var res = xhr.responseJSON;
+                        var errorMsg = L["UnexpectedError"] || "Deletion failed.";
+
+                        if (res) {
+                            var rawKey = (res.code && res.code.length > 0) ? res.code[0] :
+                                         (res.general && res.general.length > 0) ? res.general[0] : null;
+
+                            if (rawKey && L[rawKey]) {
+                                errorMsg = L[rawKey];
+                            }
+                        }
+
+                        $('#deleteCodeFeedback').text(errorMsg);
+                    }
+                });
+            });
+
+        });
     </script>
 }

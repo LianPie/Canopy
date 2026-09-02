@@ -196,25 +196,25 @@
             }
         });
         
-        $(document).ready(function () {
-            // Open Modal
-            $(document).off('click', '#forgotPasswordBtn').on('click', '#forgotPasswordBtn', function (e) {
-                e.preventDefault();
-                $('#forgotPasswordModal').addClass('show');
-            });
+        // $(document).ready(function () {
+        //     // Open Modal
+        //     $(document).off('click', '#forgotPasswordBtn').on('click', '#forgotPasswordBtn', function (e) {
+        //         e.preventDefault();
+        //         $('#forgotPasswordModal').addClass('show');
+        //     });
 
-            // Close Modal on 'X' click
-            $(document).off('click', '#closeForgotPasswordModal').on('click', '#closeForgotPasswordModal', function () {
-                $('#forgotPasswordModal').removeClass('show');
-            });
+        //     // Close Modal on 'X' click
+        //     $(document).off('click', '#closeForgotPasswordModal').on('click', '#closeForgotPasswordModal', function () {
+        //         $('#forgotPasswordModal').removeClass('show');
+        //     });
 
-            // Close Modal when clicking outside the white card
-            $(document).off('click', '#forgotPasswordModal').on('click', '#forgotPasswordModal', function (e) {
-                if ($(e.target).is('#forgotPasswordModal')) {
-                    $('#forgotPasswordModal').removeClass('show');
-                }
-            });
-        });
+        //     // Close Modal when clicking outside the white card
+        //     $(document).off('click', '#forgotPasswordModal').on('click', '#forgotPasswordModal', function (e) {
+        //         if ($(e.target).is('#forgotPasswordModal')) {
+        //             $('#forgotPasswordModal').removeClass('show');
+        //         }
+        //     });
+        // });
 
         const vmessages = {
             requiredFields: '@V["RequiredFields"]',
@@ -310,6 +310,61 @@
                     }
                 });
             });
+        });
+
+        $(document).ready(function () {
+
+            $('#forgotPasswordBtn').on('click', function (e) {
+                e.preventDefault();
+
+                var inputVal = $('#username').val().trim();
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                // 1. Validation: Ensure user entered their email or username first
+                if (!inputVal) {
+                    var emptyMsg = "@V["EnterLoginUname"]";
+
+                    // Highlight input and show toastr error
+                    $('#username').focus().addClass('input-error');
+                    toastr.error(emptyMsg);
+                    return;
+                }
+
+                $('#username').removeClass('input-error');
+
+                // 2. Submit request to ForgotPassword endpoint
+                $.ajax({
+                    url: '/Home/ForgotPassword',
+                    type: 'POST',
+                    data: {
+                        email: inputVal,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (res) {
+                        if (res && res.redirectUrl) {
+                            window.location.href = res.redirectUrl;
+                        } else {
+                            window.location.href = '/Home/VerifyEmail?email=' + encodeURIComponent(inputVal);
+                        }
+                    },
+                    error: function (xhr) {
+                        var res = xhr.responseJSON;
+                        var errorMsg = serverErrorMessages["UnexpectedError"] || "An error occurred.";
+
+                        if (res) {
+                            var rawKey = (res.code && res.code.length > 0) ? res.code[0] :
+                                         (res.general && res.general.length > 0) ? res.general[0] : null;
+
+                            if (rawKey && serverErrorMessages[rawKey]) {
+                                errorMsg = serverErrorMessages[rawKey];
+                            }
+                        }
+
+                        toastr.error(errorMsg);
+                    }
+                });
+            });
+
         });
     </script>
 

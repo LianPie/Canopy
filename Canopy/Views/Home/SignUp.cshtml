@@ -66,7 +66,7 @@
                             </path>
                         </svg>
                     </div>
-                    <span class="label">@V["14_Accept"] <a href="/home/TermsOfService"> @V["15_terms"] </a></span>
+                    <span class="label">@V["14_Accept"] <a href="/home/TermsOfService" target="_blank"> @V["15_terms"] </a></span>
                 </label>
             </div>
             <span class="error-msg" id="termsError"></span>
@@ -277,8 +277,7 @@
                                 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                             },
                             success: function () {
-                                window.location.href = '/home/welcome';
-                            },
+                                window.location.href = '/home/VerifyEmail?email=' + encodeURIComponent($('#email').val().trim());                            },
                             error: function (xhr) {
                                 const errors = xhr.responseJSON;
                                 if (errors) {

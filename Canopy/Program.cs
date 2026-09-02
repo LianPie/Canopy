@@ -158,6 +158,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

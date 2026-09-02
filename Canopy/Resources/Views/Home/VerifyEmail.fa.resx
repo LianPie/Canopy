@@ -117,49 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="11_LoginUname" xml:space="preserve">
-    <value>ایمیل / نام کاربری</value>
+  <data name="VerifyEmailSubtitle" xml:space="preserve">
+    <value>کد تایید ۶ رقمی به این ایمیل ارسال شد:</value>
   </data>
-  <data name="12_LoginPass" xml:space="preserve">
-    <value>رمز عبور</value>
+  <data name="VerifyButton" xml:space="preserve">
+    <value>تایید ایمیل</value>
   </data>
-  <data name="13_RememberMe" xml:space="preserve">
-    <value>منو یادت بمونه!</value>
+  <data name="DidNotReceiveCode" xml:space="preserve">
+    <value>کد را دریافت نکردید؟</value>
   </data>
-  <data name="14_ForgotPassword" xml:space="preserve">
-    <value>یادم رفته :(</value>
+  <data name="ResendCode" xml:space="preserve">
+    <value>ارسال مجدد</value>
   </data>
-  <data name="15_NoAccount" xml:space="preserve">
-    <value>حساب کاربری نداری؟</value>
+  <data name="InvalidData" xml:space="preserve">
+    <value>اطلاعات کد تایید وارد شده معتبر نمی‌باشد.</value>
   </data>
-  <data name="16_SignUp" xml:space="preserve">
-    <value>ایجاد حساب کاربری</value>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>کاربری با این نشانی ایمیل یافت نشد.</value>
   </data>
-  <data name="17_InvalidCred" xml:space="preserve">
-    <value>نام کاربری یا پسورد اشتباهه!</value>
+  <data name="InvalidCode" xml:space="preserve">
+    <value>کد تایید وارد شده اشتباه است.</value>
   </data>
-  <data name="RequiredFields" xml:space="preserve">
-    <value>لطفاً نام کاربری و رمز عبور را وارد کنید</value>
+  <data name="CodeExpired" xml:space="preserve">
+    <value>کد تایید منقضی شده است. لطفاً کد جدیدی درخواست کنید.</value>
   </data>
-  <data name="Error400" xml:space="preserve">
-    <value>داده‌های ورودی نامعتبر است</value>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>خطایی رخ داد. لطفاً دوباره تلاش کنید.</value>
   </data>
-  <data name="Error403" xml:space="preserve">
-    <value>دسترسی به حساب رد شد</value>
+  <data name="CodeResent" xml:space="preserve">
+    <value>کد تایید جدید به ایمیل شما ارسال شد.</value>
   </data>
-  <data name="Error500" xml:space="preserve">
-    <value>خطای سرور. لطفاً بعداً دوباره تلاش کن!</value>
+  <data name="EmailSendFailed" xml:space="preserve">
+    <value>خطا در ارسال ایمیل. لطفاً بعداً دوباره تلاش کنید.</value>
   </data>
-  <data name="ErrorGeneric" xml:space="preserve">
-    <value>خطایی رخ داد. لطفاً دوباره تلاش کن!</value>
-  </data>
-  <data name="WorkingOnItTitle" xml:space="preserve">
-    <value>دارم روش کار میکنم</value>
-  </data>
-  <data name="WorkingOnIt" xml:space="preserve">
-    <value>اکانتت از دست رفت متاسفم</value>
-  </data>
-  <data name="EnterLoginUname" xml:space="preserve">
-    <value>لطفا ایمیل یا نام کاربری را وارد کنید</value>
+  <data name="Sending" xml:space="preserve">
+    <value>درحال ارسال</value>
   </data>
 </root>

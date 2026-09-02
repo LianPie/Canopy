@@ -192,4 +192,40 @@
   <data name="PasswordComplexity" xml:space="preserve">
     <value>رمز عبور باید حداقل ۸ کاراکتر و شامل حداقل یک حرف بزرگ و یک کاراکتر خاص (!@#$%^&amp;amp;*) باشد.&lt;/value&gt;</value>
   </data>
+	<data name="DeleteAccountLabel" xml:space="preserve">
+    <value>حذف حساب کاربری</value>
+  </data>
+	<data name="DeleteAccountTitle" xml:space="preserve">
+    <value>حذف حساب کاربری؟</value>
+  </data>
+	<data name="DeleteAccountWarning" xml:space="preserve">
+    <value>آیا از حذف دائمی حساب کاربری خود اطمینان دارید؟ این عملیات قابل بازگشت نیست. برای تأیید، یک کد تأیید به ایمیل شما ارسال خواهد شد.</value>
+  </data>
+	<data name="SendCodeButton" xml:space="preserve">
+    <value>ارسال کد تأیید</value>
+  </data>
+	<data name="VerifyCodeTitle" xml:space="preserve">
+    <value>تأیید حذف حساب کاربری</value>
+  </data>
+	<data name="VerifyCodeInstructions" xml:space="preserve">
+    <value>کد ۶ رقمی ارسال‌شده به ایمیل خود را برای حذف دائمی حساب کاربری وارد کنید.</value>
+  </data>
+	<data name="VerificationCodeLabel" xml:space="preserve">
+    <value>کد تأیید</value>
+  </data>
+	<data name="ConfirmDeleteButton" xml:space="preserve">
+    <value>حذف دائمی حساب</value>
+  </data>
+	<data name="AccountDeleted" xml:space="preserve">
+    <value>حساب کاربری شما با موفقیت حذف شد.</value>
+  </data>
+	<data name="InvalidCode" xml:space="preserve">
+    <value>کد تأیید واردشده اشتباه است.</value>
+  </data>
+	<data name="CodeExpired" xml:space="preserve">
+    <value>کد تأیید منقضی شده است. لطفاً دوباره درخواست دهید.</value>
+  </data>
+	<data name="CodeResent" xml:space="preserve">
+    <value>کد تأیید به ایمیل شما ارسال شد.</value>
+  </data>
 </root>

@@ -1,0 +1,225 @@
+﻿@model Canopy.Models.VerifyEmailViewModel
+@namespace Canopy.Resources
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+
+@inject IViewLocalizer V
+@inject IHtmlLocalizer<SharedResources> SR
+
+@section Head
+{
+    <link href="~/css/loginstyle.css" rel="stylesheet" />
+    <style>
+        .input-box {
+            margin-bottom: 8px;
+        }
+
+        .code-input {
+            letter-spacing: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .email-info-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #0f1b09;
+            margin-bottom: 18px;
+            padding: 0 10px;
+            line-height: 1.4;
+        }
+    </style>
+}
+
+<div class="login-container">
+    <form id="verifyForm" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="email" name="Email" value="@Model.Email" />
+
+        <div class="login-card">
+            <div class="avatar-container">
+                <div class="avatar-circle">
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+                </div>
+            </div>
+
+            <p class="email-info-text">
+                @V["VerifyEmailSubtitle"] <strong>@Model.Email</strong>
+            </p>
+
+            <div class="input-group">
+                <div class="input-box">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="text"
+                           id="code"
+                           name="Code"
+                           class="code-input"
+                           maxlength="6"
+                           placeholder="123456"
+                           autocomplete="off">
+                </div>
+                <span class="error-msg" id="codeError"></span>
+            </div>
+
+            <button type="button" class="login-btn" id="submitBtn">@V["VerifyButton"]</button>
+
+            <p class="switch-mode">
+                @V["DidNotReceiveCode"]
+                <a href="javascript:void(0);" id="resendCodeBtn">@V["ResendCode"]</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+    // Map controller error keys directly to localized strings from Razor
+    const serverErrorMessages = {
+        "InvalidData": "@V["InvalidData"]",
+        "UserNotFound": "@V["UserNotFound"]",
+        "InvalidCode": "@V["InvalidCode"]",
+        "CodeExpired": "@V["CodeExpired"]",
+        "ResendCode": "@V["ResendCode"]",
+        "Sending": "@V["Sending"]",
+        "CodeResent": "@V["CodeResent"]",
+        "EmailSendFailed": "@V["EmailSendFailed"]",
+        "UnexpectedError": "@V["UnexpectedError"]"
+    };
+
+    $(document).ready(function () {
+
+        function submitVerification() {
+            $('#codeError').text('').hide();
+
+            var email = $('#email').val();
+            var code = $('#code').val().trim();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            if (!code) {
+                $('#codeError').text(serverErrorMessages["InvalidData"]).show();
+                return;
+            }
+
+            $.ajax({
+                url: '/Home/VerifyEmail',
+                type: 'POST',
+                data: {
+                    Email: email,
+                    Code: code,
+                    __RequestVerificationToken: token
+                },
+                success: function (response) {
+                    if (response && response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        window.location.href = '/Home/Welcome';
+                    }
+                },
+                error: function (xhr) {
+                        var res = xhr.responseJSON;
+                        var errorText = serverErrorMessages["UnexpectedError"];
+
+                        if (res) {
+                            // Check camelCase "code" array (or fallback to "Code")
+                            var rawKey = (res.code && res.code.length > 0) ? res.code[0] :
+                                         (res.general && res.general.length > 0) ? res.general[0] :
+                                         (res.Code && res.Code.length > 0) ? res.Code[0] :
+                                         (res.General && res.General.length > 0) ? res.General[0] : null;
+
+                            if (rawKey && serverErrorMessages[rawKey]) {
+                                errorText = serverErrorMessages[rawKey];
+                            } else if (res.message) {
+                                errorText = res.message;
+                            }
+                        }
+
+                        // Display error via toastr
+                        toastr.error(errorText);
+                }
+            });
+        }
+
+        // Trigger on submit button click
+        $('#submitBtn').on('click', function (e) {
+            e.preventDefault();
+            submitVerification();
+        });
+
+        // Trigger on Enter key inside the code input
+        $('#code').on('keypress', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                submitVerification();
+            }
+        });
+    });
+
+        $(document).ready(function () {
+
+            $('#resendCodeBtn').on('click', function (e) {
+                e.preventDefault();
+
+                var $btn = $(this);
+                var email = $('#email').val(); // Reads from <input type="hidden" id="email" ... />
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                if ($btn.hasClass('disabled')) {
+                    return;
+                }
+
+                // Temporarily disable the link
+                $btn.addClass('disabled').css('pointer-events', 'none');
+
+                $.ajax({
+                    url: '/api/account/sendCode',
+                    type: 'GET',
+                    data: {
+                        email: email,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (res) {
+                        var successMsg = serverErrorMessages["CodeResent"] || "Verification code sent!";
+                        toastr.success(successMsg);
+                        startResendCountdown(60);
+                    },
+                    error: function (xhr) {
+                        var res = xhr.responseJSON;
+                        var errorMsg = serverErrorMessages["UnexpectedError"];
+
+                        if (res) {
+                            var rawKey = (res.code && res.code.length > 0) ? res.code[0] :
+                                         (res.general && res.general.length > 0) ? res.general[0] : null;
+
+                            if (rawKey && serverErrorMessages[rawKey]) {
+                                errorMsg = serverErrorMessages[rawKey];
+                            }
+                        }
+
+                        toastr.error(errorMsg);
+                        $btn.removeClass('disabled').css('pointer-events', 'auto');
+                    }
+                });
+            });
+
+            function startResendCountdown(seconds) {
+                var $btn = $('#resendCodeBtn');
+                var originalText = "@V["ResendCode"]";
+                var remaining = seconds;
+
+                var interval = setInterval(function () {
+                    $btn.text(originalText + ' (' + remaining + 's)');
+                    remaining--;
+
+                    if (remaining < 0) {
+                        clearInterval(interval);
+                        $btn.text(originalText)
+                            .removeClass('disabled')
+                            .css('pointer-events', 'auto');
+                    }
+                }, 1000);
+            }
+
+        });
+</script>
+}

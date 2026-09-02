@@ -192,4 +192,40 @@
   <data name="PasswordComplexity" xml:space="preserve">
     <value>Password must be at least 8 characters long and contain at least one uppercase letter and one special character (!@#$%^&amp;amp;*).&lt;/value&gt;</value>
   </data>
+	<data name="DeleteAccountLabel" xml:space="preserve">
+    <value>Delete Account</value>
+  </data>
+	<data name="DeleteAccountTitle" xml:space="preserve">
+    <value>Delete Account?</value>
+  </data>
+	<data name="DeleteAccountWarning" xml:space="preserve">
+    <value>Are you sure you want to permanently delete your account? This action cannot be undone. We will send a verification code to your email to confirm.</value>
+  </data>
+	<data name="SendCodeButton" xml:space="preserve">
+    <value>Send Verification Code</value>
+  </data>
+	<data name="VerifyCodeTitle" xml:space="preserve">
+    <value>Confirm Account Deletion</value>
+  </data>
+	<data name="VerifyCodeInstructions" xml:space="preserve">
+    <value>Enter the 6-digit code sent to your email to permanently delete your account.</value>
+  </data>
+	<data name="VerificationCodeLabel" xml:space="preserve">
+    <value>Verification Code</value>
+  </data>
+	<data name="ConfirmDeleteButton" xml:space="preserve">
+    <value>Delete Account Permanently</value>
+  </data>
+	<data name="AccountDeleted" xml:space="preserve">
+    <value>Your account has been deleted successfully.</value>
+  </data>
+	<data name="InvalidCode" xml:space="preserve">
+    <value>The verification code you entered is invalid.</value>
+  </data>
+	<data name="CodeExpired" xml:space="preserve">
+    <value>The verification code has expired. Please request a new one.</value>
+  </data>
+	<data name="CodeResent" xml:space="preserve">
+    <value>A verification code has been sent to your email.</value>
+  </data>
 </root>
