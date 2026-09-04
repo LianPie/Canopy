@@ -1,8 +1,11 @@
 ﻿@model Canopy.Models.ChatRoomViewModel
 @using Microsoft.AspNetCore.Mvc.Localization
-
+@using Microsoft.AspNetCore.Localization
 
 @inject IViewLocalizer _localizer
+@{
+    var isRTL = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name == "fa";
+}
 <style>
     /* ── Light mode ───────────────────────── */
     .chatroom-container {
@@ -283,26 +286,30 @@
         border-radius: 20px;
     }
 
-    /* RTL layout padding adjustment */
-    [dir="rtl"] .chat-input {
+    /* RTL layout */
+    .chatroom-rtl .chat-input {
         padding-right: 16px !important;
         padding-left: 78px !important;
+    }
+    .chatroom-rtl .chat-input-actions {
+        right: auto !important;
+        left: 6px !important;
+    }
+    .chatroom-rtl .chatroom-input-bar {
+        flex-direction: row-reverse;
     }
 
     /* Absolute action container inside the textbox */
     .chat-input-actions {
         position: absolute;
         right: 6px;
+        left: auto;
         bottom: 5px;
         display: flex;
         align-items: center;
         gap: 6px;
     }
 
-    [dir="rtl"] .chat-input-actions {
-        right: auto;
-        left: 6px;
-    }
 
     /* Embedded Send Button */
     .chat-send-inside-btn {
@@ -334,6 +341,130 @@
         line-height: 1;
     }
 
+    /* ── File preview tray ───────────────────────── */
+    .chat-file-preview-tray {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: var(--chat-bg);
+        border-top: 1px solid var(--chat-header-border);
+        animation: fadeSlideUp 0.2s ease;
+    }
+    .chat-file-preview-tray.active { display: flex; }
+
+    @@keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-preview-thumb {
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .chat-preview-file-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        background: rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.6rem;
+        color: var(--chat-icon-color);
+    }
+    .chat-preview-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .chat-preview-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--chat-input-text);
+    }
+    .chat-preview-size {
+        font-size: 0.75rem;
+        color: var(--chat-meta-color);
+        margin-top: 2px;
+    }
+    .chat-preview-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .chat-preview-cancel {
+        width: 32px; height: 32px; border-radius: 50%; border: none;
+        background: rgba(0,0,0,0.08); color: var(--chat-icon-color);
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        transition: background 0.15s;
+    }
+    .chat-preview-cancel:hover { background: rgba(0,0,0,0.16); }
+    .chat-preview-send {
+        width: 36px; height: 36px; border-radius: 50%; border: none;
+        background: var(--chat-bubble-own-bg); color: #fff;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        transition: opacity 0.15s;
+    }
+    .chat-preview-send:hover { opacity: 0.85; }
+
+    /* ── Upload progress (shown after send clicked) ───────────────────────── */
+    .chat-upload-progress {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--chat-bg);
+        border-top: 1px solid var(--chat-header-border);
+        font-size: 0.8rem;
+        color: var(--chat-meta-color);
+    }
+    .chat-upload-progress.active { display: flex; }
+    .chat-upload-bar {
+        flex: 1; height: 3px; border-radius: 2px;
+        background: var(--chat-input-border); overflow: hidden;
+    }
+    .chat-upload-bar-fill {
+        height: 100%; width: 0%;
+        background: var(--chat-bubble-own-bg); transition: width 0.2s;
+    }
+
+    /* ── Attachment bubbles ───────────────────────── */
+    .chat-attachment-img {
+        width: 200px;
+        height: 200px;
+        border-radius: 12px;
+        display: block;
+        cursor: pointer;
+        object-fit: cover;
+    }
+    @@media (max-width: 576px) {
+        .chat-attachment-img {
+            width: 160px;
+            height: 160px;
+        }
+    }
+    .chat-attachment-file {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: rgba(0,0,0,0.06);
+        border-radius: 10px;
+        text-decoration: none;
+        color: inherit;
+        font-size: 0.85rem;
+        max-width: 200px;
+    }
+    .chat-attachment-file span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .chat-attachment-file i { font-size: 1.4rem; flex-shrink: 0; }
+
     /* Mobile responsive sizing */
     @@media (max-width: 576px) {
         .chat-char-counter {
@@ -351,15 +482,42 @@
             font-size: 0.88rem;
         }
 
-        [dir="rtl"] .chat-input {
+        .chatroom-rtl .chat-input {
+            padding-right: 16px !important;
             padding-left: 68px !important;
         }
     }
 </style>
-<div class="chatroom-container"
+<input type="file" id="chatFileInput" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,video/mp4,video/webm,audio/mpeg,audio/ogg,audio/wav,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" style="display:none" />
+
+<div class="chatroom-container @(isRTL ? "chatroom-rtl" : "")"
      data-chat-id="@Model.ChatId"
      data-group-id="@Model.GroupId"
      data-current-user-id="@Model.CurrentUserId">
+
+    <!-- File preview tray (shown after picking, before sending) -->
+    <div class="chat-file-preview-tray" id="chatFileTray">
+        <div id="chatPreviewThumbWrap"></div>
+        <div class="chat-preview-info">
+            <div class="chat-preview-name" id="chatPreviewName"></div>
+            <div class="chat-preview-size" id="chatPreviewSize"></div>
+        </div>
+        <div class="chat-preview-actions">
+            <button class="chat-preview-cancel" id="chatPreviewCancel" title="Cancel">
+                <i class="ki-outline ki-cross fs-4"></i>
+            </button>
+            <button class="chat-preview-send" id="chatPreviewSend" title="Send">
+                <i class="ki-outline ki-send fs-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Upload progress (shown after send clicked) -->
+    <div class="chat-upload-progress" id="chatUploadProgress">
+        <span id="chatUploadName" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <div class="chat-upload-bar"><div class="chat-upload-bar-fill" id="chatUploadBarFill"></div></div>
+        <span id="chatUploadPct">0%</span>
+    </div>
 
     <div class="chatroom-input-bar">
         <button type="button" class="chat-icon-btn" id="chatAttachBtn" title="@_localizer["Attach"]">
@@ -422,7 +580,24 @@
                         <div class="chat-sender-name">@msg.UserName</div>
                     }
                     <div class="chat-bubble">
-                        <span class="chat-bubble-text">@msg.Text</span>
+                        @if (!string.IsNullOrEmpty(msg.Text))
+                        {
+                            <span class="chat-bubble-text">@msg.Text</span>
+                        }
+                        @foreach (var att in msg.Attachments)
+                        {
+                            if (att.MimeType != null && att.MimeType.StartsWith("image/"))
+                            {
+                                <img src="@att.Url" class="chat-attachment-img" onclick="window.open('@att.Url')" alt="@att.Name" />
+                            }
+                            else
+                            {
+                                <a href="@att.Url" download="@att.Name" class="chat-attachment-file" target="_blank">
+                                    <i class="ki-outline ki-document fs-2"></i>
+                                    <span>@att.Name</span>
+                                </a>
+                            }
+                        }
                     </div>
                     <div class="chat-bubble-meta">
                         @msg.DateCreated.ToString("HH:mm")
@@ -437,25 +612,90 @@
     </div>
 </div>
 <script>
-    let chatConnectionReady = null; // پرامیس اتصال، برای هماهنگی با join
+    let chatConnectionReady = null;
+
+    // Attach button → open file picker
     $(document).off('click', '#chatAttachBtn').on('click', '#chatAttachBtn', function (e) {
         e.preventDefault();
-
-        let $btn = $(this);
-
-        // Read current click count from element data, or default to 0
-        let clicks = ($btn.data('click-count') || 0) + 1;
-        $btn.data('click-count', clicks);
-
-        // Trigger modal on the second click and onwards
-        if (clicks > 1) {
-            var modalEl = document.getElementById('workingOnItModal');
-            if (modalEl) {
-                var modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-                modalInstance.show();
-            }
-        }
+        document.getElementById('chatFileInput').click();
     });
+
+    // File selected → validate → show preview tray
+    let pendingUploadFile = null;
+
+    const ALLOWED_TYPES = new Set([
+        'image/jpeg','image/png','image/gif','image/webp','image/svg+xml',
+        'video/mp4','video/webm',
+        'audio/mpeg','audio/ogg','audio/wav',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+        'application/zip','application/x-zip-compressed'
+    ]);
+    const MAX_SIZE_MB = 20;
+
+    $('#chatFileInput').off('change').on('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        this.value = '';
+
+        if (!ALLOWED_TYPES.has(file.type)) {
+            toastr.error('@_localizer["FileTypeNotAllowed"]');
+            return;
+        }
+        if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+            toastr.error('@_localizer["FileTooLarge"]');
+            return;
+        }
+
+        pendingUploadFile = file;
+        showFileTray(file);
+    });
+
+    function showFileTray(file) {
+        const isImage = file.type.startsWith('image/');
+        const $thumbWrap = $('#chatPreviewThumbWrap');
+
+        if (isImage) {
+            const url = URL.createObjectURL(file);
+            $thumbWrap.html(`<img src="${url}" class="chat-preview-thumb" />`);
+        } else {
+            $thumbWrap.html(`<div class="chat-preview-file-icon"><i class="ki-outline ki-document"></i></div>`);
+        }
+
+        $('#chatPreviewName').text(file.name);
+        $('#chatPreviewSize').text(formatBytes(file.size));
+        $('#chatFileTray').addClass('active');
+    }
+
+    function hideFileTray() {
+        $('#chatFileTray').removeClass('active');
+        $('#chatPreviewThumbWrap').html('');
+        pendingUploadFile = null;
+    }
+
+    // Cancel
+    $(document).off('click', '#chatPreviewCancel').on('click', '#chatPreviewCancel', function () {
+        hideFileTray();
+    });
+
+    // Send
+    $(document).off('click', '#chatPreviewSend').on('click', '#chatPreviewSend', function () {
+        if (!pendingUploadFile) return;
+        const chatId = parseInt($('.chatroom-container').data('chat-id'));
+        const file = pendingUploadFile;
+        hideFileTray();
+        uploadChatFile(chatId, file);
+    });
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
     function initChatRoom() {
         const $container = $('.chatroom-container');
         const chatId = parseInt($container.data('chat-id'));
@@ -553,6 +793,49 @@
     
 
 
+    function uploadChatFile(chatId, file) {
+        const $progress = $('#chatUploadProgress');
+        const $fill     = $('#chatUploadBarFill');
+        const $pct      = $('#chatUploadPct');
+        const $name     = $('#chatUploadName');
+
+        $name.text(file.name);
+        $fill.css('width', '0%');
+        $pct.text('0%');
+        $progress.addClass('active');
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `/api/Chats/${chatId}/upload`);
+
+        xhr.upload.onprogress = function (e) {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 100);
+                $fill.css('width', pct + '%');
+                $pct.text(pct + '%');
+            }
+        };
+
+        xhr.onload = function () {
+            $progress.removeClass('active');
+            if (xhr.status !== 200) {
+                toastr.error('Upload failed');
+            }
+            // ReceiveMessage via SignalR will render the bubble automatically
+        };
+
+        xhr.onerror = function () {
+            $progress.removeClass('active');
+            toastr.error('Upload failed');
+        };
+
+        // Add auth cookie (sent automatically with credentials)
+        xhr.withCredentials = true;
+        xhr.send(formData);
+    }
+
     function sendChatMessage(chatId) {
         const $input = $('#chatMessageInput');
         const text = $input.val().trim();
@@ -602,7 +885,20 @@
             lastRenderedDateString = dateKey;
         }
 
-        const safeText = $('<div>').text(text).html();
+        const safeText = text ? $('<div>').text(text).html() : '';
+        const attachments = msg.attachments || msg.Attachments || [];
+        const attachmentHtml = attachments.map(a => {
+            const mime = a.mimeType || a.MimeType || '';
+            const url  = a.url || a.Url || '';
+            const name = a.name || a.Name || 'file';
+            if (mime.startsWith('image/')) {
+                return `<img src="${url}" class="chat-attachment-img" onclick="window.open('${url}')" alt="${name}" />`;
+            }
+            return `<a href="${url}" download="${name}" class="chat-attachment-file" target="_blank">
+                        <i class="ki-outline ki-document fs-2"></i>
+                        <span>${name}</span>
+                    </a>`;
+        }).join('');
 
        const html = `
         <div class="chat-bubble-row ${isOwn ? 'own' : 'other'}" data-message-id="${msg.id || msg.Id}">
@@ -611,7 +907,10 @@
             </div>
             <div class="chat-content-wrapper">
                 ${!isOwn ? `<div class="chat-sender-name">${senderName}</div>` : ''}
-                <div class="chat-bubble"><span class="chat-bubble-text">${safeText}</span></div>
+                <div class="chat-bubble">
+                    ${safeText ? `<span class="chat-bubble-text">${safeText}</span>` : ''}
+                    ${attachmentHtml}
+                </div>
                 <div class="chat-bubble-meta">
                     ${time}
                     ${isOwn ? '<span class="chat-delivered" title="@_localizer["Delivered"]">✓✓</span>' : ''}

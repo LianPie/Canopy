@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
+using Canopy.Hubs;
 using Canopy.Models;
 using Canopy.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Canopy.Controllers
 {
@@ -12,10 +14,14 @@ namespace Canopy.Controllers
     public class ChatsController : ControllerBase
     {
         private readonly IChatService _chatService;
+        private readonly IHubContext<ChatHub> _chatHub;
+        private readonly IWebHostEnvironment _env;
 
-        public ChatsController(IChatService chatService)
+        public ChatsController(IChatService chatService, IHubContext<ChatHub> chatHub, IWebHostEnvironment env)
         {
             _chatService = chatService;
+            _chatHub = chatHub;
+            _env = env;
         }
 
         [HttpGet]
@@ -72,6 +78,46 @@ namespace Canopy.Controllers
             await _chatService.MarkMessageAsSeenAsync(messageId, userId, chatId);
             return NoContent();
         }
+        [HttpPost("{chatId}/upload")]
+        [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
+        public async Task<IActionResult> UploadFile(int chatId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file provided.");
+
+            if (file.Length > 20 * 1024 * 1024)
+                return BadRequest("File too large. Max 20 MB.");
+
+            var allowedTypes = new HashSet<string>
+            {
+                "image/jpeg","image/png","image/gif","image/webp","image/svg+xml",
+                "video/mp4","video/webm",
+                "audio/mpeg","audio/ogg","audio/wav",
+                "application/pdf",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "text/plain",
+                "application/zip","application/x-zip-compressed"
+            };
+            if (!allowedTypes.Contains(file.ContentType.ToLower()))
+                return BadRequest("File type not allowed.");
+
+            var userId = GetUserId();
+
+            try
+            {
+                var dto = await _chatService.SendFileAsync(chatId, userId, file, _env.WebRootPath);
+                await _chatHub.Clients.Group($"chat-{chatId}").SendAsync("ReceiveMessage", dto);
+                return Ok(dto);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
+            }
+        }
+
         private int GetUserId()
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier);

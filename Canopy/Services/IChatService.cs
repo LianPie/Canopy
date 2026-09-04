@@ -1,4 +1,5 @@
 ﻿using Canopy.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Canopy.Services
 {
@@ -10,6 +11,7 @@ namespace Canopy.Services
         Task MarkMessageAsSeenAsync(int messageId, int userId, int chatId);
         Task<List<MessageDto>> GetMessagesAsync(int chatId, int skip = 0, int take = 50);
         Task<Chat> GetOrCreateChatForGroupAsync(int groupId);
+        Task<MessageDto> SendFileAsync(int chatId, int userId, IFormFile file, string uploadRoot);
 
 
     }

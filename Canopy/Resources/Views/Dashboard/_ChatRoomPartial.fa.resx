@@ -135,4 +135,10 @@
   <data name="Today" xml:space="preserve">
     <value>امروز</value>
   </data>
+  <data name="FileTypeNotAllowed" xml:space="preserve">
+    <value>نوع فایل مجاز نیست. فرمت‌های مجاز: تصویر، ویدیو، صوت، PDF، Word، Excel، TXT، ZIP.</value>
+  </data>
+  <data name="FileTooLarge" xml:space="preserve">
+    <value>فایل بیش از حد بزرگ است. حداکثر ۲۰ مگابایت.</value>
+  </data>
 </root>

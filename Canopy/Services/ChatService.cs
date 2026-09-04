@@ -1,5 +1,6 @@
 ﻿using Canopy.Models;
 using Canopy.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace Canopy.Services
 {
@@ -84,6 +85,57 @@ namespace Canopy.Services
                 return dto;
             }).ToList();
         }
+        public async Task<MessageDto> SendFileAsync(int chatId, int userId, IFormFile file, string uploadRoot)
+        {
+            if (!await IsUserMemberOfChatAsync(chatId, userId))
+                throw new UnauthorizedAccessException("User is not a member of this chat.");
+
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var storedName = $"{Guid.NewGuid()}{ext}";
+            var dir = Path.Combine(uploadRoot, "uploads", "chat");
+            Directory.CreateDirectory(dir);
+            var fullPath = Path.Combine(dir, storedName);
+
+            using (var stream = File.Create(fullPath))
+                await file.CopyToAsync(stream);
+
+            var mimeType = file.ContentType;
+            var type = mimeType.StartsWith("image/") ? "image"
+                     : mimeType.StartsWith("video/") ? "video"
+                     : mimeType.StartsWith("audio/") ? "audio"
+                     : "document";
+
+            var message = new Message
+            {
+                ChatId = chatId,
+                UserId = userId,
+                Text = null,
+                Type = type,
+                DateCreated = DateTime.Now,
+                MessageAttachments = new List<MessageAttachment>
+                {
+                    new MessageAttachment
+                    {
+                        FilePath = storedName,
+                        Name = file.FileName,
+                        Size = file.Length.ToString(),
+                        MimeType = mimeType,
+                        DateUploaded = DateTime.Now
+                    }
+                }
+            };
+
+            await _messagesRepo.CreateAsync(message);
+            var dto = MessageDto.FromEntity(message);
+
+            var chat = await _chatsRepo.GetByIdAsync(chatId);
+            var memberIds = _groupsRepo.GetMembers(chat!.GroupId, userId);
+            var recipients = memberIds.Where(x => x.UserId != userId).Select(x => x.UserId).ToList();
+            await _notificationService.NotifyNewMessageAsync(chatId, dto, recipients);
+
+            return dto;
+        }
+
         public async Task<Chat> GetOrCreateChatForGroupAsync(int groupId)
         {
             var chat = await _chatsRepo.GetByGroupIdAsync(groupId);

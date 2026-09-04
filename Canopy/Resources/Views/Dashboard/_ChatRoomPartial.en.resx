@@ -135,4 +135,10 @@
   <data name="Today" xml:space="preserve">
     <value>Today</value>
   </data>
+  <data name="FileTypeNotAllowed" xml:space="preserve">
+    <value>File type not allowed. Allowed: images, video, audio, PDF, Word, Excel, TXT, ZIP.</value>
+  </data>
+  <data name="FileTooLarge" xml:space="preserve">
+    <value>File is too large. Maximum size is 20 MB.</value>
+  </data>
 </root>

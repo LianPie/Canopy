@@ -1,5 +1,14 @@
 ﻿namespace Canopy.Models
 {
+    public class AttachmentDto
+    {
+        public int Id { get; set; }
+        public string Url { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string? MimeType { get; set; }
+        public string? Size { get; set; }
+    }
+
     public class MessageDto
     {
         public int Id { get; set; }
@@ -10,6 +19,7 @@
         public string? Text { get; set; }
         public string Type { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }
+        public List<AttachmentDto> Attachments { get; set; } = new();
 
         public static MessageDto FromEntity(Message m) => new()
         {
@@ -20,10 +30,16 @@
             ImageUrl = m.User?.ImageUrl,
             Text = m.Text,
             Type = m.Type,
-            DateCreated = m.DateCreated
+            DateCreated = m.DateCreated,
+            Attachments = m.MessageAttachments.Select(a => new AttachmentDto
+            {
+                Id = a.Id,
+                Url = "/uploads/chat/" + a.FilePath,
+                Name = a.Name,
+                MimeType = a.MimeType,
+                Size = a.Size
+            }).ToList()
         };
-
-
     }
     public class SendMessageRequest
     {

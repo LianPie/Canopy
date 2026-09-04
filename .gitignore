@@ -365,3 +365,4 @@ FodyWeavers.xsd
 Canopy/appsettings.json
 /migration.sql
 /Canopy/migration.sql
+/Canopy/wwwroot/uploads/chat
