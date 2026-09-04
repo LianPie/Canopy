@@ -171,4 +171,19 @@
   <data name="NotifNewMessage" xml:space="preserve">
     <value>{0} پیام جدیدی فرستاد</value>
   </data>
+  <data name="NotifDailyReminder" xml:space="preserve">
+    <value>یادآوری روزانه تسک: شما {0} تسک برای امروز دارید</value>
+  </data>
+  <data name="NotifDailyCheckIn" xml:space="preserve">
+    <value>صبح بخیر! وقتشه یه نگاهی به برنامه امروزت بنداری :)</value>
+  </data>
+  <data name="NotifDailyReminderNoTasks" xml:space="preserve">
+    <value>صبح بخیر! امروز هیچ تسکی ندارید</value>
+  </data>
+  <data name="NotifDailyReminderTasksList" xml:space="preserve">
+    <value>تسک های امروز شما: {0}</value>
+  </data>
+  <data name="NotifDailyRecurringTask" xml:space="preserve">
+    <value>تسک تکراری: {0}</value>
+  </data>
 </root>

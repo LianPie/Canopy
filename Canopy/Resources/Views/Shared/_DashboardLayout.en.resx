@@ -171,4 +171,19 @@
   <data name="NotifNewMessage" xml:space="preserve">
     <value>{0} Sent a new message</value>
   </data>
+  <data name="NotifDailyReminder" xml:space="preserve">
+    <value>Daily Task Reminder: You have {0} task(s) for today</value>
+  </data>
+  <data name="NotifDailyCheckIn" xml:space="preserve">
+    <value>Good morning! Time to check in for today:)</value>
+  </data>
+  <data name="NotifDailyReminderNoTasks" xml:space="preserve">
+    <value>Good morning! No tasks due today</value>
+  </data>
+  <data name="NotifDailyReminderTasksList" xml:space="preserve">
+    <value>Your tasks for today: {0}</value>
+  </data>
+  <data name="NotifDailyRecurringTask" xml:space="preserve">
+    <value>Recurring task due: {0}</value>
+  </data>
 </root>

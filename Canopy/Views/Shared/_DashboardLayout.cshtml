@@ -791,6 +791,8 @@
                 taskAssigned = V["NotifTaskAssigned"].Value,
                 projectAssigned = V["NotifProjectAssigned"].Value,
                 NewMessage = V["NotifNewMessage"].Value,
+                DailyReminder = V["NotifDailyReminder"].Value,
+                DailyCheckIn = V["NotifDailyCheckIn"].Value,
                 fallback = V["NotifFallback"].Value,
                 empty = V["NotifEmpty"].Value
             }));
@@ -955,6 +957,14 @@
             case 5:
             case "NewMessage":
             return fmt(LN.NewMessage, `<b>${p.senderName}</b>`);
+
+            case 6:
+            case "DailyReminder":
+            return fmt(LN.DailyReminder, `<b>${p.taskCount}</b>`);
+
+            case 7:
+            case "DailyCheckIn":
+            return fmt(LN.DailyCheckIn);
 
             default:
             return LN.fallback;

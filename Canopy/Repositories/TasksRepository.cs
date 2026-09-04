@@ -116,7 +116,14 @@ namespace Canopy.Repositories
 
             return (items, hasMore);
         }
-
+        public List<int> GetAllUserIdsWithTasks()
+        {
+            return _ctx.PlannedTask
+                .Where(t => !t.Status && t.AssignedToUID > 0)
+                .Select(t => t.AssignedToUID)
+                .Distinct()
+                .ToList();
+        }
 
         public PlannedTask? GetByIdForUser(int id, int userId)
         {

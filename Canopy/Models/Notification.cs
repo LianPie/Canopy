@@ -18,5 +18,7 @@ public enum NotificationType
     GroupInvitationDeclined = 2,
     TaskAssigned = 3,
     ProjectAssigned = 4,
-    NewMessage = 5
+    NewMessage = 5,
+    DailyReminder = 6,
+    DailyCheckIn = 7
 }

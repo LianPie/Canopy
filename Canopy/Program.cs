@@ -163,6 +163,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IMessageEncryptionService, MessageEncryptionService>();
+builder.Services.AddScoped<ITaskReminderService, TaskReminderService>();
+
+builder.Services.AddHostedService<DailyReminderBackgroundService>();
 
 
 builder.Services.AddSwaggerGen();

@@ -11,6 +11,7 @@ namespace Canopy.Repositories
         List<PlannedTask> Getreaccuring(int userId);
         List<PlannedTask> GetreaccuringforToday(int userId);
         DashboardViewData GetDashboardStats(int userId);
+        List<int> GetAllUserIdsWithTasks();
         PlannedTask? GetByIdForUser(int id, int userId);
         PlannedTask? GetAssignedByIdForUser(int id, int userId);
         (List<PlannedTask> Items, bool HasMore) GetPage(bool? isOverdue, int userId, int page, int pageSize);
