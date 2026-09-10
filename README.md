@@ -115,10 +115,14 @@ The API handles authentication, business logic, and data management while the fr
 - [x] User management
 - [x] Groups and projects
 - [x] Task management
-- [ ] Real-time chat
-- [ ] Calendar system
+- [x] Real-time chat
+- [x] Reminders
+- [x] Email Verification 
+- [x] Calendar system
+- [x] Dashboard analytics
 - [ ] Mindmap planning tools
-- [ ] Dashboard analytics
+- [ ] Mobile App
+- [ ] Group board
 
 ## Status
 Canopy is actively being developed and new features are continuously being added.
