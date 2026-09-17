@@ -36,9 +36,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     else
         options.UseSqlServer(sqlConn);
 });
+var keysPath = Environment.GetEnvironmentVariable("DATAPROTECTION_KEYS_PATH")
+    ?? @"C:\CanopyKeys";
 builder.Services.AddDataProtection()
     .SetApplicationName("Canopy")
-    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\CanopyKeys"));
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath));
 
 
 // Register repository
