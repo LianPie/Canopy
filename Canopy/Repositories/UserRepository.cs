@@ -52,10 +52,81 @@ namespace Canopy.Repositories
                 return user;
             }
 
-            public async void DeleteAsync(User user)
+            public async Task DeleteAsync(User user)
             {
+                // Transfer ownership of groups created by this user to the oldest other active member
+                var ownedGroups = await _ctx.Group
+                    .Where(g => g.CreatorId == user.Id)
+                    .ToListAsync();
+
+                foreach (var group in ownedGroups)
+                {
+                    var newOwner = await _ctx.UserGroup
+                        .Where(ug => ug.GroupId == group.Id && ug.UserId != user.Id && ug.IsActive)
+                        .OrderBy(ug => ug.JoinedDate)
+                        .Select(ug => ug.UserId)
+                        .FirstOrDefaultAsync();
+
+                    if (newOwner != 0)
+                        group.CreatorId = newOwner;
+                    else
+                        _ctx.Group.Remove(group); // no other members — delete the group
+                }
+
+                // Transfer ownership of projects created by this user to the oldest other active member
+                var ownedProjects = await _ctx.Projects
+                    .Where(p => p.CreatorId == user.Id)
+                    .ToListAsync();
+
+                foreach (var project in ownedProjects)
+                {
+                    var newOwner = await _ctx.ProjectMember
+                        .Where(pm => pm.ProjectId == project.Id && pm.UserId != user.Id && pm.IsActive)
+                        .OrderBy(pm => pm.AddedDate)
+                        .Select(pm => pm.UserId)
+                        .FirstOrDefaultAsync();
+
+                    if (newOwner != 0)
+                        project.CreatorId = newOwner;
+                    else
+                        _ctx.Projects.Remove(project); // no other members — delete the project
+                }
+
+                // Delete tasks created by this user
+                var createdTasks = await _ctx.PlannedTask
+                    .Where(t => t.CreatorId == user.Id)
+                    .ToListAsync();
+
+                _ctx.PlannedTask.RemoveRange(createdTasks);
+
+                // Reassign remaining tasks assigned to this user back to their creator
+                var assignedTasks = await _ctx.PlannedTask
+                    .Where(t => t.AssignedToUID == user.Id && t.CreatorId != user.Id)
+                    .ToListAsync();
+
+                foreach (var task in assignedTasks)
+                    task.AssignedToUID = task.CreatorId;
+
+                // Fix UserGroup rows where this user was the inviter — point InvitedBy to the member themselves
+                var invitedByUser = await _ctx.UserGroup
+                    .Where(ug => ug.InvitedById == user.Id && ug.UserId != user.Id)
+                    .ToListAsync();
+
+                foreach (var ug in invitedByUser)
+                    ug.InvitedById = ug.UserId;
+
+                await _ctx.SaveChangesAsync();
+
+                // Explicitly remove this user's own group memberships so EF doesn't try to in-memory cascade
+                var userMemberships = await _ctx.UserGroup
+                    .Where(ug => ug.UserId == user.Id)
+                    .ToListAsync();
+
+                _ctx.UserGroup.RemoveRange(userMemberships);
+                await _ctx.SaveChangesAsync();
+
                 _ctx.Users.Remove(user);
-                _ctx.SaveChanges();
+                await _ctx.SaveChangesAsync();
             }
 
 

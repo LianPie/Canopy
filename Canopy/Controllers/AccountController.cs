@@ -263,7 +263,7 @@ namespace Canopy.Controllers
                 return BadRequest(new { code = new[] { "CodeExpired" } });
             }
 
-            _repo.DeleteAsync(user);
+            await _repo.DeleteAsync(user);
 
             Response.Cookies.Delete("access_token");
             Response.Cookies.Delete("session_type");
