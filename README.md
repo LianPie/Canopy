@@ -39,16 +39,16 @@ The goal of Canopy is to provide a flexible workspace where teams can plan, trac
 ## Screenshots
 
 ### Dashboard
-![Canopy Dashboard](Screenshots/dashboard.png)
+![Canopy login](Screenshots/picture2.png)
 
 ### Project Management
-![Canopy Project Management](Screenshots/projects.png)
+![Canopy Project Management](Screenshots/picture4.png)
 
 ### Calendar
-![Canopy Calendar](Screenshots/calendar.png)
+![Canopy Calendar](Screenshots/picture3.png)
 
 ### Group Chat
-![Canopy Group Chat](Screenshots/chat.png)
+![Canopy profile](Screenshots/picture5.png)
 
 
 
