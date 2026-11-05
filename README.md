@@ -27,20 +27,30 @@ The goal of Canopy is to provide a flexible workspace where teams can plan, trac
 - Task status tracking
 - Multi-language support (Persian & English)
 - Database management using Entity Framework Core
-
-### In Development
-
 - Real-time group chat using SignalR
-- Calendar and scheduling features
-- Mindmap-based project planning
 - Dashboard with project and task statistics
 - User profile management
 
+### In Development
+
+- Calendar and scheduling features
+- Mindmap-based project planning
+
 ## Screenshots
 
-_Coming soon_
+### Dashboard
+![Canopy Dashboard](Screenshots/dashboard.png)
 
-Dashboard and application screenshots will be added after completing the main UI components.
+### Project Management
+![Canopy Project Management](Screenshots/projects.png)
+
+### Calendar
+![Canopy Calendar](Screenshots/calendar.png)
+
+### Group Chat
+![Canopy Group Chat](Screenshots/chat.png)
+
+
 
 ## Tech Stack
 
@@ -68,20 +78,20 @@ Dashboard and application screenshots will be added after completing the main UI
 ## Architecture
 
 Canopy follows a client-server architecture:
-```text
-Frontend
-    |
-    |
-ASP.NET Core API
-    |
-    |
-Entity Framework Core
-    |
-    |
-SQL Server
-```
 
-The API handles authentication, business logic, and data management while the frontend focuses on user interaction and application experience.
+flowchart TD
+    A["Frontend<br/>Bootstrap · Metronic · jQuery"]
+    B["ASP.NET Core Web API<br/>Authentication · Business Logic · REST Endpoints"]
+    C["Entity Framework Core<br/>Data Access · ORM"]
+    D[("SQL Server<br/>Database")]
+
+    A <-->|"HTTP Requests / Responses"| B
+    B <--> C
+    C <--> D
+
+Canopy uses a client-server architecture in which the frontend communicates with an ASP.NET Core Web API through HTTP requests.
+
+The API handles authentication, application logic, and RESTful endpoints. Entity Framework Core manages data access and database operations, with SQL Server serving as the application's persistent data store.
 
 ## Running the Project
 
