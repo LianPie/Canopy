@@ -75,10 +75,12 @@ The goal of Canopy is to provide a flexible workspace where teams can plan, trac
 - Responsive dashboard UI using Metronic
 
 
+
 ## Architecture
 
-Canopy follows a client-server architecture:
+Canopy uses a client-server architecture in which the frontend communicates with an ASP.NET Core Web API through HTTP requests.
 
+```mermaid
 flowchart TD
     A["Frontend<br/>Bootstrap · Metronic · jQuery"]
     B["ASP.NET Core Web API<br/>Authentication · Business Logic · REST Endpoints"]
@@ -88,6 +90,9 @@ flowchart TD
     A <-->|"HTTP Requests / Responses"| B
     B <--> C
     C <--> D
+```
+
+The API handles authentication, application logic, and RESTful endpoints. Entity Framework Core manages data access and database operations, with SQL Server serving as the application's persistent data store.
 
 Canopy uses a client-server architecture in which the frontend communicates with an ASP.NET Core Web API through HTTP requests.
 
